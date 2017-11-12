@@ -268,29 +268,6 @@ var instructions_block = {
 	}
 };
 
-/*
-var instructions_block = {
-	type: 'poldrack-text',
-	data: {
-		trial_id: "instructions"
-	},
-	timing_response: -1,
-	text: '<div class = bigbox><div class = centerbox>'+
-			'<p class = block-text><font color = "white">We are interested in the suitability of different objects to be judged on a "use/utilize now" vs "use/utilize repetitively later" axis.</font></p>'+
-			'<p class = block-text><font color = "white">To be specific, for each object we want you to think about how you would feel if you used/utilized that object now - within a few seconds.</font></p>'+
-			'<p class = block-text><font color = "white">In addition, we would also like you to think about the long-term consequences of repeatedly using/utilizing <strong>each</strong> object.</font></p>'+
-			'<p class = block-text><font color = "white">Please indicate your judgement of each objects suitability on a "use/utilize now" vs "use/utilize repetitively later" axis, using the keyboard keys 1, 2, 4, 5, and 5.</font></p>'+
-			'<p class = block-text><font color = "white">You will have 3 seconds to make your choice, and your response will be indicated by a green border surrounding your button of choice.</font></p>'+
-			'<p class = block-text><font color = "white">Please start by fixating your eyes at the center of the screen.</font></p>'+
-			'<p class = block-text><font color = "white">When you are ready to begin, press <strong>enter</strong> to start with a practice trial.</font></p>'+		
-		 '</div></div>',
-	cont_key: [13],
-	timing_post_trial: 0,
-	on_finish: function(){
-		gameState = "practice_rating"
-	}
-};
-*/
 var start_test_block = {
 	type: 'poldrack-text',
 	data: {
@@ -344,24 +321,6 @@ var practice_rating_block = {
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
-	
-	
-var fixation_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">+</font></div></div></div>',
-	is_html: true,
-	choices: 'none',
-	data: {
-		trial_id: "fixation"
-	},
-	timing_post_trial: 0,
-	timing_stim: 200,
-	timing_response: 200,
-	on_finish: function(){
-		keyTracker = []
-		pressedKey = ""
-	}
-};
 
 var training_trials = []
 for(var i = 0; i < numTrialsPerBlock; i++){ //numStims before, should be # of trials per block (40??)
@@ -384,7 +343,6 @@ for(var i = 0; i < numTrialsPerBlock; i++){ //numStims before, should be # of tr
 	}
 	};
 	
-	//training_trials.push(fixation_block)
 	training_trials.push(rating_block)
 }
 training_trials.push(rest_block)
