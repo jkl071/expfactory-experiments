@@ -15,11 +15,6 @@ var getFeedback = function() {
 	return '<div class = centerbox><p class = block-text>' + feedback_text + '</p></div>'
 }
 
-var testPhaseReady = function(){
-	feedback_text = 'We will now start with a test session. In this test, concentrate on responding quickly and accurately to each stimuli unless it requires no response.</p><p class = block-text>Press enter to continue.'
-}
-
-
 
 var createTrialTypes = function(numTrials){
 	var stims = []
@@ -130,20 +125,25 @@ var getSSD = function(){
 
 var appendData = function(){
 	curr_trial = jsPsych.progress().current_trial_global
-	testPhase = jsPsych.data.getDataByTrialIndex(curr_trial).exp_stage
 
 	if (exp_phase == "practice1"){
+		
 		currBlock = practiceCount
+		
 	} else if (exp_phase == "practice2"){
-		jsPsych.data.addDataToLastTrial({
-			stop_type: stimData.stop_type
-		})
+		
 		currBlock = practiceStopCount
-	} else if (exp_phase == "test"){
+		
 		jsPsych.data.addDataToLastTrial({
 			stop_type: stimData.stop_type
 		})
+	} else if (exp_phase == "test"){
+		
 		currBlock = testCount
+		
+		jsPsych.data.addDataToLastTrial({
+			stop_type: stimData.stop_type
+		})
 	}
 	
 	jsPsych.data.addDataToLastTrial({
@@ -154,7 +154,6 @@ var appendData = function(){
 	})
 	
 	if (exp_phase == "test"){	
-		curr_trial = jsPsych.progress().current_trial_global
 		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == 32) && (SSD<850) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
 			SSD = SSD + 50
 		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != 32) && (SSD>0) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
@@ -304,7 +303,7 @@ var ITI_block = {
 	timing_stim: 1400,
 	timing_response: 1400,
 	timing_post_trial: 0,
-	response_ends_trial: false,,
+	response_ends_trial: false,
 	on_finish: appendData
 }
 
@@ -420,7 +419,6 @@ var test_intro = {
 	timing_response: -1,
 	response_ends_trial: true,
 	on_finish: function(){
-		testPhaseReady
 		feedback_text = 'We will now start the test session. Please concentrate on responding quickly and accurately to each stimuli.'
 	}
 };
