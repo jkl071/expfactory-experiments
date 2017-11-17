@@ -15,6 +15,39 @@ var getFeedback = function() {
 	return '<div class = centerbox><p class = block-text>' + feedback_text + '</p></div>'
 }
 
+var createForcedStims = function(numShapes){
+	tempCombo = []
+	for (i = 0; i < numShapes - 1 ; i++) {
+		for (x = i + 1; x < numShapes; x++) {
+		tempCombo.push([i,x])
+		tempCombo.push([x,i])
+		}
+	}
+	
+	tempCombo = jsPsych.randomization.repeat(tempCombo,1)
+	return tempCombo
+}
+
+
+
+var getForcedStim = function(){
+	forced_combo = forcedStims.pop()
+	
+	forced_left_stim = shapes[forced_combo[0]]
+	forced_left_type = forced_stim_types[forced_combo[0]]
+	forced_left_correct = forced_correct_responses[forced_combo[0]]
+
+	forced_right_stim = shapes[forced_combo[1]]
+	forced_right_type = forced_stim_types[forced_combo[1]]
+	forced_right_correct = forced_correct_responses[forced_combo[1]]
+	
+		   
+		   
+	return [forcedChoiceType + pathSource + 'black_' + shapes[forced_combo[0]] + fileType + postFileTypeForced +
+		   forcedChoiceType2 + pathSource + 'black_' + shapes[forced_combo[1]] + fileType + postFileTypeForced]
+
+}
+
 
 var createTrialTypes = function(numTrials){
 	var stims = []
@@ -146,12 +179,14 @@ var appendData = function(){
 		})
 	}
 	
-	jsPsych.data.addDataToLastTrial({
-		stim: stimData.stim,
-		correct_response: stimData.correct_response,	
-		current_block: currBlock,
-		exp_stage: exp_phase
-	})
+	if ((exp_phase == "practice1") || (exp_phase == "practice2") || (exp_phase == "test")){
+		jsPsych.data.addDataToLastTrial({
+			stim: stimData.stim,
+			correct_response: stimData.correct_response,	
+			current_block: currBlock,
+			exp_stage: exp_phase
+		})
+	}
 	
 	if (exp_phase == "test"){	
 		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == 32) && (SSD<850) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
@@ -172,6 +207,19 @@ var appendData = function(){
 			jsPsych.data.addDataToLastTrial({stop_acc: 0})
 		}
 	}
+	
+	if (exp_phase == "forced_choice"){
+		jsPsych.data.addDataToLastTrial({
+			left_stim: forced_left_stim, 
+			left_stim_type: forced_left_type,
+			left_stim_correct_response: forced_left_correct,
+
+			right_stim: forced_right_stim,
+			right_stim_type: forced_right_type,
+			right_stim_correct_response: forced_right_correct
+		})
+	
+	}
 }
 
 
@@ -181,6 +229,7 @@ var appendData = function(){
 var subject_ID = 469
 var practice_length = 12
 var test_length = 60 // 840 
+var numForcedTrials = 12
 var numBlocks = test_length/10
 var numTrialsPerBlock = test_length/numBlocks
 
@@ -209,6 +258,10 @@ var pathSource = "/static/experiments/overt_response/images/"
 var fileType = ".png"
 var preFileType = "<img class = center src='"
 
+var forcedChoiceType = "<div class = decision-left><img src='"
+var forcedChoiceType2 = "<div class = decision-right><img src='"
+var postFileTypeForced = "'></img></div>"
+
 
 
 var shapesPreload = jsPsych.randomization.repeat(shapes,1)
@@ -236,7 +289,17 @@ var stop_type = ''
 var correct_response = ''
 var exp_phase = "practice1"
 
+var forcedStims = createForcedStims(shapes.length)
+var forced_stim_types = ["change","change","go","go"]
+var forced_correct_responses = [37,39,37,39]
 
+var forced_left_stim = ""
+var forced_left_type = ""
+var forced_left_correct = ""
+
+var forced_right_stim = ""
+var forced_right_type = ""
+var forced_right_correct = ""
 
 
 /* ************************************ */
@@ -287,8 +350,7 @@ var prompt_ITI_block = {
 	timing_response: 1400,
 	timing_post_trial: 0,
 	response_ends_trial: false,
-	prompt: prompt_text,
-	on_finish: appendData
+	prompt: prompt_text
 }
 	
 var ITI_block = {
@@ -303,8 +365,7 @@ var ITI_block = {
 	timing_stim: 1400,
 	timing_response: 1400,
 	timing_post_trial: 0,
-	response_ends_trial: false,
-	on_finish: appendData
+	response_ends_trial: false
 }
 
 var instructions_block = {
@@ -338,8 +399,7 @@ var fixation_block = {
 	},
 	timing_post_trial: 0,
 	timing_stim: 500,
-	timing_response: 500,
-	on_finish: appendData
+	timing_response: 500
 };
 
 var prompt_fixation_block = {
@@ -354,8 +414,7 @@ var prompt_fixation_block = {
 	timing_post_trial: 0,
 	timing_stim: 500,
 	timing_response: 500,
-	prompt: prompt_text,
-	on_finish: appendData
+	prompt: prompt_text
 };
 
 
@@ -423,6 +482,27 @@ var test_intro = {
 	}
 };
 
+var forced_choice_intro = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = centerbox>'+
+	'<p class = block-text>We will now start the forced choice phase for the experiment.</p>'+
+	'<p class = block-text>Please choose the shape that you prefer, using the left arrow key to choose the left image, and the right arrow key to choose the right image.</p>'+
+	'<p class = block-text>Press <strong> enter</strong> to begin.</p>'+
+	'</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		exp_id: "overt_response",
+		"trial_id": "stop_intro_phase1"
+	},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true,
+	on_finish: function(){
+		exp_phase = "forced_choice"
+	}
+};
 
 var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
 var feedback_block = {
@@ -699,6 +779,8 @@ var testNode = {
 
 		if (testCount == numBlocks) {
 			feedback_text += '</p><p class = block-text>Done with this test.'
+			exp_phase = "forced_choice"
+			
 			return false;
 		} else {
 			
@@ -737,6 +819,40 @@ var testNode = {
 	}
 }
 
+var forced_choice_trials = []
+
+for (i = 0; i < numForcedTrials; i++) {
+	forced_choice_trials.push(fixation_block)
+		var forced_choice_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getForcedStim, //getForcedStim
+		is_html: true,
+		choices: [37,39],
+		data: {
+			exp_id: "overt_response",
+			trial_id: "forced_choice",
+		},
+		timing_post_trial: 0,
+		timing_stim: 2500,
+		timing_response: 2500,
+		on_finish: appendData,
+		response_ends_trial: true
+		};
+
+	forced_choice_trials.push(forced_choice_block)
+	forced_choice_trials.push(ITI_block)
+}
+
+				  
+var forcedChoiceNode = {
+	timeline: forced_choice_trials,
+	loop_function: function(data) {
+	
+	
+	
+	
+	}
+}
 
 /* ************************************ */
 /*          Set up Experiment           */
@@ -758,6 +874,10 @@ overt_response_experiment.push(feedback_block);
 overt_response_experiment.push(test_intro);
 overt_response_experiment.push(testNode);
 overt_response_experiment.push(feedback_block);
+
+
+overt_response_experiment.push(forced_choice_intro);
+overt_response_experiment.push(forcedChoiceNode);
 
 overt_response_experiment.push(end_block);
 
