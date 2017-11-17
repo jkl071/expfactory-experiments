@@ -245,7 +245,7 @@ var preFileType = "<img class = center src='/static/experiments/cue_control_smok
 
 
 var pathSource = "/static/experiments/cue_control_smoking/images/stim_numbered/"
-var valued_stim_directory = "PDC3_chosen_cigs_500/" //controls if you are showing food or smoking pictures
+var valued_stim_directory = "PDC3_chosen_cigs_500_next/" //controls if you are showing food or smoking pictures
 var neutral_directory = "neutral_stims_500/"
 
 var fileTypeBMP = ".bmp'></img>"
