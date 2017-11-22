@@ -25,7 +25,7 @@ var createForcedStims = function(numShapes){
 			tempCombo.push([x,i])
 		}
 	}
-	
+	tempCombo = jsPsych.randomization.repeat(tempCombo,1)
 	return tempCombo
 }
 
@@ -42,20 +42,35 @@ var getForcedStim = function(){
 	forced_right_correct = forced_correct_responses[forced_combo[1]]
 	
 		   
-		   
-	return [forcedChoiceType + pathSource + forced_left_stim_color + 'square' + fileType + postFileTypeForced +
-		   forcedChoiceType2 + pathSource + forced_right_stim_color + 'square' + fileType + postFileTypeForced]
+	return [forcedChoiceType + pathSource + forced_left_stim_color + '_square' + fileType + postFileTypeForced +
+		   forcedChoiceType2 + pathSource + forced_right_stim_color + '_square' + fileType + postFileTypeForced]
 
 }
 
 
 var createTrialTypes = function(numTrials){
-	var left_choices = [78,78,78,78,90,90,90,90]
-	var right_choices = [77,77,77,77,90,90,90,90]
+	var left_choices = [possible_responses[0][1],
+						possible_responses[0][1],
+						possible_responses[0][1],
+						possible_responses[0][1],
+						stop_change_response[1],
+						stop_change_response[1],
+						stop_change_response[1],
+						stop_change_response[1]]
+
+	var right_choices = [possible_responses[1][1],
+						 possible_responses[1][1],
+						 possible_responses[1][1],
+						 possible_responses[1][1],
+						 stop_change_response[1],
+						 stop_change_response[1],
+						 stop_change_response[1],
+						 stop_change_response[1]]
+						 
 	var stop_types = ['go','go','go','go','stop','stop','stop','stop']
 	var stop_colors = ['','','','',colors[4],colors[5],colors[6],colors[7]]
-	var left_choice = [78,90]
-	var right_choice = [77,90]
+	var left_choice = [possible_responses[0][1],stop_change_response[1]]
+	var right_choice = [possible_responses[1][1],stop_change_response[1]]
 	
 	var stims = []
 	var trialTypes1_1 = jsPsych.randomization.repeat([0],numTrials/6) 
@@ -88,7 +103,7 @@ var createTrialTypes = function(numTrials){
 			'correct_response': left_choices[trialType1],
 			'possible_response': left_choice,
 			'stop_color': stop_colors[trialType1],
-			'stim_color': colors[0]
+			'stim_color': colors[0],
 		}
 		stim2 = {
 			'stim' : shapes[1],
@@ -96,7 +111,7 @@ var createTrialTypes = function(numTrials){
 			'correct_response': left_choices[trialType2],
 			'possible_response': left_choice,
 			'stop_color': stop_colors[trialType2],
-			'stim_color': colors[1]		
+			'stim_color': colors[1],
 		}
 		stim3 = {
 			'stim' : shapes[2],
@@ -104,7 +119,7 @@ var createTrialTypes = function(numTrials){
 			'correct_response': right_choices[trialType3],
 			'possible_response': right_choice,
 			'stop_color': stop_colors[trialType3],
-			'stim_color': colors[2]
+			'stim_color': colors[2],
 		}
 		stim4 = {
 			'stim' : shapes[3],
@@ -112,7 +127,7 @@ var createTrialTypes = function(numTrials){
 			'correct_response': right_choices[trialType4],
 			'possible_response': right_choice,
 			'stop_color': stop_colors[trialType4],
-			'stim_color': colors[3]
+			'stim_color': colors[3],
 		} 
 	
 	stims.push(stim1)
@@ -130,19 +145,29 @@ var getStim = function(){
 
 	if(exp_phase == "practice1"){
 		shape = practice_stims.stim.pop()
-		shape_color = practice_stims.stim_color.pop()
-		correct_response = practice_stims.correct_response.pop()
-		possible_responses = practice_stims.possible_response.pop()
+		shape_color = "black"
+		if ((shape == shapes[0]) || (shape == shapes[1])){
+			correct_response = possible_responses[0][1]
+		} else if ((shape == shapes[2]) || (shape == shapes[3])){
+			correct_response = possible_responses[1][1]
+		}
+		stim_possible_responses = practice_stims.possible_response.pop()
 		stop_type = "practice_no_stop"
 		stop_color = "practice_no_stop"
+		
+		console.log('shape = '+shape)
+		console.log('correct response = '+correct_response)
 		
 	} else if ((exp_phase == "practice2") || (exp_phase == "test")){
 		shape = test_stims.stim.pop()
 		shape_color = test_stims.stim_color.pop()
 		correct_response = test_stims.correct_response.pop()
-		possible_responses = test_stims.possible_response.pop()
+		stim_possible_responses = test_stims.possible_response.pop()
 		stop_type = test_stims.stop_type.pop()
 		stop_color = test_stims.stop_color.pop()
+		console.log('stim = '+shape_color+'_'+shape)
+		console.log('correct response = '+correct_response)
+		console.log('stop_color = '+stop_color)
 		
 	}
 	
@@ -153,7 +178,7 @@ var getStim = function(){
 			stim: shape_color + '_' + shape,
 			stop_type: stop_type,
 			correct_response: correct_response,
-			possible_esponses: possible_responses,
+			possible_responses: stim_possible_responses,
 			stop_color: stop_color
 			}
 	}
@@ -200,9 +225,9 @@ var appendData = function(){
 	}
 	
 	if (exp_phase == "test"){	
-		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == 32) && (SSD<850) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
+		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == stop_change_response[1]) && (SSD<850) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
 			SSD = SSD + 50
-		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != 32) && (SSD>0) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
+		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != stop_change_response[1]) && (SSD>0) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
 			SSD = SSD - 50
 		}
 	
@@ -212,23 +237,38 @@ var appendData = function(){
 			jsPsych.data.addDataToLastTrial({go_acc: 0})
 		}
 	
-		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == 32) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
+		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == stop_change_response[1]) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
 			jsPsych.data.addDataToLastTrial({stop_acc: 1})
-		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != 32) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
+		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != stop_change_response[1]) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
 			jsPsych.data.addDataToLastTrial({stop_acc: 0})
 		}
 	}
 	
 	if (exp_phase == "forced_choice"){
+		if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == 37 ){
+			chosen_forced_stim = forced_left_stim_color
+			chosen_forced_stim_type = forced_left_type
+			chosen_forced_correct_response = forced_left_correct
+		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == 39 ){
+			chosen_forced_stim = forced_right_stim_color
+			chosen_forced_stim_type = forced_right_type
+			chosen_forced_correct_response = forced_right_correct		
+		}
+		
 		jsPsych.data.addDataToLastTrial({
-			left_stim: forced_left_stim, 
+			left_stim: forced_left_stim_color, 
 			left_stim_type: forced_left_type,
 			left_stim_correct_response: forced_left_correct,
 
-			right_stim: forced_right_stim,
+			right_stim: forced_right_stim_color,
 			right_stim_type: forced_right_type,
-			right_stim_correct_response: forced_right_correct
+			right_stim_correct_response: forced_right_correct,
+			
+			chosen_forced_stim: chosen_forced_stim,
+			chosen_forced_stim_type: chosen_forced_stim_type,
+			chosen_forced_correct_response: chosen_forced_correct_response
 		})
+	
 	
 	}
 }
@@ -240,7 +280,7 @@ var appendData = function(){
 var subject_ID = 469
 var practice_length = 48
 var test_length = 48 // 840 
-var numForcedTrials = 12
+var numForcedTrials = 32
 var numBlocks = test_length/12
 var numTrialsPerBlock = test_length/numBlocks
 
@@ -252,26 +292,12 @@ var SSD = 250;
 
 
 var shapes = jsPsych.randomization.repeat(['circle','rhombus','pentagon','triangle'],1)
-var colors = jsPsych.randomization.repeat(['red','green','brown','blue','pink','purple','yellow','black'],1)
+var colors = jsPsych.randomization.repeat(['red','green','brown','blue','pink','purple','yellow','turquoise'],1)
+var color = "black"
 
 
-var shape1 = shapes[0] // correct response = left
-var shape2 = shapes[1] // correct response = right
-var shape3 = shapes[2] // correct response = left
-var shape4 = shapes[3] // correct response = right
-
-
-var color1 = colors[0]
-var color2 = colors[1]
-var color3 = colors[2]
-var color4 = colors[3]
-var color5 = colors[4]
-var color6 = colors[5]
-var color7 = colors[6]
-var color8 = colors[7]
-
-
-var possible_responses = [['N key', 78],['M key', 77]]
+var possible_responses = [['left key', 37],['right key', 39]]
+var stop_change_response = ['Z key', 90]
 
 
 var postFileType = "'></img>"
@@ -295,8 +321,8 @@ jsPsych.pluginAPI.preloadImages(images);
 
 
 var prompt_text = '<ul list-text><li>' + shapes[0] + ': ' + possible_responses[0][0] +
-	'</li><li>' + shapes[1] + ': ' + possible_responses[1][0] + '</li><li>' + shapes[2] + ': ' +
-	possible_responses[0][0] + '</li><li>' + shapes[3] + ': ' + possible_responses[1][0] +
+	'</li><li>' + shapes[1] + ': ' + possible_responses[0][0] + '</li><li>' + shapes[2] + ': ' +
+	possible_responses[1][0] + '</li><li>' + shapes[3] + ': ' + possible_responses[1][0] +
 	'</li></ul>'
 
 
@@ -312,7 +338,15 @@ var exp_phase = "practice1"
 
 var forcedStims = createForcedStims(shapes.length)
 var forced_stim_types = ["go","go","go","go","stop","stop","stop","stop"]
-var forced_correct_responses = [78,78,77,77,90,90,90,90]
+var forced_correct_responses = [possible_responses[0][1],
+								possible_responses[0][1],
+								possible_responses[1][1],
+								possible_responses[1][1],
+								stop_change_response[1],
+								stop_change_response[1],
+								stop_change_response[1],
+								stop_change_response[1]]
+
 
 var forced_left_stim = ""
 var forced_left_type = ""
@@ -321,6 +355,7 @@ var forced_left_correct = ""
 var forced_right_stim = ""
 var forced_right_type = ""
 var forced_right_correct = ""
+var stim_possible_responses = ""
 
 
 /* ************************************ */
@@ -366,7 +401,7 @@ var prompt_ITI_block = {
 		exp_id: "stop_change",
 		"trial_id": "ITI",
 	},
-	choices: [32],
+	choices: 'none',
 	timing_stim: 1400,
 	timing_response: 1400,
 	timing_post_trial: 0,
@@ -382,7 +417,7 @@ var ITI_block = {
 		exp_id: "stop_change",
 		"trial_id": "ITI"
 	},
-	choices: [32],
+	choices: 'none',
 	timing_stim: 1400,
 	timing_response: 1400,
 	timing_post_trial: 0,
@@ -441,7 +476,7 @@ var prompt_fixation_block = {
 
 var practice_intro = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><p class = block-text>We will now start the practice for the experiment.<br><br>For these trials, you must press the <strong>'+possible_responses[0][0]+' </strong> or have <strong>'+possible_responses[1][0]+'</strong> depending on the shape of the stimulus.  Make sure to respond as quickly and accurately as possible to the shape. <br><br> The responses for each shape are as follows: ' +
+	stimulus: '<div class = centerbox><p class = block-text>We will now start the practice for the experiment.<br><br>For these trials, you must press the <strong>'+possible_responses[0][0]+' </strong> or the <strong>'+possible_responses[1][0]+'</strong> depending on the shape of the stimulus.  Make sure to respond as quickly and accurately as possible to the shape. <br><br> The responses for each shape are as follows: ' +
 		prompt_text +
 		'</p><p class = block-text>Remember these rules before you proceed.</p><p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
 	is_html: true,
@@ -460,11 +495,11 @@ var practice_stop_intro = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = centerbox>'+
 			  	'<p class = block-text>We will now start the second practice for the experiment.</p>'+
-			  	'<p class = block-text>On some trials a star will appear around the shape.  If a star appears, please change your response from the Left or Right arrow key, to the space bar.</p>'+
+			  	'<p class = block-text>On some trials a star will appear around the shape.  If a star appears, please change your response from the ' + possible_responses[0][0] + ' or ' + possible_responses[1][0] + ', to the ' + stop_change_response[0] + '.</p>'+
 				'<p class = block-text>Do not wait to see if a star will appear before you make your response.  Please continue to respond to each shape as quickly and as accurately as possible.</p>'+
 				'<p class = block-text>Remember these rules before you proceed.</p>'+
 				prompt_text +
-				'<p class = block-text>If a star appears, the correct response on that trial is the space bar.</p>'+
+				'<p class = block-text>If a star appears, the correct response on that trial is the ' + stop_change_response[0] + '.</p>'+
 			    '<p class = block-text>Press <strong> enter</strong> to begin.</p>'+
 			  '</div>',
 	is_html: true,
@@ -487,7 +522,9 @@ var test_intro = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = centerbox><p class = block-text>We will now start the main phase of the experiment.<br><br>These trials are the same as the trials that you have just completed. <br><br>The rules for each shape are as follows:  <br>' +
 		prompt_text +
-		'</p><p class = block-text>Remember these rules before you proceed, as they will no longer be presented during the trial.</p><p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
+		'</p><p class = block-text>Remember these rules before you proceed, as they will no longer be presented during the trial.</p>'+
+		'<p class = block-text>If a star appears, the correct response on that trial is the ' + stop_change_response[0] + '.</p>'+
+		'<p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
 	is_html: true,
 	choices: [13],
 	data: {
@@ -560,7 +597,7 @@ for (i = 0; i < practice_length; i++) {
 			exp_id: "stop_change",
 			"trial_id": "practice_trial",
 		},
-		choices: [37,39],
+		choices: [possible_responses[0][1],possible_responses[1][1]],
 		timing_stim: 850,
 		timing_response: 850,
 		on_finish: appendData,
@@ -649,7 +686,7 @@ for (i = 0; i < practice_length; i++) {
 			"trial_id": "practice_stop_trial",
 		},
 		is_html: true,
-		choices: [32,37,39],
+		choices: [possible_responses[0][1],possible_responses[1][1], stop_change_response[1]],
 		timing_stim: 850,
 		timing_response: 1850,
 		response_ends_trial: false,
@@ -686,7 +723,7 @@ var practiceStopNode = {
 				}
 			} else if (data[i].stop_type == "stop") {
 				stop_length += 1
-				if (data[i].rt == 32) {
+				if (data[i].key_press == stop_change_response[1]) {
 					sumStop_correct += 1
 				}
 			}
@@ -725,6 +762,7 @@ var practiceStopNode = {
 			
 			feedback_text += '</p><p class = block-text>Done with this practice.'
 			exp_phase = "test"
+			test_stims = createTrialTypes(test_length)
 			return false;
 		}
 	}
@@ -745,7 +783,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 			"trial_id": "test_trial",
 		},
 		is_html: true,
-		choices: [32,37,39],
+		choices: [possible_responses[0][1],possible_responses[1][1], stop_change_response[1]],
 		timing_stim: 850,
 		timing_response: 1850,
 		response_ends_trial: false,
@@ -780,7 +818,7 @@ var testNode = {
 				}
 			} else if (data[i].stop_type == "stop") {
 				stop_length += 1
-				if (data[i].rt == 32) {
+				if (data[i].key_press == stop_change_response[1]) {
 					sumStop_correct += 1
 				}
 			}
@@ -827,14 +865,13 @@ var testNode = {
 			
 			if (stop_respond > 0.70){
 				feedback_text +=
-					'</p><p class = block-text>We have detected a number of trials that <strong>required a space bar response</strong>, where a left or right arrow response was made.  Please <strong>ensure that you are switching your response to the spacebar </strong>when the star appears.'
+					'</p><p class = block-text>We have detected a number of trials that <strong>required a ' + stop_change_response[0] + ' response</strong>, where an ' + possible_responses[0][0] + ' or an ' + possible_responses[1][0] + ' response was made.  Please <strong>ensure that you are switching your response to the ' + stop_change_response[0] + ' </strong>when the star appears.'
 			
 			}else if (stop_respond < .30){
 				feedback_text +=
 					'</p><p class = block-text>You have been responding too slowly, please respond to each shape (circle, triangle, rhombus, pentagon) as quickly and as accurately as possible.'
 			
 			}
-				
 			return true;
 		}
 	}
@@ -857,7 +894,7 @@ for (i = 0; i < numForcedTrials; i++) {
 		timing_stim: 2500,
 		timing_response: 2500,
 		on_finish: appendData,
-		response_ends_trial: true
+		response_ends_trial: false
 		};
 
 	forced_choice_trials.push(forced_choice_block)
