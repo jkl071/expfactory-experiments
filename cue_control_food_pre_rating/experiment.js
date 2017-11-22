@@ -1,0 +1,270 @@
+/* ************************************ */
+/*       Define Helper Functions        */
+/* ************************************ */
+
+
+function getDisplayElement() {
+    $('<div class = display_stage_background></div>').appendTo('body')
+    return $('<div class = display_stage></div>').appendTo('body')
+}
+
+function addID() {
+  jsPsych.data.addDataToLastTrial({exp_id: 'cue_control_food_pre_rating', subject_ID: subject_ID})
+}
+
+
+var createStims = function(numStims,numIterations,numZeroes){
+	var lowEnd = 1
+	var stimArray = []
+	for (i = lowEnd; i<numStims+1; i++){
+		num_zeros = numZeroes - i.toString().length
+
+		if (num_zeros === 0) {
+			stim_num = i
+		}else if (num_zeros == 1) {
+			stim_num = '0' + i
+		}else if (num_zeros == 2) {
+			stim_num = '00' + i
+		}else if (num_zeros == 3) {
+			stim_num = '000' + i
+		}
+	
+		stim = {
+			stim: stim_num,
+			stim_type:  'Food'
+		}
+		
+		stimArray.push(stim)
+	}
+	
+	for (x = 0; x < numStims; x++){
+		stim = {
+			stim: neutral_pics[x],
+			stim_type: 'Neutral'
+		}
+		stimArray.push(stim)
+	}
+
+	var stimArray = jsPsych.randomization.repeat(stimArray, numIterations, true)
+	return stimArray
+}
+
+
+var pressSubmit = function(rating){
+	stim_rating = rating
+	hitKey(13)
+}
+
+	
+var hitKey = function(whichKey){
+	e = jQuery.Event("keydown");
+  	e.which = whichKey; // # Some key code value
+  	e.keyCode = whichKey
+  	$(document).trigger(e);
+ 	e = jQuery.Event("keyup");
+  	e.which = whichKey; // # Some key code value
+  	e.keyCode = whichKey
+  	$(document).trigger(e)
+}
+
+
+function getRatingBoard(){	
+		current_stim = stims.stim.pop()
+		stim_type = stims.stim_type.pop()
+		
+		if(stim_type == experiment_stim_type){
+	
+			return ratingBoard1 + valued_stim_directory + current_stim + fileTypeJPG + ratingBoard2		
+		}else if(stim_type == "Neutral"){
+			return ratingBoard1 + neutral_directory + current_stim + "'></img>"  + ratingBoard2	
+		}
+}
+
+var appendData = function(){
+	//curr_trial = jsPsych.progress().current_trial_global
+	//trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
+	jsPsych.data.addDataToLastTrial({
+		stim: current_stim,
+		stim_type: stim_type,
+		stim_rating: stim_rating,
+		current_trial: currTrial
+	})
+	
+	currTrial += 1
+
+}
+
+/* ************************************ */
+/*    Define Experimental Variables     */
+/* ************************************ */
+var subject_ID = 472
+var numStimsPerCategory = 44
+var totalStims = numStimsPerCategory * 2 // 5 total conditions
+
+
+var numIterations = 1 //number of a certain stim, in each of the one conditions
+
+var stim = ''
+var stim_type = ''
+var stim_rating = ''
+var currTrial = 0
+
+
+var now_cue = 'NOW'
+var later_cue = 'LATER'
+var experiment_stim_type = 'Food'
+var current_game_state = "start"
+var postRateNullType = 0
+
+
+var preFileType = "<img class = center src='/static/experiments/cue_control_food_pre_rating/images/"
+var valued_stim_directory = "PDC3_chosen_food_500/" //controls if you are showing food or smoking pictures
+var neutral_directory = "neutral_stims_500/"
+
+var fileTypeJPG = ".jpg'></img>"
+
+
+
+////////////////
+
+
+var ratingBoard1 = 
+	"<div class = bigbox>"+
+		"<div class = practice_rating_text>"+
+		"<p class = center-textJamie style='font-size:26px'><font color = 'white'>Please rate how much you currently want to consume/use the item.</font></p>"+
+		"</div>"+
+		
+		"<div class = center_picture_box>"+preFileType
+		
+var ratingBoard2 = 
+	    "</div>"+
+		
+		"<div class = buttonbox>"+
+			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(1)' >1</button></div>"+
+			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(2)' >2</button></div>"+
+			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(3)' >3</button></div>"+
+			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(4)' >4</button></div>"+
+			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(5)' >5</button></div>"+
+		"</div>"+
+	"</div>"
+		
+	
+var stims = createStims(numStimsPerCategory,numIterations,3) // last input is for numZeroes
+
+
+/* ************************************ */
+/*        Set up jsPsych blocks         */
+/* ************************************ */
+
+var end_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "end"
+	},
+	timing_response: -1,
+	text: '<div class = bigbox><div class = centerbox>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">Thanks for completing this task!</font></p>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		  '</div></div>',
+	cont_key: [13],
+	timing_post_trial: 0,
+};
+
+var welcome_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "welcome"
+	},
+	timing_response: -1,
+	text: '<div class = bigbox><div class = centerbox>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">Welcome to the task!</font></p>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		  '</div></div>',
+	cont_key: [13],
+	timing_post_trial: 0,
+};
+
+var post_rating_intro = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "post_rating_intro"
+	},
+	timing_response: -1,
+	text: '<div class = bigbox><div class = centerbox>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">For this phase, please rate how much you want to consume / use the item.</font></p>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">1 = very low, 5 = very high.</font></p>'+		  
+		  '</div></div>',
+	cont_key: [13],
+	timing_post_trial: 0
+};
+
+var instructions_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "instructions"
+	},
+	timing_response: -1,
+	text: '<div class = bigbox><div class = centerbox>'+
+			'<p class = block-text><font color = "white">You will be rating various stimuli based on how much you currently want to use and/or consume the item.</font></p>'+
+			'<p class = block-text><font color = "white">1 = very low, 5 = very high.  Please use the mouse to indicate your choice.</font></p>'+
+			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
+	
+		 '</div></div>',
+	cont_key: [13],
+	timing_post_trial: 0,
+};
+
+
+
+/* ************************************ */
+/*        Set up timeline blocks        */
+/* ************************************ */
+
+
+
+var post_rating_trials = []
+for(var i = 0; i < totalStims; i++){ //numStims before, but probably should equal the number of all stims = 120
+	var rating_block = {
+	type: 'poldrack-single-stim',
+	stimulus: getRatingBoard,
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "post_rating"
+	},
+	timing_post_trial: 0,
+	timing_stim: -1, //3000
+	timing_response: -1, //3000
+	on_finish: appendData,
+	response_ends_trial: true
+	};
+	
+	//post_rating_trials.push(fixation_block)
+	post_rating_trials.push(rating_block)
+}
+
+var post_rating_node = {
+	timeline: post_rating_trials,
+	loop_function: function(data){
+		
+	
+	}
+}
+
+
+/* ************************************ */
+/*          Set up Experiment           */
+/* ************************************ */
+
+var cue_control_food_pre_rating_experiment = []
+
+cue_control_food_pre_rating_experiment.push(welcome_block);
+
+cue_control_food_pre_rating_experiment.push(instructions_block);
+
+cue_control_food_pre_rating_experiment.push(post_rating_intro);
+
+cue_control_food_pre_rating_experiment.push(post_rating_node);
+
+cue_control_food_pre_rating_experiment.push(end_block);
+
