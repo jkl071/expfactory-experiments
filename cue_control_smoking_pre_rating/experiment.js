@@ -16,33 +16,21 @@ function addID() {
 var createStims = function(numStims,numIterations,numZeroes){
 	var lowEnd = 1
 	var stimArray = []
-	for (i = lowEnd; i<numStims+1; i++){
-		num_zeros = numZeroes - i.toString().length
-
-		if (num_zeros === 0) {
-			stim_num = i
-		}else if (num_zeros == 1) {
-			stim_num = '0' + i
-		}else if (num_zeros == 2) {
-			stim_num = '00' + i
-		}else if (num_zeros == 3) {
-			stim_num = '000' + i
-		}
 	
-		stim = {
-			stim: stim_num,
-			stim_type:  'Smoking'
-		}
-		
-		stimArray.push(stim)
-	}
 	
 	for (x = 0; x < numStims; x++){
-		stim = {
+		stim1 = {
+			stim: valued_stim_array[x],
+			stim_type: experiment_stim_type
+		} 
+		
+		stim2 = {
 			stim: neutral_pics[x],
 			stim_type: 'Neutral'
 		}
-		stimArray.push(stim)
+		
+		stimArray.push(stim1)
+		stimArray.push(stim2)
 	}
 
 	var stimArray = jsPsych.randomization.repeat(stimArray, numIterations, true)
@@ -74,7 +62,7 @@ function getRatingBoard(){
 		
 		if(stim_type == experiment_stim_type){
 	
-			return ratingBoard1 + valued_stim_directory + current_stim + fileTypeJPG + ratingBoard2		
+			return ratingBoard1 + valued_stim_directory + current_stim + "'></img>"  + ratingBoard2	
 		}else if(stim_type == "Neutral"){
 			return ratingBoard1 + neutral_directory + current_stim + "'></img>"  + ratingBoard2	
 		}

@@ -110,10 +110,7 @@ function getCue(){
 	whichCue = stims.trial_cue_type.pop()
 	stim_type = stims.stim_type.pop()
 	current_stim = stims.stim.pop()
-	
-	console.log('cue = '+whichCue)
-	console.log('stim_type = '+stim_type)
-	console.log('stim = '+current_stim)
+
 	
 	if (whichCue == "null"){
 	
@@ -319,7 +316,6 @@ var testratingBoard3 =
 	
 	
 var stims = createAllStims(numStimsPerCategory,numIterations,3,mainNullType) // last input is for numZeroes
-var post_rating_stims = createAllStims(numStimsPerCategory,numIterations,3,postRateNullType)
 
 
 /* ************************************ */
