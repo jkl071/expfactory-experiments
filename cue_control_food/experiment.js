@@ -87,7 +87,6 @@ function createAllStims(numStimsPerCategory, numIterations, numZeroes, nullType)
 }
 	
 
-
 function getRestText(){
 	if(currBlock == numBlocks - 1){
 		return '<div class = bigbox><div class = centerbox>'+
@@ -149,7 +148,7 @@ function getRatingBoard(){
 	
 		if(stim_type == experiment_stim_type){
 	
-			return probeBoard1 + valued_stim_directory + current_stim + "'></img>" + probeBoard2	
+			return ratingBoard1 + valued_stim_directory + current_stim + "'></img>" + ratingBoard2	
 		} else if(stim_type == "neutral"){
 
 			return ratingBoard1 + neutral_directory + current_stim + "'></img>" + ratingBoard2	
@@ -159,6 +158,17 @@ function getRatingBoard(){
 		}
 	
 	
+}
+
+var hitKey = function(whichKey){
+	e = jQuery.Event("keydown");
+  	e.which = whichKey; // # Some key code value
+  	e.keyCode = whichKey
+  	$(document).trigger(e);
+ 	e = jQuery.Event("keyup");
+  	e.which = whichKey; // # Some key code value
+  	e.keyCode = whichKey
+  	$(document).trigger(e)
 }
 
 
@@ -174,37 +184,82 @@ document.addEventListener("keydown", function(e){
     	keynum = e.which;
     }
     
-    if (keynum == 84){
-    trigger_tracker.push(keynum)
-    trigger_timer.push(time)
+    if ((keynum == possible_responses[0][1]) || 
+    	(keynum == possible_responses[1][1]) || 
+    	(keynum == possible_responses[2][1]) || 
+    	(keynum == possible_responses[3][1]) || 
+    	(keynum == possible_responses[4][1])){
+
+		
+	
+		if (exp_target_phase == 1){
+    
+    		response_tracker.push(keynum)
+    	
+    	}
+    }
+    
+    
+    if ((keynum == possible_responses[0][1]) && (response_tracker.length == 1)){
+    	$('#btn1').removeClass('unselected');
+    	$('#btn1').addClass('selected');
+    	hitKey(13)
+    	subject_response = keynum
+    	console.log('here')
+    
+    }else if((keynum == possible_responses[1][1]) && (response_tracker.length == 1)){
+    	$('#btn2').removeClass('unselected');
+    	$('#btn2').addClass('selected');
+    	subject_response = keynum
+    	hitKey(13)
+    
+    }else if((keynum == possible_responses[2][1]) && (response_tracker.length == 1)){
+    	$('#btn3').removeClass('unselected');
+    	$('#btn3').addClass('selected');
+    	subject_response = keynum
+    	hitKey(13)
+    
+    }else if((keynum == possible_responses[3][1]) && (response_tracker.length == 1)){
+    	$('#btn4').removeClass('unselected');
+    	$('#btn4').addClass('selected');
+    	subject_response = keynum
+    	hitKey(13)
+    
+    }else if((keynum == possible_responses[4][1]) && (response_tracker.length == 1)){
+    	$('#btn5').removeClass('unselected');
+    	$('#btn5').addClass('selected');
+    	subject_response = keynum
+    	hitKey(13)
+    
     }
     
     
     
 });
 
+
+
 var appendData = function(){
 
-	jsPsych.data.addDataToLastTrial({
-		triggers: trigger_tracker,
-		trigger_time: trigger_timer
-	})
-
-	trigger_tracker = []
-	trigger_timer = []
-	
 	curr_trial = jsPsych.progress().current_trial_global
 	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
+	
+	if(response_tracker.length == 0){
+    	subject_response = ""
+    }
 	
 	if (trial_id == "current_rating"){
 		jsPsych.data.addDataToLastTrial({
 			stim: current_stim,
 			stim_type: stim_type,
-			which_cue: whichCue
+			which_cue: whichCue,
+			response: subject_response
 			
 		})
 	
-	}
+	} 
+	response_tracker = []
+	exp_target_phase = 0
 }
 
 /* ************************************ */
@@ -213,7 +268,7 @@ var appendData = function(){
 var subject_ID = 472
 var numStimsPerCategory = 44
 var totalStims = (numStimsPerCategory/2) * 5 // 5 total conditions
-
+var possible_responses = [['1', 49],['2',50],['3',51],['4',52],['5',53]]
 
 
 
@@ -222,6 +277,7 @@ var numBlocks = totalStims / 22
 var numStimsPerBlock = totalStims / numBlocks
 
 var submitPressMax = 5
+var exp_target_phase = 0
 
 
 
@@ -248,9 +304,9 @@ var whichCue = ""
 var current_stim = ""
 var current_trial_type = ""
 var currBlock = 0
-var trigger_tracker = []
-var trigger_timer = []
+var response_tracker = []
 var submitPress = 0
+var subject_response = ""
 
 
 
@@ -276,6 +332,17 @@ var ratingBoard2 =
 	    '</div>'+
 		
 		'<div class = buttonbox>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn1" onClick="return false;" >1</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn2" onClick="return false;" >2</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn3" onClick="return false;" >3</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn4" onClick="return false;" >4</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn5" onClick="return false;" >5</button></div>'+
+		'</div>'+	
+	'</div>'
+	
+	
+	/*
+	'<div class = buttonbox>'+
 			'<div class = inner><button type="submit" class="likert_btn" id="btn1" onClick="return false;" >1</button></div>'+
 			'<div class = inner><button type="submit" class="likert_btn" id="btn2" onClick="return false;" >2</button></div>'+
 			'<div class = inner><button type="submit" class="likert_btn" id="btn3" onClick="return false;" >3</button></div>'+
@@ -283,7 +350,7 @@ var ratingBoard2 =
 			'<div class = inner><button type="submit" class="likert_btn" id="btn5" onClick="return false;" >5</button></div>'+
 		'</div>'+	
 	'</div>'
-	
+	*/
 	
 	
 	
@@ -333,8 +400,7 @@ var end_block = {
 		  '<p class = center-textJamie style="font-size:36px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
-	timing_post_trial: 0,
-	on_finish: appendData
+	timing_post_trial: 0
 };
 
 var welcome_block = {
@@ -348,8 +414,7 @@ var welcome_block = {
 		  '<p class = center-textJamie style="font-size:36px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
-	timing_post_trial: 0,
-	on_finish: appendData
+	timing_post_trial: 0
 };
 
 
@@ -363,8 +428,7 @@ var experimentor_wait_block = {
 		  '<p class = center-textJamie style="font-size:36px"><font color="white">Scanner Setup.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
-	timing_post_trial: 0,
-	on_finish: appendData
+	timing_post_trial: 0
 };
 
 var scanner_wait_block_first = {
@@ -380,8 +444,7 @@ var scanner_wait_block_first = {
 	timing_post_trial: 0,
 	timing_stim: -1,
 	timing_response: -1,
-	response_ends_trial: true,
-	on_finish: appendData
+	response_ends_trial: true
 };
 
 
@@ -398,8 +461,7 @@ var scanner_wait_block = {
 	timing_post_trial: 0,
 	timing_stim: 10880,
 	timing_response: 10880,
-	response_ends_trial: false,
-	on_finish: appendData
+	response_ends_trial: false
 };
 
 
@@ -419,8 +481,7 @@ var instructions_block = {
 	
 		 '</div></div>',
 	cont_key: [13],
-	timing_post_trial: 0,
-	on_finish: appendData
+	timing_post_trial: 0
 };
 
 
@@ -434,8 +495,7 @@ var scanner_rest_block = {
 	},
 	timing_post_trial: 0,
 	timing_stim: 3000,
-	timing_response: 3000,
-	on_finish: appendData
+	timing_response: 3000
 };
 
 
@@ -456,8 +516,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	},
 	timing_post_trial: 0,
 	timing_stim: 2000, 
-	timing_response: 2000, 
-	on_finish: appendData,
+	timing_response: 2000,
 	response_ends_trial: true
 	};
 	
@@ -472,15 +531,18 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_post_trial: 0,
 	timing_stim: 5000,
 	timing_response: 5000,
-	on_finish: appendData,
-	response_ends_trial: true
+	response_ends_trial: true,
+	on_finish: function(){
+	exp_target_phase = 1
+	
+	}
 	};
 	
 	var rating_block = {
 	type: 'poldrack-single-stim',
 	stimulus: getRatingBoard,
 	is_html: true,
-	choices: [13], //'none'
+	choices: [13], //[possible_responses[0][1], possible_responses[1][1], possible_responses[2][1], possible_responses[3][1], possible_responses[4][1]]
 	data: {
 		trial_id: "current_rating"
 	},
@@ -488,7 +550,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_stim: 3000, 
 	timing_response: 3000, 
 	on_finish: appendData,
-	response_ends_trial: true
+	response_ends_trial: false
 	};
 	
 	training_trials.push(cue_block)
@@ -526,13 +588,13 @@ var cue_control_food_experiment = []
 cue_control_food_experiment.push(welcome_block);
 
 cue_control_food_experiment.push(instructions_block);
-
+/*
 cue_control_food_experiment.push(experimentor_wait_block);
 
 cue_control_food_experiment.push(scanner_wait_block_first);
 
 cue_control_food_experiment.push(scanner_wait_block);
-
+*/
 cue_control_food_experiment.push(training_node);
 
 cue_control_food_experiment.push(end_block);

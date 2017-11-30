@@ -42,4 +42,5 @@ var neutral_pics = [
 'tennisracket.jpg',
 'trampoline.jpg',
 'treadmill.jpg',
-'volleyball.jpg']
+'volleyball.jpg'
+]

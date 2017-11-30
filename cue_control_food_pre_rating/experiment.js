@@ -37,12 +37,6 @@ var createStims = function(numStims,numIterations,numZeroes){
 	return stimArray
 }
 
-
-var pressSubmit = function(rating){
-	stim_rating = rating
-	hitKey(13)
-}
-
 	
 var hitKey = function(whichKey){
 	e = jQuery.Event("keydown");
@@ -71,6 +65,11 @@ function getRatingBoard(){
 var appendData = function(){
 	//curr_trial = jsPsych.progress().current_trial_global
 	//trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
+	
+	if(response_tracker.length == 0){
+    	stim_rating = ""
+    }
+    
 	jsPsych.data.addDataToLastTrial({
 		stim: current_stim,
 		stim_type: stim_type,
@@ -79,8 +78,72 @@ var appendData = function(){
 	})
 	
 	currTrial += 1
+	response_tracker = []
 
 }
+
+document.addEventListener("keydown", function(e){
+    var keynum;
+    var time = jsPsych.totalTime()
+    
+    
+    if(window.event){
+    	keynum = e.keyCode;
+    } else if(e.which){
+    	keynum = e.which;
+    }
+    
+    if ((keynum == possible_responses[0][1]) || 
+    	(keynum == possible_responses[1][1]) || 
+    	(keynum == possible_responses[2][1]) || 
+    	(keynum == possible_responses[3][1]) || 
+    	(keynum == possible_responses[4][1])){
+
+		
+	
+		if (exp_target_phase == 1){
+    
+    		response_tracker.push(keynum)
+    	
+    	}
+    }
+    
+    
+    if ((keynum == possible_responses[0][1]) && (response_tracker.length == 1)){
+    	$('#btn1').removeClass('unselected');
+    	$('#btn1').addClass('selected');
+    	hitKey(13)
+    	stim_rating = keynum
+    
+    }else if((keynum == possible_responses[1][1]) && (response_tracker.length == 1)){
+    	$('#btn2').removeClass('unselected');
+    	$('#btn2').addClass('selected');
+    	stim_rating = keynum
+    	hitKey(13)
+    
+    }else if((keynum == possible_responses[2][1]) && (response_tracker.length == 1)){
+    	$('#btn3').removeClass('unselected');
+    	$('#btn3').addClass('selected');
+    	stim_rating = keynum
+    	hitKey(13)
+    
+    }else if((keynum == possible_responses[3][1]) && (response_tracker.length == 1)){
+    	$('#btn4').removeClass('unselected');
+    	$('#btn4').addClass('selected');
+    	stim_rating = keynum
+    	hitKey(13)
+    
+    }else if((keynum == possible_responses[4][1]) && (response_tracker.length == 1)){
+    	$('#btn5').removeClass('unselected');
+    	$('#btn5').addClass('selected');
+    	stim_rating = keynum
+    	hitKey(13)
+    
+    }
+    
+    
+    
+});
 
 /* ************************************ */
 /*    Define Experimental Variables     */
@@ -111,7 +174,11 @@ var neutral_directory = "neutral_stims_500/"
 
 var fileTypeJPG = ".jpg'></img>"
 
+var response_tracker = []
+var subject_response = ""
+var possible_responses = [['1', 49],['2',50],['3',51],['4',52],['5',53]]
 
+var exp_target_phase = 0
 
 ////////////////
 
@@ -127,14 +194,14 @@ var ratingBoard1 =
 var ratingBoard2 = 
 	    "</div>"+
 		
-		"<div class = buttonbox>"+
-			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(1)' >1</button></div>"+
-			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(2)' >2</button></div>"+
-			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(3)' >3</button></div>"+
-			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(4)' >4</button></div>"+
-			"<div class = inner><button type='submit' class='likert_btn' onClick='pressSubmit(5)' >5</button></div>"+
-		"</div>"+
-	"</div>"
+		'<div class = buttonbox>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn1" onClick="return false;" >1</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn2" onClick="return false;" >2</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn3" onClick="return false;" >3</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn4" onClick="return false;" >4</button></div>'+
+			'<div class = inner><button class="likert_btn unselected" id="btn5" onClick="return false;" >5</button></div>'+
+		'</div>'+	
+	'</div>'
 		
 	
 var stims = createStims(numStimsPerCategory,numIterations,3) // last input is for numZeroes
@@ -183,7 +250,10 @@ var post_rating_intro = {
 		  '<p class = center-textJamie style="font-size:36px"><font color="white">1 = very low, 5 = very high.</font></p>'+		  
 		  '</div></div>',
 	cont_key: [13],
-	timing_post_trial: 0
+	timing_post_trial: 0,
+	on_finish: function(){
+		exp_target_phase = 1
+	}
 };
 
 var instructions_block = {
@@ -221,10 +291,10 @@ for(var i = 0; i < totalStims; i++){ //numStims before, but probably should equa
 		trial_id: "post_rating"
 	},
 	timing_post_trial: 0,
-	timing_stim: -1, //3000
-	timing_response: -1, //3000
+	timing_stim: 3000, //3000
+	timing_response: 3000, //3000
 	on_finish: appendData,
-	response_ends_trial: true
+	response_ends_trial: false
 	};
 	
 	//post_rating_trials.push(fixation_block)

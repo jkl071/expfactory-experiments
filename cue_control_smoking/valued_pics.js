@@ -42,5 +42,5 @@ var valued_stim_array = [
 '042.jpg',
 '043.jpg',
 '044.jpg',
-'045.jpg',
+'045.jpg'
 ]
