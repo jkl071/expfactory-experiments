@@ -18,7 +18,7 @@ var neutral_pics = [
 'cellphone.jpg',
 'cornet.jpg',
 'couch02.jpg',
-'desk02.jpg'
+'desk02.jpg',
 'desktopcomputer.jpg',
 'doublebass.jpg',
 'drumset.jpg',

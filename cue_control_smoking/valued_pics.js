@@ -28,7 +28,7 @@ var valued_stim_array = [
 '027.jpg',
 '028.jpg',
 '029.jpg',
-'031.jpg',
+'030.jpg',
 '032.jpg',
 '034.jpg',
 '036.jpg',

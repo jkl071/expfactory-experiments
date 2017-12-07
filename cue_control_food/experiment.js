@@ -494,8 +494,8 @@ var scanner_rest_block = {
 		trial_id: "scanner_rest"
 	},
 	timing_post_trial: 0,
-	timing_stim: 3000,
-	timing_response: 3000
+	timing_stim: 10000,
+	timing_response: 10000
 };
 
 
@@ -517,7 +517,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_post_trial: 0,
 	timing_stim: 2000, 
 	timing_response: 2000,
-	response_ends_trial: true
+	response_ends_trial: false
 	};
 	
 	var probe_block = {
@@ -531,7 +531,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_post_trial: 0,
 	timing_stim: 5000,
 	timing_response: 5000,
-	response_ends_trial: true,
+	response_ends_trial: false,
 	on_finish: function(){
 	exp_target_phase = 1
 	
@@ -588,13 +588,13 @@ var cue_control_food_experiment = []
 cue_control_food_experiment.push(welcome_block);
 
 cue_control_food_experiment.push(instructions_block);
-/*
+
 cue_control_food_experiment.push(experimentor_wait_block);
 
 cue_control_food_experiment.push(scanner_wait_block_first);
 
 cue_control_food_experiment.push(scanner_wait_block);
-*/
+
 cue_control_food_experiment.push(training_node);
 
 cue_control_food_experiment.push(end_block);
