@@ -1,11 +1,12 @@
 [
     {
-        "name": "Cue Control Food Practice",
+        "name": "Cue Control Smoking Practice",
         "template":"jspsych",
         "run": [
 
                 "static/js/jspsych/jspsych.js",
                 "static/js/jspsych/plugins/jspsych-call-function.js",
+                "static/js/jspsych/plugins/jspsych-text.js",
                 "static/js/jspsych/poldrack_plugins/jspsych-poldrack-text.js",
                 "static/js/jspsych/poldrack_plugins/jspsych-poldrack-instructions.js",
                 "static/js/jspsych/poldrack_plugins/jspsych-attention-check.js",
@@ -22,7 +23,7 @@
                 
                 
                ],
-        "exp_id": "cue_control_food_practice",
+        "exp_id": "cue_control_smoking_practice",
         "cognitive_atlas_task_id": "tsk_4a57abb949e1a",
         "contributors": [
                          "Jamie Li",

@@ -473,17 +473,16 @@ var instructions_block = {
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
 			'<p class = block-text><font color = "white">Each trial is composed of multiple parts.</font></p>'+
-			'<p class = block-text><font color = "white">In the first part, you will see a cue, either NOW or LATER followed by a probe.  The cue will instruct you how to think about the probe.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the pictured stimulus.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the pictured stimulus.</font></p>'+
-			'<p class = block-text><font color = "white">In the second part, you will rate the current probe.  Please indicate how much you currently want to consume/use the probe on the screen.</font></p>'+
+			'<p class = block-text><font color = "white">In the first part, you will see a cue, either NOW or LATER followed by an item.  The cue will instruct you how to think about the item.</font></p>'+
+			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the pictured item.</font></p>'+
+			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the pictured item.</font></p>'+
+			'<p class = block-text><font color = "white">In the second part, you will rate the current item.  Please indicate how much you currently want to consume/use the item on the screen.</font></p>'+
 			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
 	
 		 '</div></div>',
 	cont_key: [13],
 	timing_post_trial: 0
 };
-
 
 var scanner_rest_block = {
 	type: 'poldrack-single-stim',
@@ -517,7 +516,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_post_trial: 0,
 	timing_stim: 2000, 
 	timing_response: 2000,
-	response_ends_trial: false
+	response_ends_trial: true
 	};
 	
 	var probe_block = {
@@ -531,7 +530,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_post_trial: 0,
 	timing_stim: 5000,
 	timing_response: 5000,
-	response_ends_trial: false,
+	response_ends_trial: true,
 	on_finish: function(){
 	exp_target_phase = 1
 	
@@ -550,7 +549,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	timing_stim: 3000, 
 	timing_response: 3000, 
 	on_finish: appendData,
-	response_ends_trial: false
+	response_ends_trial: true
 	};
 	
 	training_trials.push(cue_block)

@@ -74,10 +74,6 @@ img.force {
   max-height: 65%;
 }
 
-.selected{
-  border:solid 15px green; 
-}
-
 
 img.prime {
   height: 400px;
@@ -175,12 +171,12 @@ text-align: center;
 }
 
 .selected{
-  border: 15px solid green;
+  border: 10px solid green;
   
 }
 
 .unselected{
-	border: 15px solid black;
+	border: 10px solid black;
 }
 
 .buttonbox {

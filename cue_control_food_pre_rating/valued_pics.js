@@ -1,7 +1,6 @@
 var valued_stim_array = [
 '002.jpg',
 '003.jpg',
-'004.jpg',
 '005.jpg',
 '006.jpg',
 '007.jpg',
@@ -19,6 +18,7 @@ var valued_stim_array = [
 '021.jpg',
 '022.jpg',
 '023.jpg',
+'024.jpg',
 '025.jpg',
 '026.jpg',
 '027.jpg',
@@ -44,4 +44,3 @@ var valued_stim_array = [
 '049.jpg',
 '050.jpg'
 ]
-

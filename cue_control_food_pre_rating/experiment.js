@@ -263,8 +263,8 @@ var instructions_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
-			'<p class = block-text><font color = "white">You will be rating various stimuli based on how much you currently want to use and/or consume the item.</font></p>'+
-			'<p class = block-text><font color = "white">1 = very low, 5 = very high.  Please use the mouse to indicate your choice.</font></p>'+
+			'<p class = block-text><font color = "white">You will be rating various items based on how much you currently want to use and/or consume the item.</font></p>'+
+			'<p class = block-text><font color = "white">1 = very low, 5 = very high.  Please use the keyboard to indicate your choice.</font></p>'+
 			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
 	
 		 '</div></div>',

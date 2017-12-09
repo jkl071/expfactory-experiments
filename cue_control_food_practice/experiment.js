@@ -412,10 +412,10 @@ var instructions_block = {
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
 			'<p class = block-text><font color = "white">Each trial is composed of multiple parts.</font></p>'+
-			'<p class = block-text><font color = "white">In the first part, you will see a cue, either NOW or LATER followed by a probe.  The cue will instruct you how to think about the probe.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the pictured stimulus.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the pictured stimulus.</font></p>'+
-			'<p class = block-text><font color = "white">In the second part, you will rate the current probe.  Please indicate how much you currently want to consume/use the probe on the screen.</font></p>'+
+			'<p class = block-text><font color = "white">In the first part, you will see a cue, either NOW or LATER followed by an item.  The cue will instruct you how to think about the item.</font></p>'+
+			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the pictured item.</font></p>'+
+			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the pictured item.</font></p>'+
+			'<p class = block-text><font color = "white">In the second part, you will rate the current item.  Please indicate how much you currently want to consume/use the item on the screen.</font></p>'+
 			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
 	
 		 '</div></div>',
