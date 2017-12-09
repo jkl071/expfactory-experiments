@@ -83,9 +83,7 @@ var appendData = function(){
 }
 
 document.addEventListener("keydown", function(e){
-    var keynum;
-    var time = jsPsych.totalTime()
-    
+    var keynum;    
     
     if(window.event){
     	keynum = e.keyCode;
@@ -149,7 +147,7 @@ document.addEventListener("keydown", function(e){
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 472
-var numStimsPerCategory = 44
+var numStimsPerCategory = 6
 var totalStims = numStimsPerCategory * 2 // 5 total conditions
 
 

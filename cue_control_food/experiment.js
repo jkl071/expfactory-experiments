@@ -90,18 +90,18 @@ function createAllStims(numStimsPerCategory, numIterations, numZeroes, nullType)
 function getRestText(){
 	if(currBlock == numBlocks - 1){
 		return '<div class = bigbox><div class = centerbox>'+
-		  	  	 '<p class = center-textJamie style="font-size:36px"><font color="white">This phase is over.</font></p>'+
-		      	 '<p class = center-textJamie style="font-size:36px"><font color="white">The next phase will start shortly.</font></p>'+
+		  	  	 '<p class = center-textJamie style="font-size:50px"><font color="white">This phase is over.</font></p>'+
 		 	   '</div></div>'
 	
 	}else if(currBlock < numBlocks - 1){	
 		return '<div class = bigbox><div class = centerbox>'+
-		  	  	 '<p class = center-textJamie style="font-size:36px"><font color="white">Take a break!</font></p>'+
-		      	 '<p class = center-textJamie style="font-size:36px"><font color="white">The task will start again in 10 seconds.</font></p>'+
+		  	  	 '<p class = center-textJamie style="font-size:50px"><font color="white">Take a break!</font></p>'+
+		      	 '<p class = center-textJamie style="font-size:50px"><font color="white">Task will start in 10 seconds.</font></p>'+
 		 	   '</div></div>'
 	}
 
 }
+
 
 
 
@@ -174,9 +174,7 @@ var hitKey = function(whichKey){
 
 
 document.addEventListener("keydown", function(e){
-    var keynum;
-    var time = jsPsych.totalTime()
-    
+    var keynum;    
     
     if(window.event){
     	keynum = e.keyCode;
@@ -262,13 +260,27 @@ var appendData = function(){
 	exp_target_phase = 0
 }
 
+var check_finger_counter = 0
+function getCheckFingerStim(){
+	return '<div class = bigbox><div class = centerbox>'+
+		   	'<p class = center-textJamie style="font-size:50px"><font color="white">Press your ' + possible_responses[check_finger_counter][0] + '</font></p>'+
+		   '</div></div>'
+
+
+}
+
+function getChoice(){
+	return [possible_responses[check_finger_counter][1]]
+}
+
+
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 472
 var numStimsPerCategory = 44
 var totalStims = (numStimsPerCategory/2) * 5 // 5 total conditions
-var possible_responses = [['1', 49],['2',50],['3',51],['4',52],['5',53]]
+var possible_responses = [['Thumb', 66],['Index Finger',89],['Middle Finger',71],['Ring Finger',82],['Pinky',77]]
 
 
 
@@ -341,43 +353,6 @@ var ratingBoard2 =
 	'</div>'
 	
 	
-	/*
-	'<div class = buttonbox>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn1" onClick="return false;" >1</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn2" onClick="return false;" >2</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn3" onClick="return false;" >3</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn4" onClick="return false;" >4</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn5" onClick="return false;" >5</button></div>'+
-		'</div>'+	
-	'</div>'
-	*/
-	
-	
-	
-	
-var testratingBoard1 = 
-	'<div class = bigbox>'+
-		'<div class = practice_rating_text>'+
-		'<p class = center-textJamie style="font-size:26px"><font color = "white">Please rate how much you currently want to consume/use the item, '
-
-var testratingBoard2 = 
-		'.</font></p>'+
-		'</div>'+
-		
-		'<div class = center_picture_box>'+preFileType
-		
-var testratingBoard3 = 
-	    '</div>'+
-		
-		'<div class = buttonbox>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn1" onClick="return false;" >1</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn2" onClick="return false;" >2</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn3" onClick="return false;" >3</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn4" onClick="return false;" >4</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn5" onClick="return false;" >5</button></div>'+
-		'</div>'+	
-	'</div>'
-	
  
 	
 	
@@ -396,8 +371,8 @@ var end_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie style="font-size:36px"><font color="white">Thanks for completing this task!</font></p>'+
-		  '<p class = center-textJamie style="font-size:36px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		  '<p class = center-textJamie style="font-size:50px"><font color="white">Thanks for completing!</font></p>'+
+		  '<p class = center-textJamie style="font-size:50px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
 	timing_post_trial: 0
@@ -410,8 +385,8 @@ var welcome_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie style="font-size:36px"><font color="white">Welcome to the task!</font></p>'+
-		  '<p class = center-textJamie style="font-size:36px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		  '<p class = center-textJamie style="font-size:50px"><font color="white">Welcome to the task!</font></p>'+
+		  '<p class = center-textJamie style="font-size:50px"><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
 	timing_post_trial: 0
@@ -425,7 +400,7 @@ var experimentor_wait_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie style="font-size:36px"><font color="white">Scanner Setup.</font></p>'+
+		  '<p class = center-textJamie style="font-size:50px"><font color="white">Scanner Setup</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
 	timing_post_trial: 0
@@ -434,7 +409,7 @@ var experimentor_wait_block = {
 var scanner_wait_block_first = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox><div class = centerbox>'+
-		  	  '<p class = center-textJamie style="font-size:36px"><font color="white">Task about to start!</font></p>'+
+		  	  '<p class = center-textJamie style="font-size:50px"><font color="white">Task about to start!</font></p>'+
 		  	  '</div></div>',
 	is_html: true,
 	choices: [84],
@@ -448,10 +423,10 @@ var scanner_wait_block_first = {
 };
 
 
-var scanner_wait_block = {
+var scanner_wait_block_second = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox><div class = centerbox>'+
-		  	  '<p class = center-textJamie style="font-size:36px"><font color="white">Task about to start!</font></p>'+
+		  	  '<p class = center-textJamie style="font-size:50px"><font color="white">Task about to start!</font></p>'+
 		  	  '</div></div>',
 	is_html: true,
 	choices: 'none',
@@ -459,11 +434,26 @@ var scanner_wait_block = {
 		trial_id: "scanner_wait"
 	},
 	timing_post_trial: 0,
-	timing_stim: 10880,
-	timing_response: 10880,
+	timing_stim: 8160,
+	timing_response: 8160,
 	response_ends_trial: false
 };
 
+var scanner_wait_block_third = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox><div class = centerbox>'+
+		  	  '<p class = center-textJamie style="font-size:50px"><font color="white">Get Ready!</font></p>'+
+		  	  '</div></div>',
+	is_html: true,
+	choices: 'none',
+	data: {
+		trial_id: "scanner_wait"
+	},
+	timing_post_trial: 0,
+	timing_stim: 2720,
+	timing_response: 2720,
+	response_ends_trial: false
+};
 
 var instructions_block = {
 	type: 'poldrack-text',
@@ -472,12 +462,10 @@ var instructions_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
-			'<p class = block-text><font color = "white">Each trial is composed of multiple parts.</font></p>'+
-			'<p class = block-text><font color = "white">In the first part, you will see a cue, either NOW or LATER followed by an item.  The cue will instruct you how to think about the item.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the pictured item.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the pictured item.</font></p>'+
-			'<p class = block-text><font color = "white">In the second part, you will rate the current item.  Please indicate how much you currently want to consume/use the item on the screen.</font></p>'+
-			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
+			'<p class = block-text style="font-size:36px"><font color = "white">If the cue is, NOW, please think about the immediate consequences of consuming/using the item.</font></p>'+
+			'<p class = block-text style="font-size:36px"><font color = "white">If the cue is, LATER, please think about the long-term consequences of repeatedly consuming/using the item.</font></p>'+
+			'<p class = block-text style="font-size:36px"><font color = "white">After, you will rate the item.  Please indicate how much you currently want to consume/use the item on the screen.</font></p>'+
+			'<p class = block-text style="font-size:36px"><font color = "white">1 = very low , 5 = very high</font></p>'+		
 	
 		 '</div></div>',
 	cont_key: [13],
@@ -489,19 +477,51 @@ var scanner_rest_block = {
 	type: 'poldrack-single-stim',
 	stimulus: getRestText,
 	is_html: true,
-	choices: 'none',
+	choices: [13],
 	data: {
 		trial_id: "scanner_rest"
 	},
 	timing_post_trial: 0,
 	timing_stim: 10000,
-	timing_response: 10000
+	timing_response: 10000,
+	response_ends_trial: true
 };
 
 
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
+
+var check_finger_trials = []
+for(var i = 0; i < possible_responses.length; i++){
+	var check_finger_block = {
+	type: 'poldrack-single-stim',
+	stimulus: getCheckFingerStim,
+	is_html: true,
+	choices: getChoice, //'none'
+	data: {
+		trial_id: "cue"
+	},
+	timing_post_trial: 0,
+	timing_stim: -1, 
+	timing_response: -1,
+	response_ends_trial: true,
+	on_finish: function(){
+		check_finger_counter += 1
+		}
+	};
+	
+	check_finger_trials.push(check_finger_block)
+}
+
+var check_finger_node = {
+	timeline: check_finger_trials,
+	loop_function: function(data){
+		return false
+	
+	}
+}
+
 
 var training_trials = []
 for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of trials per block (40??)
@@ -587,13 +607,17 @@ var cue_control_food_experiment = []
 
 cue_control_food_experiment.push(welcome_block);
 
+cue_control_food_experiment.push(check_finger_node);
+
 cue_control_food_experiment.push(instructions_block);
 
 cue_control_food_experiment.push(experimentor_wait_block);
 
 cue_control_food_experiment.push(scanner_wait_block_first);
 
-cue_control_food_experiment.push(scanner_wait_block);
+cue_control_food_experiment.push(scanner_wait_block_second);
+
+cue_control_food_experiment.push(scanner_wait_block_second);
 
 cue_control_food_experiment.push(training_node);
 

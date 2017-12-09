@@ -174,9 +174,7 @@ var hitKey = function(whichKey){
 
 
 document.addEventListener("keydown", function(e){
-    var keynum;
-    var time = jsPsych.totalTime()
-    
+    var keynum;    
     
     if(window.event){
     	keynum = e.keyCode;
@@ -290,8 +288,8 @@ var postRateNullType = 0
 var preFileType = "<img class = center src='/static/experiments/cue_control_food_practice/images/"
 
 
-var valued_stim_directory = "PDC3_chosen_food_500/" //controls if you are showing food or smoking pictures
-var neutral_directory = "neutral_stims_500/"
+var valued_stim_directory = "food/" //controls if you are showing food or smoking pictures
+var neutral_directory = "neutral/"
 
 var fileTypeBMP = ".bmp'></img>"
 var fileTypePNG = ".png'></img>"
@@ -305,7 +303,6 @@ var currBlock = 0
 var response_tracker = []
 var submitPress = 0
 var subject_response = ""
-
 
 
 
@@ -337,34 +334,6 @@ var ratingBoard2 =
 			'<div class = inner><button class="likert_btn unselected" id="btn5" onClick="return false;" >5</button></div>'+
 		'</div>'+	
 	'</div>'
-	
-	
-	
-	
-var testratingBoard1 = 
-	'<div class = bigbox>'+
-		'<div class = practice_rating_text>'+
-		'<p class = center-textJamie style="font-size:26px"><font color = "white">Please rate how much you currently want to consume/use the item, '
-
-var testratingBoard2 = 
-		'.</font></p>'+
-		'</div>'+
-		
-		'<div class = center_picture_box>'+preFileType
-		
-var testratingBoard3 = 
-	    '</div>'+
-		
-		'<div class = buttonbox>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn1" onClick="return false;" >1</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn2" onClick="return false;" >2</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn3" onClick="return false;" >3</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn4" onClick="return false;" >4</button></div>'+
-			'<div class = inner><button type="submit" class="likert_btn" id="btn5" onClick="return false;" >5</button></div>'+
-		'</div>'+	
-	'</div>'
-	
- 
 	
 	
 	
@@ -413,8 +382,8 @@ var instructions_block = {
 	text: '<div class = bigbox><div class = centerbox>'+
 			'<p class = block-text><font color = "white">Each trial is composed of multiple parts.</font></p>'+
 			'<p class = block-text><font color = "white">In the first part, you will see a cue, either NOW or LATER followed by an item.  The cue will instruct you how to think about the item.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the pictured item.</font></p>'+
-			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the pictured item.</font></p>'+
+			'<p class = block-text><font color = "white">If you see the cue, NOW, please think about the immediate consequences of consuming/using the item.</font></p>'+
+			'<p class = block-text><font color = "white">If you see the cue, LATER, please think about the long-term consequences of repeatedly consuming/using the item.</font></p>'+
 			'<p class = block-text><font color = "white">In the second part, you will rate the current item.  Please indicate how much you currently want to consume/use the item on the screen.</font></p>'+
 			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
 	

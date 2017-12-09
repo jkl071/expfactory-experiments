@@ -135,14 +135,13 @@ div.demo_text {
 width:80%;
 height: 20%;
 position:absolute;
-top:10%;
+top:7.5%;
 left:50%;
 margin-right:-50%;
 transform: translate(-50%,-50%);
 background-color: black;
 text-align: center;
 }
-
 
 
 .bigbox {
@@ -183,7 +182,7 @@ text-align: center;
 width: 60%;
 height: 10%;
 position:absolute;
-top:90%;
+top:95%;
 left:50%;
 transform: translate(-50%,-50%);
 margin-right:0%;

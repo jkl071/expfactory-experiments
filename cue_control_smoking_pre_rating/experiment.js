@@ -83,9 +83,7 @@ var appendData = function(){
 }
 
 document.addEventListener("keydown", function(e){
-    var keynum;
-    var time = jsPsych.totalTime()
-    
+    var keynum;    
     
     if(window.event){
     	keynum = e.keyCode;

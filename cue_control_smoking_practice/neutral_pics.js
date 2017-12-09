@@ -1,8 +1,8 @@
 var neutral_pics = [
-'50dollarbill.jpg',
-'acousticguitar02.jpg',
-'airconditioner.jpg',
-'airhockeytable.jpg',
-'baseballbat.jpg',
-'basketball01.jpg'
+'magnifyingglass01b.jpg',
+'boot02b.jpg',
+'stool01.jpg',
+'rowboat.jpg',
+'lawnmower.jpg',
+'uprightpiano01.jpg'
 ]
