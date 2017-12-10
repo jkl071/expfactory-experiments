@@ -38,6 +38,8 @@ var createStims = function(numStims,numIterations,numZeroes){
 function createAllStims(numStimsPerCategory, numIterations, numZeroes, nullType){
 	
 	var neutral_stim_array = jsPsych.randomization.repeat(neutral_pics,1)
+	var valued_stim_array = jsPsych.randomization.repeat(valued_pics,1)
+
 
 	
 	var stims = []
@@ -617,7 +619,7 @@ cue_control_food_experiment.push(scanner_wait_block_first);
 
 cue_control_food_experiment.push(scanner_wait_block_second);
 
-cue_control_food_experiment.push(scanner_wait_block_second);
+cue_control_food_experiment.push(scanner_wait_block_third);
 
 cue_control_food_experiment.push(training_node);
 

@@ -17,6 +17,8 @@ var createStims = function(numStims,numIterations,numZeroes){
 	var lowEnd = 1
 	var stimArray = []
 	
+	var neutral_stim_array = jsPsych.randomization.repeat(neutral_pics,1)
+	var valued_stim_array = jsPsych.randomization.repeat(valued_pics,1)
 	
 	for (x = 0; x < numStims; x++){
 		stim1 = {
@@ -147,7 +149,7 @@ document.addEventListener("keydown", function(e){
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 472
-var numStimsPerCategory = 6
+var numStimsPerCategory = 44
 var totalStims = numStimsPerCategory * 2 // 5 total conditions
 
 
@@ -161,7 +163,7 @@ var currTrial = 0
 
 var now_cue = 'NOW'
 var later_cue = 'LATER'
-var experiment_stim_type = 'Food'
+var experiment_stim_type = 'food'
 var current_game_state = "start"
 var postRateNullType = 0
 

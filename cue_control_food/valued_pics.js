@@ -1,4 +1,4 @@
-var valued_stim_array = [
+var valued_pics = [
 '002.jpg',
 '003.jpg',
 '005.jpg',

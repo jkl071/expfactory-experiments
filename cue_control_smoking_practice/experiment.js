@@ -38,6 +38,7 @@ var createStims = function(numStims,numIterations,numZeroes){
 function createAllStims(numStimsPerCategory, numIterations, numZeroes, nullType){
 	
 	var neutral_stim_array = jsPsych.randomization.repeat(neutral_pics,1)
+	var valued_stim_array = jsPsych.randomization.repeat(valued_pics,1)
 
 	
 	var stims = []
@@ -204,7 +205,6 @@ document.addEventListener("keydown", function(e){
     	$('#btn1').addClass('selected');
     	hitKey(13)
     	subject_response = keynum
-    	console.log('here')
     
     }else if((keynum == possible_responses[1][1]) && (response_tracker.length == 1)){
     	$('#btn2').removeClass('unselected');
@@ -397,13 +397,14 @@ var scanner_rest_block = {
 	type: 'poldrack-single-stim',
 	stimulus: getRestText,
 	is_html: true,
-	choices: 'none',
+	choices: [13],
 	data: {
 		trial_id: "scanner_rest"
 	},
 	timing_post_trial: 0,
 	timing_stim: 3000,
-	timing_response: 3000
+	timing_response: 3000,
+	response_ends_trial: true
 };
 
 

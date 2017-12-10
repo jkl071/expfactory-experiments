@@ -17,6 +17,8 @@ var createStims = function(numStims,numIterations,numZeroes){
 	var lowEnd = 1
 	var stimArray = []
 	
+	var neutral_stim_array = jsPsych.randomization.repeat(neutral_pics,1)
+	var valued_stim_array = jsPsych.randomization.repeat(valued_pics,1)
 	
 	for (x = 0; x < numStims; x++){
 		stim1 = {
@@ -161,7 +163,7 @@ var currTrial = 0
 
 var now_cue = 'NOW'
 var later_cue = 'LATER'
-var experiment_stim_type = 'Smoking'
+var experiment_stim_type = 'smoking'
 var current_game_state = "start"
 var postRateNullType = 0
 
@@ -289,8 +291,8 @@ for(var i = 0; i < totalStims; i++){ //numStims before, but probably should equa
 		trial_id: "post_rating"
 	},
 	timing_post_trial: 0,
-	timing_stim: 2000, //3000
-	timing_response: 2000, //3000
+	timing_stim: 3000, //3000
+	timing_response: 3000, //3000
 	on_finish: appendData,
 	response_ends_trial: false
 	};

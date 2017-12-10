@@ -38,6 +38,7 @@ var createStims = function(numStims,numIterations,numZeroes){
 function createAllStims(numStimsPerCategory, numIterations, numZeroes, nullType){
 	
 	var neutral_stim_array = jsPsych.randomization.repeat(neutral_pics,1)
+	var valued_stim_array = jsPsych.randomization.repeat(valued_pics,1)
 
 	
 	var stims = []
