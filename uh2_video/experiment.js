@@ -21,7 +21,6 @@ document.addEventListener("keydown", function(e){
     		var elem = document.getElementById("myvideo");
 			elem.webkitRequestFullScreen();
   		
-  			console.log('here')
   		}
   	}
   	
@@ -96,7 +95,7 @@ var experimentor_wait_block = {
 var scanner_wait_block_first = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox><div class = centerbox>'+
-		  	  '<p class = center-textJamie style="font-size:36px"><font color="white">Task about to start!</font></p>'+
+		  	  '<p class = center-textJamie style="font-size:50px"><font color="white">Task about to start!</font></p>'+
 		  	  '</div></div>',
 	is_html: true,
 	choices: [84],
@@ -110,10 +109,10 @@ var scanner_wait_block_first = {
 };
 
 
-var scanner_wait_block = {
+var scanner_wait_block_second = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox><div class = centerbox>'+
-		  	  '<p class = center-textJamie style="font-size:36px"><font color="white">Task about to start!</font></p>'+
+		  	  '<p class = center-textJamie style="font-size:50px"><font color="white">Task about to start!</font></p>'+
 		  	  '</div></div>',
 	is_html: true,
 	choices: 'none',
@@ -121,8 +120,24 @@ var scanner_wait_block = {
 		trial_id: "scanner_wait"
 	},
 	timing_post_trial: 0,
-	timing_stim: 10880,
-	timing_response: 10880,
+	timing_stim: 8160,
+	timing_response: 8160,
+	response_ends_trial: false
+};
+
+var scanner_wait_block_third = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox><div class = centerbox>'+
+		  	  '<p class = center-textJamie style="font-size:50px"><font color="white">Get Ready!</font></p>'+
+		  	  '</div></div>',
+	is_html: true,
+	choices: 'none',
+	data: {
+		trial_id: "scanner_wait"
+	},
+	timing_post_trial: 0,
+	timing_stim: 2720,
+	timing_response: 2720,
 	response_ends_trial: false
 };
 
@@ -157,7 +172,9 @@ uh2_video_experiment.push(experimentor_wait_block);
 
 uh2_video_experiment.push(scanner_wait_block_first);
 
-uh2_video_experiment.push(scanner_wait_block);
+uh2_video_experiment.push(scanner_wait_block_second);
+
+uh2_video_experiment.push(scanner_wait_block_third);
 
 uh2_video_experiment.push(practice_block);
 
