@@ -86,9 +86,9 @@ var experimentor_wait_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie style="font-size:36px"><font color="white">Scanner Setup.</font></p>'+
+		  '<p class = center-textJamie style="font-size:36px"><font color="white">Scanner Setup</font></p>'+
 		  '</div></div>',
-	cont_key: [13],
+	cont_key: [32],
 	timing_post_trial: 0
 };
 

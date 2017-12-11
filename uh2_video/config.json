@@ -42,7 +42,7 @@
         "deployment_variables":{"jspsych_init":
                                         {"fullscreen": true,
                                         "display_element": "getDisplayElement",
-                                        "on_trial_finish": "addID('simple_reaction_time')",
+                                        "on_trial_finish": "addID('uh2_video')",
                                         "on_trial_start": ""}
                        }
    }

@@ -404,7 +404,7 @@ var experimentor_wait_block = {
 	text: '<div class = bigbox><div class = centerbox>'+
 		  '<p class = center-textJamie style="font-size:50px"><font color="white">Scanner Setup</font></p>'+
 		  '</div></div>',
-	cont_key: [13],
+	cont_key: [32],
 	timing_post_trial: 0
 };
 
