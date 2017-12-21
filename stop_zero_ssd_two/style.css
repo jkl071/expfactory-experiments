@@ -1,0 +1,121 @@
+img.center {
+  height: auto;
+  width: auto\9; /* ie8 */
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
+  max-height: 65%;
+}
+
+
+.centerbox {
+ width: 50vw;
+ height: 60vh;
+ position:absolute;
+ top:50%;
+ left:50%;
+ margin-right:-50%;
+ transform: translate(-50%,-50%);
+ background: white;
+}
+
+.decision-left {
+ width: auto;
+ height: auto\9;
+ position:absolute;
+ top:50%;
+ left:25%;
+ margin-right: -50%;
+ transform: translate(-50%,-50%);
+}
+
+
+.decision-right {
+ height: auto;
+ width: auto\9;
+ position:absolute;
+ top:50%;
+ left:75%;
+ margin-right: -50%;
+ transform: translate(-50%,-50%);
+}
+
+
+.bigbox {
+width:100%;
+height: 100%;
+position:absolute;
+top:0%;
+left:0%;
+margin-right:0%;
+background-color: white;
+}
+
+
+/* Text based classes */
+/* Used for general instructions */
+.block-text {
+ width:100%;
+ height 100vw;
+ text-align: justify;
+ margin: 0 auto;
+ margin-bottom: 1em;
+ font-size: 24px;
+ line-height: 120%;
+}
+
+/* As above but centered instead of justified. Good for instructions with few lines */
+.center-block-text {
+ width:100%;
+ height 100vw;
+ text-align: center;
+ margin: 0 auto;
+ margin-bottom: 1em;
+ font-size: 26px;
+ line-height: 120%;
+}
+
+.center-textJamie {
+ text-align:center;
+ font-size: 26px;
+ position: relative;
+ top: 40%;
+ -ms-transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+ transform: translateY(-50%);
+}
+
+
+/* used for large text shown in the center of the screen, like FB or stimuli */
+.center-text {
+ text-align:center;
+ font-size: 60px;
+ position: relative;
+ top: 50%;
+ -ms-transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+ transform: translateY(-50%);
+}
+
+/* fixation should be used like this in: '<div class = centerbox><div class = fixation>+</div></div>'*/
+.fixation {
+ text-align: center;
+ font-size: 150px;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
+
+.center-block-text2 {
+ width:100%;
+ height 100vw;
+ text-align: center;
+ margin: 0 auto;
+ margin-bottom: 1em;
+ font-size: 18px;
+ line-height: 120%;
+}
