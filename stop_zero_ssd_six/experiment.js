@@ -107,7 +107,7 @@ var getStim = function(){
 	}
 	
 	stim = {
-		image: preFileType + pathSource + 'black_' + shape + fileType + postFileType,
+		image: preFileType + pathSource + shape + fileType + postFileType,
 		data: { 
 			exp_id: 'stop_zero_ssd_six',
 			stim: 'black_' + shape,
@@ -181,10 +181,10 @@ var appendData = function(){
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 469
-var practice_length = 12 //24
+var practice_length = 18 //18
 var test_length = 720 // 720
 var numBlocks = test_length/72
-var numTrialsPerBlock = test_length/numBlocks
+var numTrialsPerBlock = 18//test_length/numBlocks
 
 var SSD_array = [50,100,150,200,250]
 var SSD_array = jsPsych.randomization.repeat( SSD_array, numBlocks/SSD_array.length )
@@ -197,7 +197,7 @@ var missed_response_thresh = 0.15;
 var accuracy_thresh = 0.80;
 
 
-var shapes = jsPsych.randomization.repeat(['circle','rhombus','square','triangle'],1)
+var shapes = jsPsych.randomization.repeat(['rectangle','oval','tear','pentagon','Lshape','hourglass'],1)
 var color = "black"
 
 
@@ -223,8 +223,10 @@ jsPsych.pluginAPI.preloadImages(images);
 var prompt_text = '<ul list-text>'+
 				  	'<li>' + shapes[0] + ': ' + possible_responses[0][0] + '</li>' +
 					'<li>' + shapes[1] + ': ' + possible_responses[0][0] + '</li>' +
-					'<li>' + shapes[2] + ': ' + possible_responses[1][0] + '</li>' +
+					'<li>' + shapes[2] + ': ' + possible_responses[0][0] + '</li>' +
 					'<li>' + shapes[3] + ': ' + possible_responses[1][0] + '</li>' +
+					'<li>' + shapes[4] + ': ' + possible_responses[1][0] + '</li>' +
+					'<li>' + shapes[5] + ': ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
 
 

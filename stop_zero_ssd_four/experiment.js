@@ -91,7 +91,7 @@ var getStim = function(){
 	}
 	
 	stim = {
-		image: preFileType + pathSource + 'black_' + shape + fileType + postFileType,
+		image: preFileType + pathSource + shape + fileType + postFileType,
 		data: { 
 			exp_id: 'stop_zero_ssd_four',
 			stim: 'black_' + shape,
