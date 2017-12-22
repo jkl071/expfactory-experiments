@@ -168,7 +168,7 @@ var subject_ID = 469
 var practice_length = 12 //24
 var test_length = 720 // 720
 var numBlocks = test_length/72
-var numTrialsPerBlock = test_length/numBlocks
+var numTrialsPerBlock = 12//test_length/numBlocks
 
 var SSD_array = [50,100,150,200,250]
 var SSD_array = jsPsych.randomization.repeat( SSD_array, numBlocks/SSD_array.length )
@@ -181,7 +181,7 @@ var missed_response_thresh = 0.15;
 var accuracy_thresh = 0.80;
 
 
-var shapes = jsPsych.randomization.repeat(['circle','rhombus','square','triangle'],1)
+var shapes = jsPsych.randomization.repeat(['Lshape','moon','oval','rhombus'],1)
 var color = "black"
 
 
@@ -198,7 +198,7 @@ var preFileType = "<img class = center src='"
 
 var images = []
 for(i=0;i<shapes.length;i++){
-	images.push(pathSource + 'black' + '_' + shapes[i] + '.png')
+	images.push(pathSource + shapes[i] + '.png')
 }
 jsPsych.pluginAPI.preloadImages(images);
 
@@ -522,7 +522,7 @@ var practiceNode = {
 var practiceStopTrials = []
 practiceStopTrials.push(feedback_block)
 for (i = 0; i < practice_length; i++) {
-	practiceStopTrials.push(fixation_block)
+	practiceStopTrials.push(prompt_fixation_block)
 	var practice_block = {
 	  type: 'poldrack-single-audio',
 	  stimulus: getStim,
@@ -540,10 +540,11 @@ for (i = 0; i < practice_length; i++) {
 	  SS_delay: getSSD,
 	  SS_path: "/static/experiments/stop_zero_ssd_four/audio/lowTone.mp3",
 	  on_finish: appendData,
+	  prompt: prompt_text
 	};
 
 	practiceStopTrials.push(practice_block)
-	practiceStopTrials.push(ITI_block)
+	practiceStopTrials.push(prompt_ITI_block)
 
 }
 
