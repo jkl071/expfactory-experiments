@@ -146,7 +146,7 @@ var appendData = function(){
 /* ************************************ */
 var subject_ID = 469
 var practice_length = 6 //18
-var test_length = 6 // 720
+var test_length = 720 // 720
 var numBlocks = test_length/72
 var numTrialsPerBlock = test_length/numBlocks
 
@@ -192,7 +192,7 @@ var prompt_text = '<ul list-text>'+
 
 
 var practice_stims = createTrialTypes(practice_length)
-var test_stims = createTrialTypes(test_length)
+var test_stims = createTrialTypes(numTrialsPerBlock)
 
 
 var shape = ''
@@ -591,7 +591,7 @@ var practiceStopNode = {
 			
 			feedback_text += '</p><p class = block-text>Done with this practice.'
 			exp_phase = "test"
-			test_stims = createTrialTypes(test_length)
+			test_stims = createTrialTypes(numTrialsPerBlock)
 			return false;
 		}
 	}
@@ -701,7 +701,7 @@ var testNode = {
 					'</p><p class = block-text>You have been responding too slowly, please respond to each shape as quickly and as accurately as possible.'
 			
 			}
-			test_stims = createTrialTypes(test_length)
+			test_stims = createTrialTypes(numTrialsPerBlock)
 			return true;
 		}
 	}
