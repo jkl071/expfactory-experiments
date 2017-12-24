@@ -177,6 +177,8 @@ var appendData = function(){
 //min for 2-choice == 6 trials 
 //min for 4-choice == 12 trials
 //min for 6-choice == 18 trials
+
+//Now we should have 7 blocks, 7 SSD from 0 - 600, and 180 trials per block. 1260 total trials
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
@@ -552,9 +554,9 @@ for (i = 0; i < practice_length; i++) {
 	  choices: [possible_responses[0][1],possible_responses[1][1]],
 	  response_ends_trial: false,
 	  SS_trial_type: getSSType,
-	  timing_response: 5000,
+	  timing_response: 1850,
 	  timing_post_trial: 0,
-	  timing_stim: 3000,
+	  timing_stim: 850,
 	  SS_delay: getSSD,
 	  SS_path: "/static/experiments/stop_zero_ssd_six/audio/lowTone.mp3",
 	  on_finish: appendData,
@@ -656,9 +658,9 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 	  choices: [possible_responses[0][1],possible_responses[1][1]],
 	  response_ends_trial: false,
 	  SS_trial_type: getSSType,
-	  timing_response: 5000,
+	  timing_response: 1850,
 	  timing_post_trial: 0,
-	  timing_stim: 3000,
+	  timing_stim: 850,
 	  SS_delay: getSSD,
 	  SS_path: "/static/experiments/stop_zero_ssd_six/audio/lowTone.mp3",
 	  on_finish: appendData
