@@ -498,6 +498,26 @@ var practiceNode = {
 	}
 }
 
+var stop_signal_block = {
+	type: 'stop-signal',
+	stimulus: getStim,
+	SS_stimulus: getStopStim,
+	SS_trial_type: getSSType,
+	data: {
+		exp_id: "stop_zero_ssd_two",
+		"trial_id": "stim",
+		"exp_stage": "test_trial",
+	},
+	is_html: true,
+	choices: [possible_responses[0][1],possible_responses[1][1]],
+	timing_stim: 850,
+	timing_response: 1100,
+	response_ends_trial: false,
+	SSD: getSSD,
+	timing_SS: 500,
+	timing_post_trial: 0,
+	on_finish: appendData,
+}
 
 var practiceStopTrials = []
 practiceStopTrials.push(feedback_block)
