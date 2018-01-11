@@ -1,4 +1,3 @@
-	
 /* ************************************ */
 /*       Define Helper Functions        */
 /* ************************************ */
@@ -16,74 +15,146 @@ var getFeedback = function() {
 	return '<div class = centerbox><p class = block-text>' + feedback_text + '</p></div>'
 }
 
-
-var createTrialTypes = function(numTrials){
+var createPracticeStims = function(){
+	var stop_types = ['go','go','go','stop','stop']
 	
-	stims = []
-	var trialTypes_1 = jsPsych.randomization.repeat([0,0,2],numTrials/18)
-	var trialTypes_2 = jsPsych.randomization.repeat([0,0,2],numTrials/18)
-	var trialTypes_3 = jsPsych.randomization.repeat([0,1,2],numTrials/18)
-	var trialTypes_4 = jsPsych.randomization.repeat([1,1,2],numTrials/18)
-	var trialTypes_5 = jsPsych.randomization.repeat([1,1,2],numTrials/18)
-	var trialTypes_6 = jsPsych.randomization.repeat([1,1,2],numTrials/18)
-	
-	
-	var stop_types = ['go','go','stop']
-	
-	for (var i = 0; i < numTrials/6; i++){
-		trialTypes1 = trialTypes_1.pop()
-		trialTypes2 = trialTypes_2.pop()
-		trialTypes3 = trialTypes_3.pop()
-		trialTypes4 = trialTypes_4.pop()
-		trialTypes5 = trialTypes_5.pop()
-		trialTypes6 = trialTypes_6.pop()
-		
+	var stims = []
+	for (var x = 0; x < stop_types.length; x++){
 		stim1 = {
 			stim: shapes[0],
 			correct_response: possible_responses[0][1],
-			stop_type: stop_types[trialTypes1],
-			}
+			stop_type: stop_types[x],
+			SSD: 200
+		
+		}
+		
 		stim2 = {
 			stim: shapes[1],
 			correct_response: possible_responses[0][1],
-			stop_type: stop_types[trialTypes2],
-			}
+			stop_type: stop_types[x],
+			SSD: 200
+		
+		}
+		
 		stim3 = {
 			stim: shapes[2],
 			correct_response: possible_responses[0][1],
-			stop_type: stop_types[trialTypes3],
-			}
+			stop_type: stop_types[x],
+			SSD: 200
+		
+		}
+		
 		stim4 = {
 			stim: shapes[3],
 			correct_response: possible_responses[1][1],
-			stop_type: stop_types[trialTypes4],
-			}
+			stop_type: stop_types[x],
+			SSD: 200
+		
+		}
+		
 		stim5 = {
 			stim: shapes[4],
 			correct_response: possible_responses[1][1],
-			stop_type: stop_types[trialTypes4],
-			}
+			stop_type: stop_types[x],
+			SSD: 200
+		
+		}
+		
 		stim6 = {
 			stim: shapes[5],
 			correct_response: possible_responses[1][1],
-			stop_type: stop_types[trialTypes4],
-			}
+			stop_type: stop_types[x],
+			SSD: 200
 		
+		}
+	
 		stims.push(stim1)
 		stims.push(stim2)
 		stims.push(stim3)
 		stims.push(stim4)
 		stims.push(stim5)
 		stims.push(stim6)
+	
+	}
+	stims = jsPsych.randomization.repeat(stims,1,true)
+	return stims
+}
+
+
+var createTrialTypes = function(){
+	var ssd_types = [0,100,200,300,400,500,600]
+	var stop_types = ['go','go','stop']
+	
+	var stims = []
+	for (var i = 0; i < ssd_types.length; i++){
+		for (var x = 0; x < stop_types.length; x++){
+			stim1 = {
+				stim: shapes[0],
+				correct_response: possible_responses[0][1],
+				stop_type: stop_types[x],
+				SSD: ssd_types[i]
+			
+			}
+			
+			stim2 = {
+				stim: shapes[1],
+				correct_response: possible_responses[0][1],
+				stop_type: stop_types[x],
+				SSD: ssd_types[i]
+			
+			}
+			
+			stim3 = {
+				stim: shapes[2],
+				correct_response: possible_responses[0][1],
+				stop_type: stop_types[x],
+				SSD: ssd_types[i]
+			
+			}
+			
+			stim4 = {
+				stim: shapes[3],
+				correct_response: possible_responses[1][1],
+				stop_type: stop_types[x],
+				SSD: ssd_types[i]
+			
+			}
+			
+			stim5 = {
+				stim: shapes[4],
+				correct_response: possible_responses[1][1],
+				stop_type: stop_types[x],
+				SSD: ssd_types[i]
+			
+			}
+			
+			stim6 = {
+				stim: shapes[5],
+				correct_response: possible_responses[1][1],
+				stop_type: stop_types[x],
+				SSD: ssd_types[i]
+			
+			}
 		
+			stims.push(stim1)
+			stims.push(stim2)
+			stims.push(stim3)
+			stims.push(stim4)
+			stims.push(stim5)
+			stims.push(stim6)
+		
+		}
 	
 	}
 	
-	stims = jsPsych.randomization.repeat(stims,1,true)
+	stims = jsPsych.randomization.repeat(stims,14,true)
 	return stims
-	
 }
+	
 
+var getStopStim = function(){
+	return preFileType + pathSource + 'stopSignal' + fileType + postFileType
+}
 
 var getStim = function(){
 
@@ -91,28 +162,48 @@ var getStim = function(){
 		shape = practice_stims.stim.pop()
 		correct_response = practice_stims.correct_response.pop()
 		stop_type = "practice_no_stop"
+		SSD = ''
 		
-		//console.log('shape = '+shape)
-		//console.log('correct response = '+correct_response)
+		console.log('shape = '+shape)
+		console.log('correct response = '+correct_response)
 		
-	} else if ((exp_phase == "practice2") || (exp_phase == "test")){
-		shape = test_stims.stim.pop()
-		correct_response = test_stims.correct_response.pop()
-		stop_type = test_stims.stop_type.pop()
+	} else if (exp_phase == "practice2"){
+		shape = practice_stims.stim.pop()
+		correct_response = practice_stims.correct_response.pop()
+		stop_type = practice_stims.stop_type.pop()
+		SSD = practice_stims.SSD.pop()
 		if(stop_type == "stop"){
 			correct_response = -1
 		}
-		//console.log('stim = ' + shape)
-		//console.log('correct response = '+correct_response)
+		console.log('stim = ' + shape)
+		console.log('correct response = '+correct_response)
+		console.log('stop type = '+stop_type)
+		console.log('SSD = '+SSD)
+		
+		
+	} else if (exp_phase == "test"){
+		shape = test_stims.stim.pop()
+		correct_response = test_stims.correct_response.pop()
+		stop_type = test_stims.stop_type.pop()
+		SSD = test_stims.SSD.pop()
+		
+		if(stop_type == "stop"){
+			correct_response = -1
+		}
+		console.log('stim = ' + shape)
+		console.log('correct response = '+correct_response)
+		console.log('stop type = '+stop_type)
+		console.log('SSD = '+SSD)
 	}
 	
 	stim = {
 		image: preFileType + pathSource + shape + fileType + postFileType,
 		data: { 
-			exp_id: 'stop_zero_ssd_six',
+			exp_id: 'stop_zero_ssd_two',
 			stim: 'black_' + shape,
 			stop_type: stop_type,
 			correct_response: correct_response,
+			SSD: SSD
 			}
 	}
 	stimData = stim.data
@@ -122,7 +213,6 @@ var getStim = function(){
 
 
 function getSSD(){
-	SSD = SSD_array[testCount]
 	//console.log('SSD = ' + SSD)
 	return SSD
 }
@@ -174,22 +264,18 @@ var appendData = function(){
 }
 
 
-//min for 2-choice == 6 trials 
-//min for 4-choice == 12 trials
-//min for 6-choice == 18 trials
-
 //Now we should have 7 blocks, 7 SSD from 0 - 600, and 180 trials per block. 1260 total trials
+
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 469
-var practice_length = 18 //18
-var test_length = 720 // 720
-var numBlocks = test_length/72
-var numTrialsPerBlock = 18//test_length/numBlocks
+var practice_length = 30 //18
+var test_length = 1134 // 720
+var numBlocks = test_length/81
+var numTrialsPerBlock = test_length/numBlocks
 
-var SSD_array = [50,100,150,200,250]
-var SSD_array = jsPsych.randomization.repeat( SSD_array, numBlocks/SSD_array.length )
+
 var SSD = ''
 
 
@@ -197,6 +283,7 @@ var SSD = ''
 var rt_thresh = 1000;
 var missed_response_thresh = 0.15;
 var accuracy_thresh = 0.80;
+
 
 
 var shapes = jsPsych.randomization.repeat(['circle','pentagon','rectangle','square','tear','triangle'],1)
@@ -233,18 +320,15 @@ var prompt_text = '<ul list-text>'+
 
 
 
-var practice_stims = createTrialTypes(practice_length)
-var test_stims = createTrialTypes(numTrialsPerBlock)
+var practice_stims = createPracticeStims()
+var test_stims = createTrialTypes()
 
 
 var shape = ''
 var stop_type = ''
 var correct_response = ''
 var exp_phase = "practice1"
-all_responses = []
-for(var i = 0; i < possible_responses.length; i++){
-	all_responses.push(possible_responses[i][1])
-}
+
 
 
 
@@ -385,11 +469,11 @@ var practice_stop_intro = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = centerbox>'+
 			  	'<p class = block-text>We will now start the second practice for the experiment.</p>'+
-			  	'<p class = block-text>On some trials you will hear a tone.  If you hear a tone, please make ' + stop_zero_ssd_six_response[0] + '.</p>'+
+			  	'<p class = block-text>On some trials, a star will appear around the shape.  If the star appears, please make ' + stop_zero_ssd_six_response[0] + '.</p>'+
 				'<p class = block-text>Please continue to respond to each shape as quickly and as accurately as possible.</p>'+
 				'<p class = block-text>Remember these rules before you proceed.</p>'+
 				prompt_text +
-				'<p class = block-text>If you hear a tone, please make ' + stop_zero_ssd_six_response[0] + ' on that trial.</p>'+
+				'<p class = block-text>If you see a star, please make ' + stop_zero_ssd_six_response[0] + ' on that trial.</p>'+
 			    '<p class = block-text>Press <strong> enter</strong> to begin.</p>'+
 			  '</div>',
 	is_html: true,
@@ -413,7 +497,7 @@ var test_intro = {
 	stimulus: '<div class = centerbox><p class = block-text>We will now start the main phase of the experiment.<br><br>These trials are the same as the trials that you have just completed. <br><br>The rules for each shape are as follows:  <br>' +
 		prompt_text +
 		'</p><p class = block-text>Remember these rules before you proceed, as they will no longer be presented during the trial.</p>'+
-		'<p class = block-text>If you hear a tone, please make ' + stop_zero_ssd_six_response[0] + ' on that trial.</p>'+
+		'<p class = block-text>If you see a star, please make ' + stop_zero_ssd_six_response[0] + ' on that trial.</p>'+
 		'<p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
 	is_html: true,
 	choices: [13],
@@ -532,7 +616,7 @@ var practiceNode = {
 			
 			feedback_text += '</p><p class = block-text>Done with this practice.'
 			exp_phase = "practice2"
-			practice_stims = createTrialTypes(practice_length)
+			practice_stims = createPracticeStims()
 			return false;
 		}
 	}
@@ -544,24 +628,26 @@ practiceStopTrials.push(feedback_block)
 for (i = 0; i < practice_length; i++) {
 	practiceStopTrials.push(prompt_fixation_block)
 	var practice_block = {
-	  type: 'poldrack-single-audio',
-	  stimulus: getStim,
-	  data: {
-		trial_id: "stim",
-		exp_stage: "test_trial"
-	  },
-	  is_html: true,
-	  choices: [possible_responses[0][1],possible_responses[1][1]],
-	  response_ends_trial: false,
-	  SS_trial_type: getSSType,
-	  timing_response: 1850,
-	  timing_post_trial: 0,
-	  timing_stim: 850,
-	  SS_delay: getSSD,
-	  SS_path: "/static/experiments/stop_zero_ssd_six/audio/lowTone.mp3",
-	  on_finish: appendData,
-	  prompt: prompt_text
-	};
+		type: 'stop-signal',
+		stimulus: getStim,
+		SS_stimulus: getStopStim,
+		SS_trial_type: getSSType,
+		data: {
+			exp_id: "stop_zero_ssd_six",
+			"trial_id": "stim",
+			"exp_stage": "test_trial",
+		},
+		is_html: true,
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_stim: 850,
+		timing_response: 1100,
+		response_ends_trial: false,
+		SSD: getSSD,
+		timing_SS: 500,
+		timing_post_trial: 0,
+		on_finish: appendData,
+		prompt: prompt_text
+	}
 
 	practiceStopTrials.push(practice_block)
 	practiceStopTrials.push(prompt_ITI_block)
@@ -634,7 +720,6 @@ var practiceStopNode = {
 			
 			feedback_text += '</p><p class = block-text>Done with this practice.'
 			exp_phase = "test"
-			test_stims = createTrialTypes(numTrialsPerBlock)
 			return false;
 		}
 	}
@@ -648,23 +733,25 @@ testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock; i++) {
 	testTrials.push(fixation_block)
 	var test_block = {
-	  type: 'poldrack-single-audio',
-	  stimulus: getStim,
-	  data: {
-		trial_id: "stim",
-		exp_stage: "test_trial"
-	  },
-	  is_html: true,
-	  choices: [possible_responses[0][1],possible_responses[1][1]],
-	  response_ends_trial: false,
-	  SS_trial_type: getSSType,
-	  timing_response: 1850,
-	  timing_post_trial: 0,
-	  timing_stim: 850,
-	  SS_delay: getSSD,
-	  SS_path: "/static/experiments/stop_zero_ssd_six/audio/lowTone.mp3",
-	  on_finish: appendData
-	};
+		type: 'stop-signal',
+		stimulus: getStim,
+		SS_stimulus: getStopStim,
+		SS_trial_type: getSSType,
+		data: {
+			exp_id: "stop_zero_ssd_six",
+			"trial_id": "stim",
+			"exp_stage": "test_trial",
+		},
+		is_html: true,
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_stim: 850,
+		timing_response: 1100,
+		response_ends_trial: false,
+		SSD: getSSD,
+		timing_SS: 500,
+		timing_post_trial: 0,
+		on_finish: appendData,
+	}
 	testTrials.push(test_block)
 	testTrials.push(ITI_block)
 }
@@ -702,6 +789,10 @@ var testNode = {
 		var averageStop_correct = sumStop_correct / stop_length
 		var stop_respond = (stop_length - sumStop_correct)/stop_length  
 		var total_acc = (sumGo_correct + sumStop_correct) / (go_length + stop_length)
+		console.log('go length = ' + go_length)
+		console.log('go correct = ' +sumGo_correct)
+		console.log('stop length = ' +stop_length)
+		console.log('stop correct = '+sumStop_correct)
 		
 		
 		testCount += 1
@@ -737,14 +828,13 @@ var testNode = {
 			
 			if (stop_respond > 0.70){
 				feedback_text +=
-					'</p><p class = block-text>We have detected a number of trials that <strong>required ' + stop_zero_ssd_six_response[0] + '</strong>, where a ' + possible_responses[0][0] + ' or a ' + possible_responses[1][0] + ' response was made.  Please <strong>ensure that you are making ' + stop_zero_ssd_six_response[0] + ' </strong> when you hear a tone.'
+					'</p><p class = block-text>We have detected a number of trials that <strong>required ' + stop_zero_ssd_six_response[0] + '</strong>, where a ' + possible_responses[0][0] + ' or a ' + possible_responses[1][0] + ' response was made.  Please <strong>ensure that you are making ' + stop_zero_ssd_six_response[0] + ' </strong> when you see a star.'
 			
 			}else if (stop_respond < .30){
 				feedback_text +=
 					'</p><p class = block-text>You have been responding too slowly, please respond to each shape as quickly and as accurately as possible.'
 			
 			}
-			test_stims = createTrialTypes(numTrialsPerBlock)
 			return true;
 		}
 	}
