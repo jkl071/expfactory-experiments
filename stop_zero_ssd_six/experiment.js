@@ -290,7 +290,7 @@ var shapes = jsPsych.randomization.repeat(['circle','pentagon','rectangle','squa
 var color = "black"
 
 
-var possible_responses = [['left key', 37],['right key', 39]]
+var possible_responses = [['N key', 78],['M key', 77]]
 var stop_zero_ssd_six_response = ['No Response', -1]
 
 
@@ -376,8 +376,8 @@ var prompt_ITI_block = {
 		"trial_id": "ITI",
 	},
 	choices: 'none',
-	timing_stim: 1400,
-	timing_response: 1400,
+	timing_stim: 1000,
+	timing_response: 1000,
 	timing_post_trial: 0,
 	response_ends_trial: false,
 	prompt: prompt_text
@@ -392,8 +392,8 @@ var ITI_block = {
 		"trial_id": "ITI"
 	},
 	choices: 'none',
-	timing_stim: 1400,
-	timing_response: 1400,
+	timing_stim: 1000,
+	timing_response: 1000,
 	timing_post_trial: 0,
 	response_ends_trial: false
 }
