@@ -1,3 +1,4 @@
+	
 /* ************************************ */
 /*       Define Helper Functions        */
 /* ************************************ */
@@ -7,7 +8,7 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'stop_zero_ssd_six', subject_ID: subject_ID})
+  jsPsych.data.addDataToLastTrial({exp_id: 'stop_two', subject_ID: subject_ID})
 }
 
 
@@ -16,64 +17,19 @@ var getFeedback = function() {
 }
 
 var createPracticeStims = function(){
-	var stop_types = ['go','go','go','stop','stop']
+	var stop_types = ['go','go','go','go','stop','stop']
 	
 	var stims = []
 	for (var x = 0; x < stop_types.length; x++){
-		stim1 = {
-			stim: shapes[0],
-			correct_response: possible_responses[0][1],
-			stop_type: stop_types[x],
-			SSD: 200
-		
+		for (var i = 0; i < shapes.length; i++){
+			stim = {
+				stim: shapes[i],
+				correct_response: possible_responses[i][1],
+				stop_type: stop_types[x],
+				SSD: 200
+			}			
+			stims.push(stim)
 		}
-		
-		stim2 = {
-			stim: shapes[1],
-			correct_response: possible_responses[0][1],
-			stop_type: stop_types[x],
-			SSD: 200
-		
-		}
-		
-		stim3 = {
-			stim: shapes[2],
-			correct_response: possible_responses[0][1],
-			stop_type: stop_types[x],
-			SSD: 200
-		
-		}
-		
-		stim4 = {
-			stim: shapes[3],
-			correct_response: possible_responses[1][1],
-			stop_type: stop_types[x],
-			SSD: 200
-		
-		}
-		
-		stim5 = {
-			stim: shapes[4],
-			correct_response: possible_responses[1][1],
-			stop_type: stop_types[x],
-			SSD: 200
-		
-		}
-		
-		stim6 = {
-			stim: shapes[5],
-			correct_response: possible_responses[1][1],
-			stop_type: stop_types[x],
-			SSD: 200
-		
-		}
-	
-		stims.push(stim1)
-		stims.push(stim2)
-		stims.push(stim3)
-		stims.push(stim4)
-		stims.push(stim5)
-		stims.push(stim6)
 	
 	}
 	stims = jsPsych.randomization.repeat(stims,1,true)
@@ -81,77 +37,37 @@ var createPracticeStims = function(){
 }
 
 
-var createTrialTypes = function(){
+var createTrialTypes = function(numTrials){
 	var ssd_types = [0,100,200,300,400,500,600]
 	var stop_types = ['go','go','stop']
+	var unique_combos = 42
 	
 	var stims = []
 	for (var i = 0; i < ssd_types.length; i++){
 		for (var x = 0; x < stop_types.length; x++){
-			stim1 = {
-				stim: shapes[0],
-				correct_response: possible_responses[0][1],
-				stop_type: stop_types[x],
-				SSD: ssd_types[i]
+			for (var j = 0; j < shapes.length; j++){
+				stim = {
+					stim: shapes[j],
+					correct_response: possible_responses[j][1],
+					stop_type: stop_types[x],
+					SSD: ssd_types[i]
 			
-			}
+				}
 			
-			stim2 = {
-				stim: shapes[1],
-				correct_response: possible_responses[0][1],
-				stop_type: stop_types[x],
-				SSD: ssd_types[i]
-			
-			}
-			
-			stim3 = {
-				stim: shapes[2],
-				correct_response: possible_responses[0][1],
-				stop_type: stop_types[x],
-				SSD: ssd_types[i]
-			
-			}
-			
-			stim4 = {
-				stim: shapes[3],
-				correct_response: possible_responses[1][1],
-				stop_type: stop_types[x],
-				SSD: ssd_types[i]
-			
-			}
-			
-			stim5 = {
-				stim: shapes[4],
-				correct_response: possible_responses[1][1],
-				stop_type: stop_types[x],
-				SSD: ssd_types[i]
-			
-			}
-			
-			stim6 = {
-				stim: shapes[5],
-				correct_response: possible_responses[1][1],
-				stop_type: stop_types[x],
-				SSD: ssd_types[i]
-			
-			}
-		
-			stims.push(stim1)
-			stims.push(stim2)
-			stims.push(stim3)
-			stims.push(stim4)
-			stims.push(stim5)
-			stims.push(stim6)
+				stims.push(stim)
+			}	
 		
 		}
 	
 	}
 	
-	stims = jsPsych.randomization.repeat(stims,14,true)
+	
+	var iteration = numTrials/unique_combos
+	
+	stims = jsPsych.randomization.repeat(stims,iteration,true)
 	return stims
 }
 	
-
 var getStopStim = function(){
 	return preFileType + pathSource + 'stopSignal' + fileType + postFileType
 }
@@ -164,8 +80,6 @@ var getStim = function(){
 		stop_type = "practice_no_stop"
 		SSD = ''
 		
-		console.log('shape = '+shape)
-		console.log('correct response = '+correct_response)
 		
 	} else if (exp_phase == "practice2"){
 		shape = practice_stims.stim.pop()
@@ -174,11 +88,10 @@ var getStim = function(){
 		SSD = practice_stims.SSD.pop()
 		if(stop_type == "stop"){
 			correct_response = -1
+		} else if (stop_type == "go"){
+			SSD = "none"
 		}
-		console.log('stim = ' + shape)
-		console.log('correct response = '+correct_response)
-		console.log('stop type = '+stop_type)
-		console.log('SSD = '+SSD)
+		console.log('ssd = '+SSD+', '+'shape = '+shape+', '+'stop_type = '+stop_type)
 		
 		
 	} else if (exp_phase == "test"){
@@ -189,17 +102,18 @@ var getStim = function(){
 		
 		if(stop_type == "stop"){
 			correct_response = -1
+		} else if (stop_type == "go"){
+			SSD = "none"
 		}
-		console.log('stim = ' + shape)
-		console.log('correct response = '+correct_response)
-		console.log('stop type = '+stop_type)
-		console.log('SSD = '+SSD)
+		
+		console.log('ssd = '+SSD+', '+'shape = '+shape+', '+'stop_type = '+stop_type)
+	
 	}
 	
 	stim = {
 		image: preFileType + pathSource + shape + fileType + postFileType,
 		data: { 
-			exp_id: 'stop_zero_ssd_two',
+			exp_id: 'stop_two',
 			stim: 'black_' + shape,
 			stop_type: stop_type,
 			correct_response: correct_response,
@@ -210,7 +124,35 @@ var getStim = function(){
 	return stim.image
 }
 
+function getStopTrialTime(){
+	if  (SSD < 400){
+		console.log('here1')
+		var time_delay = 850
+		return time_delay
+	}else if (SSD > 300){
+		console.log('here2')
+		var time_delay = 850 + (SSD + 500 - 850)
+		return time_delay
+	}else {
+		console.log('here3')
+		var time_delay = 850
+		return time_delay
+	}
 
+}
+
+
+function getITI(){
+	if (SSD < 400){
+		return 1000
+	}else if (SSD > 300){
+		return 1000 - (SSD + 500 - 850)
+	}else {
+		var time_delay = 1000
+		return time_delay
+	}
+
+}
 
 function getSSD(){
 	//console.log('SSD = ' + SSD)
@@ -264,15 +206,13 @@ var appendData = function(){
 }
 
 
-//Now we should have 7 blocks, 7 SSD from 0 - 600, and 180 trials per block. 1260 total trials
-
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 469
-var practice_length = 30 //18
-var test_length = 1134 // 720
-var numBlocks = test_length/81
+var practice_length = 12 //18
+var test_length = 1176 // 720
+var numBlocks = test_length/84
 var numTrialsPerBlock = test_length/numBlocks
 
 
@@ -286,16 +226,16 @@ var accuracy_thresh = 0.80;
 
 
 
-var shapes = jsPsych.randomization.repeat(['circle','pentagon','rectangle','square','tear','triangle'],1)
+var shapes = jsPsych.randomization.repeat(['hourglass','trapezoid'],1)
 var color = "black"
 
 
-var possible_responses = [['N key', 78],['M key', 77]]
-var stop_zero_ssd_six_response = ['No Response', -1]
+var possible_responses = [['Z key', 90],['M key', 77]]
+var stop_two_response = ['No Response', -1]
 
 
 var postFileType = "'></img>"
-var pathSource = "/static/experiments/stop_zero_ssd_six/images/"
+var pathSource = "/static/experiments/stop_two/images/"
 var fileType = ".png"
 var preFileType = "<img class = center src='"
 
@@ -311,24 +251,19 @@ jsPsych.pluginAPI.preloadImages(images);
 
 var prompt_text = '<ul list-text>'+
 				  	'<li>' + shapes[0] + ': ' + possible_responses[0][0] + '</li>' +
-					'<li>' + shapes[1] + ': ' + possible_responses[0][0] + '</li>' +
-					'<li>' + shapes[2] + ': ' + possible_responses[0][0] + '</li>' +
-					'<li>' + shapes[3] + ': ' + possible_responses[1][0] + '</li>' +
-					'<li>' + shapes[4] + ': ' + possible_responses[1][0] + '</li>' +
-					'<li>' + shapes[5] + ': ' + possible_responses[1][0] + '</li>' +
+					'<li>' + shapes[1] + ': ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
 
 
 
 var practice_stims = createPracticeStims()
-var test_stims = createTrialTypes()
+var test_stims = createTrialTypes(test_length)
 
 
 var shape = ''
 var stop_type = ''
 var correct_response = ''
 var exp_phase = "practice1"
-
 
 
 
@@ -339,7 +274,7 @@ var exp_phase = "practice1"
 var end_block = {
 	type: 'poldrack-text',
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		trial_id: "end"
 	},
 	timing_response: -1,
@@ -354,7 +289,7 @@ var end_block = {
 var welcome_block = {
 	type: 'poldrack-text',
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		trial_id: "welcome"
 	},
 	timing_response: -1,
@@ -366,42 +301,10 @@ var welcome_block = {
 	timing_post_trial: 0
 };
 
-
-var prompt_ITI_block = {
-	type: 'poldrack-single-stim',
-	stimulus: "<div></div>",
-	is_html: true,
-	data: {
-		exp_id: "stop_zero_ssd_six",
-		"trial_id": "ITI",
-	},
-	choices: 'none',
-	timing_stim: 1000,
-	timing_response: 1000,
-	timing_post_trial: 0,
-	response_ends_trial: false,
-	prompt: prompt_text
-}
-	
-var ITI_block = {
-	type: 'poldrack-single-stim',
-	stimulus: "<div></div>",
-	is_html: true,
-	data: {
-		exp_id: "stop_zero_ssd_six",
-		"trial_id": "ITI"
-	},
-	choices: 'none',
-	timing_stim: 1000,
-	timing_response: 1000,
-	timing_post_trial: 0,
-	response_ends_trial: false
-}
-
 var instructions_block = {
 	type: 'poldrack-instructions',
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		trial_id: "instruction"
 	},
 	pages:[
@@ -424,7 +327,7 @@ var fixation_block = {
 	is_html: true,
 	choices: 'none',
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		trial_id: "fixation",
 	},
 	timing_post_trial: 0,
@@ -438,7 +341,7 @@ var prompt_fixation_block = {
 	is_html: true,
 	choices: 'none',
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		trial_id: "prompt_fixation",
 	},
 	timing_post_trial: 0,
@@ -456,7 +359,7 @@ var practice_intro = {
 	is_html: true,
 	choices: [13],
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		"trial_id": "stop_intro_phase1"
 	},
 	timing_post_trial: 0,
@@ -469,17 +372,17 @@ var practice_stop_intro = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = centerbox>'+
 			  	'<p class = block-text>We will now start the second practice for the experiment.</p>'+
-			  	'<p class = block-text>On some trials, a star will appear around the shape.  If the star appears, please make ' + stop_zero_ssd_six_response[0] + '.</p>'+
+			  	'<p class = block-text>On some trials, a star will appear around the shape.  If the star appears, please make ' + stop_two_response[0] + '.</p>'+
 				'<p class = block-text>Please continue to respond to each shape as quickly and as accurately as possible.</p>'+
 				'<p class = block-text>Remember these rules before you proceed.</p>'+
 				prompt_text +
-				'<p class = block-text>If you see a star, please make ' + stop_zero_ssd_six_response[0] + ' on that trial.</p>'+
+				'<p class = block-text>If you see a star, please make ' + stop_two_response[0] + ' on that trial.</p>'+
 			    '<p class = block-text>Press <strong> enter</strong> to begin.</p>'+
 			  '</div>',
 	is_html: true,
 	choices: [13],
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		"trial_id": "stop_intro_phase1"
 	},
 	timing_post_trial: 0,
@@ -497,12 +400,12 @@ var test_intro = {
 	stimulus: '<div class = centerbox><p class = block-text>We will now start the main phase of the experiment.<br><br>These trials are the same as the trials that you have just completed. <br><br>The rules for each shape are as follows:  <br>' +
 		prompt_text +
 		'</p><p class = block-text>Remember these rules before you proceed, as they will no longer be presented during the trial.</p>'+
-		'<p class = block-text>If you see a star, please make ' + stop_zero_ssd_six_response[0] + ' on that trial.</p>'+
+		'<p class = block-text>If you see a star, please make ' + stop_two_response[0] + ' on that trial.</p>'+
 		'<p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
 	is_html: true,
 	choices: [13],
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		"trial_id": "main_stop_intro_phase3"
 	},
 	timing_post_trial: 0,
@@ -518,7 +421,7 @@ var feedback_text = 'We will now start with a practice session. In this practice
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "stop_zero_ssd_six",
+		exp_id: "stop_two",
 		trial_id: "practice-no-stop-feedback"
 	},
 	choices: [13],
@@ -544,7 +447,7 @@ for (i = 0; i < practice_length; i++) {
 		stimulus: getStim,
 		is_html: true,
 		data: {
-			exp_id: "stop_zero_ssd_six",
+			exp_id: "stop_two",
 			"trial_id": "practice_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
@@ -555,6 +458,22 @@ for (i = 0; i < practice_length; i++) {
 		response_ends_trial: false,
 		prompt: prompt_text,
 
+	}
+	
+	var prompt_ITI_block = {
+		type: 'poldrack-single-stim',
+		stimulus: "<div></div>",
+		is_html: true,
+		data: {
+			exp_id: "stop_two",
+			"trial_id": "ITI",
+		},
+		choices: 'none',
+		timing_stim: getITI,
+		timing_response: getITI,
+		timing_post_trial: 0,
+		response_ends_trial: false,
+		prompt: prompt_text
 	}
 	practiceTrials.push(practiceBlock)
 	practiceTrials.push(prompt_ITI_block)
@@ -633,19 +552,35 @@ for (i = 0; i < practice_length; i++) {
 		SS_stimulus: getStopStim,
 		SS_trial_type: getSSType,
 		data: {
-			exp_id: "stop_zero_ssd_six",
+			exp_id: "stop_two",
 			"trial_id": "stim",
 			"exp_stage": "test_trial",
 		},
 		is_html: true,
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		timing_stim: 850,
-		timing_response: 1100,
+		timing_response: getStopTrialTime,
 		response_ends_trial: false,
 		SSD: getSSD,
 		timing_SS: 500,
 		timing_post_trial: 0,
 		on_finish: appendData,
+		prompt: prompt_text
+	}
+	
+	var prompt_ITI_block = {
+		type: 'poldrack-single-stim',
+		stimulus: "<div></div>",
+		is_html: true,
+		data: {
+			exp_id: "stop_two",
+			"trial_id": "ITI",
+		},
+		choices: 'none',
+		timing_stim: getITI,
+		timing_response: getITI,
+		timing_post_trial: 0,
+		response_ends_trial: false,
 		prompt: prompt_text
 	}
 
@@ -677,7 +612,7 @@ var practiceStopNode = {
 				}
 			} else if (data[i].stop_type == "stop") {
 				stop_length += 1
-				if (data[i].key_press == stop_zero_ssd_six_response[1]) {
+				if (data[i].key_press == stop_two_response[1]) {
 					sumStop_correct += 1
 				}
 			}
@@ -738,19 +673,34 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		SS_stimulus: getStopStim,
 		SS_trial_type: getSSType,
 		data: {
-			exp_id: "stop_zero_ssd_six",
+			exp_id: "stop_two",
 			"trial_id": "stim",
 			"exp_stage": "test_trial",
 		},
 		is_html: true,
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		timing_stim: 850,
-		timing_response: 1100,
+		timing_response: getStopTrialTime,
 		response_ends_trial: false,
 		SSD: getSSD,
 		timing_SS: 500,
 		timing_post_trial: 0,
 		on_finish: appendData,
+	}
+	
+	var ITI_block = {
+		type: 'poldrack-single-stim',
+		stimulus: "<div></div>",
+		is_html: true,
+		data: {
+			exp_id: "stop_two",
+			"trial_id": "ITI"
+		},
+		choices: 'none',
+		timing_stim: getITI,
+		timing_response: getITI,
+		timing_post_trial: 0,
+		response_ends_trial: false
 	}
 	testTrials.push(test_block)
 	testTrials.push(ITI_block)
@@ -778,7 +728,7 @@ var testNode = {
 				}
 			} else if (data[i].stop_type == "stop") {
 				stop_length += 1
-				if (data[i].key_press == stop_zero_ssd_six_response[1]) {
+				if (data[i].key_press == stop_two_response[1]) {
 					sumStop_correct += 1
 				}
 			}
@@ -828,7 +778,7 @@ var testNode = {
 			
 			if (stop_respond > 0.70){
 				feedback_text +=
-					'</p><p class = block-text>We have detected a number of trials that <strong>required ' + stop_zero_ssd_six_response[0] + '</strong>, where a ' + possible_responses[0][0] + ' or a ' + possible_responses[1][0] + ' response was made.  Please <strong>ensure that you are making ' + stop_zero_ssd_six_response[0] + ' </strong> when you see a star.'
+					'</p><p class = block-text>We have detected a number of trials that <strong>required ' + stop_two_response[0] + '</strong>, where a ' + possible_responses[0][0] + ' or a ' + possible_responses[1][0] + ' response was made.  Please <strong>ensure that you are making ' + stop_two_response[0] + ' </strong> when you see a star.'
 			
 			}else if (stop_respond < .30){
 				feedback_text +=
@@ -845,24 +795,24 @@ var testNode = {
 /*          Set up Experiment           */
 /* ************************************ */
 
-var stop_zero_ssd_six_experiment = []
+var stop_two_experiment = []
 
-stop_zero_ssd_six_experiment.push(welcome_block);
-stop_zero_ssd_six_experiment.push(instructions_block);
+stop_two_experiment.push(welcome_block);
+stop_two_experiment.push(instructions_block);
 
-stop_zero_ssd_six_experiment.push(practice_intro);
-stop_zero_ssd_six_experiment.push(practiceNode);
-stop_zero_ssd_six_experiment.push(feedback_block);
+stop_two_experiment.push(practice_intro);
+stop_two_experiment.push(practiceNode);
+stop_two_experiment.push(feedback_block);
 
-stop_zero_ssd_six_experiment.push(practice_stop_intro)
-stop_zero_ssd_six_experiment.push(practiceStopNode)
-stop_zero_ssd_six_experiment.push(feedback_block);
+stop_two_experiment.push(practice_stop_intro)
+stop_two_experiment.push(practiceStopNode)
+stop_two_experiment.push(feedback_block);
 
-stop_zero_ssd_six_experiment.push(test_intro);
-stop_zero_ssd_six_experiment.push(testNode);
-stop_zero_ssd_six_experiment.push(feedback_block);
+stop_two_experiment.push(test_intro);
+stop_two_experiment.push(testNode);
+stop_two_experiment.push(feedback_block);
 
-stop_zero_ssd_six_experiment.push(end_block);
+stop_two_experiment.push(end_block);
 
 
 

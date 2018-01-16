@@ -1,6 +1,6 @@
 [
     {
-        "name": "Stop Zero SSD Two",
+        "name": "Stop Two",
         "template":"jspsych",
         "run": [
                 "static/js/jspsych/jspsych.js",
@@ -23,7 +23,7 @@
                 
 
                ],
-        "exp_id": "stop_zero_ssd_two",
+        "exp_id": "stop_two",
         "cognitive_atlas_task_id": "tsk_4a57abb949e1a",
         "contributors": [
                          "Jamie Li",
@@ -42,7 +42,8 @@
                                   }],
         "deployment_variables":{"jspsych_init":
                                         {"fullscreen": true,
-                                        "display_element": "getDisplayElement"}
+                                        "display_element": "getDisplayElement",
+                                        "on_trial_finish": "addID()"}
                        			} 
     
    }
