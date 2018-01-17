@@ -133,6 +133,9 @@ function getStopTrialTime(){
 		return 850
 	}else if (SSD > 300){
 		return 850 + (SSD + 500 - 850)
+	}else {
+		var time_delay = 1000
+		return time_delay
 	}
 
 }
@@ -208,7 +211,7 @@ var appendData = function(){
 /* ************************************ */
 var subject_ID = 469
 var practice_length = 24 //18
-var test_length = 1176 // 720
+var test_length = 1008 // 720
 var numBlocks = test_length/84
 var numTrialsPerBlock = test_length/numBlocks
 
@@ -353,7 +356,7 @@ var prompt_fixation_block = {
 
 var practice_intro = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><p class = block-text>We will now start the practice for the experiment.<br><br>For these trials, you must press the <strong>'+possible_responses[0][0]+' </strong> or the <strong>'+possible_responses[1][0]+'</strong> depending on the shape of the stimulus.  Make sure to respond as quickly and accurately as possible to the shape. <br><br> The responses for each shape are as follows: ' +
+	stimulus: '<div class = centerbox><p class = block-text>We will now start the practice for the experiment.<br><br>For these trials, you must press the <strong>'+possible_responses[0][0]+'</strong>, '+ '<strong>'+possible_responses[1][0]+'</strong>, '+ '<strong>'+possible_responses[2][0]+ '</strong>, or <strong>'+possible_responses[3][0]+ ' </strong>depending on the shape of the stimulus.  Make sure to respond as quickly and accurately as possible to the shape. <br><br> The responses for each shape are as follows: ' +
 		prompt_text +
 		'</p><p class = block-text>Remember these rules before you proceed.</p><p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
 	is_html: true,
@@ -512,7 +515,28 @@ var practiceNode = {
 		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
 		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(average_rt) + " ms. 	Accuracy: " + Math.round(averageGo_correct * 100)+ "%</strong>"
 
-		if (practiceCount == 1) {
+		if ((averageGo_correct >= accuracy_thresh)||(practiceCount == 3)){
+			if (average_rt > rt_thresh) {
+				feedback_text +=
+				'</p><p class = block-text><strong>You have been responding too slowly, please respond to each shape as quickly and as accurately as possible.</strong>'
+			}
+			if (missed_responses > missed_response_thresh){
+				if(averageGo_correct < accuracy_thresh){
+				feedback_text +=
+					'</p><p class = block-text>We have detected a number of trials that <strong>required a response</strong>, where no response was made.  Please <strong>ensure that you are quickly responding </strong>to shapes that require a response.'
+				} else {
+				feedback_text +=
+					'</p><p class = block-text>We have detected a number of trials that <strong>required a response</strong>, where no response was made.  Please <strong>ensure that you are quickly responding </strong>to shapes that require a response.<br><br>' +
+					prompt_text
+				}
+			}
+			feedback_text += '</p><p class = block-text>Done with this practice.'
+			exp_phase = "practice2"
+			practice_stims = createPracticeStims()
+			return false;
+		
+		
+		}else if (averageGo_correct < accuracy_thresh) {
 			if (averageGo_correct < accuracy_thresh) {
 				feedback_text +=
 					'</p><p class = block-text><strong>Your accuracy is too low. Remember, the correct responses for each shape are as follows:</strong><br><br>' +
@@ -533,10 +557,9 @@ var practiceNode = {
 				}
 			}
 			
-			feedback_text += '</p><p class = block-text>Done with this practice.'
-			exp_phase = "practice2"
+			feedback_text += '</p><p class = block-text>Redoing this practice.'
 			practice_stims = createPracticeStims()
-			return false;
+			return true;
 		}
 	}
 }
