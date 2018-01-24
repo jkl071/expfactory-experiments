@@ -126,15 +126,12 @@ var getStim = function(){
 
 function getStopTrialTime(){
 	if  (SSD < 400){
-		console.log('here1')
 		var time_delay = 850
 		return time_delay
 	}else if (SSD > 300){
-		console.log('here2')
 		var time_delay = 850 + (SSD + 500 - 850)
 		return time_delay
 	}else {
-		console.log('here3')
 		var time_delay = 850
 		return time_delay
 	}

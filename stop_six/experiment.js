@@ -134,7 +134,7 @@ function getStopTrialTime(){
 	}else if (SSD > 300){
 		return 850 + (SSD + 500 - 850)
 	}else {
-		var time_delay = 1000
+		var time_delay = 850
 		return time_delay
 	}
 
