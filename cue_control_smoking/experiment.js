@@ -201,33 +201,32 @@ document.addEventListener("keydown", function(e){
     if ((keynum == possible_responses[0][1]) && (response_tracker.length == 1)){
     	$('#btn1').removeClass('unselected');
     	$('#btn1').addClass('selected');
-    	hitKey(13)
+    	hitKey(keynum)
     	subject_response = keynum
-    	console.log('here')
     
     }else if((keynum == possible_responses[1][1]) && (response_tracker.length == 1)){
     	$('#btn2').removeClass('unselected');
     	$('#btn2').addClass('selected');
     	subject_response = keynum
-    	hitKey(13)
+    	hitKey(keynum)
     
     }else if((keynum == possible_responses[2][1]) && (response_tracker.length == 1)){
     	$('#btn3').removeClass('unselected');
     	$('#btn3').addClass('selected');
     	subject_response = keynum
-    	hitKey(13)
+    	hitKey(keynum)
     
     }else if((keynum == possible_responses[3][1]) && (response_tracker.length == 1)){
     	$('#btn4').removeClass('unselected');
     	$('#btn4').addClass('selected');
     	subject_response = keynum
-    	hitKey(13)
+    	hitKey(keynum)
     
     }else if((keynum == possible_responses[4][1]) && (response_tracker.length == 1)){
     	$('#btn5').removeClass('unselected');
     	$('#btn5').addClass('selected');
     	subject_response = keynum
-    	hitKey(13)
+    	hitKey(keynum)
     
     }
     
@@ -279,7 +278,7 @@ function getChoice(){
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 472
-var numStimsPerCategory = 44
+var numStimsPerCategory = 36
 var totalStims = (numStimsPerCategory/2) * 5 // 5 total conditions
 
 var possible_responses = [['Thumb', 66],['Index Finger',89],['Middle Finger',71],['Ring Finger',82],['Pinky',77]]
@@ -287,7 +286,7 @@ var possible_responses = [['Thumb', 66],['Index Finger',89],['Middle Finger',71]
 
 
 var numIterations = 1 //number of a certain stim, in each of the one conditions
-var numBlocks = totalStims / 22
+var numBlocks = totalStims / 30
 var numStimsPerBlock = totalStims / numBlocks
 
 var submitPressMax = 5
@@ -463,8 +462,10 @@ var instructions_block = {
 	text: '<div class = bigbox><div class = centerbox>'+
 			'<p class = block-text style="font-size:36px"><font color = "white">If the cue is, NOW, please think about the immediate consequences of consuming/using the item.</font></p>'+
 			'<p class = block-text style="font-size:36px"><font color = "white">If the cue is, LATER, please think about the long-term consequences of repeatedly consuming/using the item.</font></p>'+
-			'<p class = block-text style="font-size:36px"><font color = "white">After, you will rate the item.  Please indicate how much you currently want to consume/use the item on the screen.</font></p>'+
-			'<p class = block-text style="font-size:36px"><font color = "white">1 = very low , 5 = very high</font></p>'+		
+			'<p class = block-text style="font-size:36px"><font color = "white">After, please indicate how much you currently want to consume/use the item.</font></p>'+
+			'<p class = block-text style="font-size:36px"><font color = "white">1 = very low , 5 = very high</font></p>'+
+			'<p class = block-text style="font-size:36px"><font color = "white">1 = thumb , 5 = pinky</font></p>'+		
+		
 	
 		 '</div></div>',
 	cont_key: [13],
@@ -561,7 +562,7 @@ for(var i = 0; i < numStimsPerBlock; i++){ //numStims before, should be # of tri
 	type: 'poldrack-single-stim',
 	stimulus: getRatingBoard,
 	is_html: true,
-	choices: [13], //[possible_responses[0][1], possible_responses[1][1], possible_responses[2][1], possible_responses[3][1], possible_responses[4][1]]
+	choices: [possible_responses[0][1], possible_responses[1][1], possible_responses[2][1], possible_responses[3][1], possible_responses[4][1]], 
 	data: {
 		trial_id: "current_rating"
 	},

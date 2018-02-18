@@ -1,3 +1,4 @@
+/* these would be the smoking valued pics if we only had top 36  */
 var valued_pics = [
 '001.jpg',
 '002.jpg',
@@ -27,20 +28,12 @@ var valued_pics = [
 '026.jpg',
 '027.jpg',
 '028.jpg',
-'029.jpg',
 '030.jpg',
 '032.jpg',
-'034.jpg',
 '036.jpg',
 '037.jpg',
 '038.jpg',
 '039.jpg',
 '040.jpg',
-'041.jpg',
-'042.jpg',
-'043.jpg',
-'044.jpg',
-'045.jpg',
-'046.jpg',
-'047.jpg'
+'041.jpg'
 ]

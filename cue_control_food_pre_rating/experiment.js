@@ -149,7 +149,7 @@ document.addEventListener("keydown", function(e){
 /*    Define Experimental Variables     */
 /* ************************************ */
 var subject_ID = 472
-var numStimsPerCategory = 44
+var numStimsPerCategory = 36
 var totalStims = numStimsPerCategory * 2 // 5 total conditions
 
 

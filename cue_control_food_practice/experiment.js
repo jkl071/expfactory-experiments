@@ -289,7 +289,7 @@ var postRateNullType = 0
 var preFileType = "<img class = center src='/static/experiments/cue_control_food_practice/images/"
 
 
-var valued_stim_directory = "food/" //controls if you are showing food or smoking pictures
+var valued_stim_directory = "PDC3_chosen_food_500/" //controls if you are showing food or smoking pictures
 var neutral_directory = "neutral/"
 
 var fileTypeBMP = ".bmp'></img>"

@@ -1,8 +1,9 @@
+/* these would be the practice neutral pics if we only had top 36  */
 var neutral_pics = [
-'magnifyingglass01b.jpg',
-'boot02b.jpg',
-'stool01.jpg',
-'rowboat.jpg',
-'lawnmower.jpg',
-'uprightpiano01.jpg'
+'boat.jpg',
+'scooter.jpg',
+'tennisracket.jpg',
+'exercisemachine.jpg',
+'bumpercar.jpg',
+'airhockeytable.jpg'
 ]

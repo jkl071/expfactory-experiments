@@ -146,7 +146,7 @@ var scanner_wait_block_third = {
 var practice_block = {
   type: 'poldrack-single-stim',
   stimulus: "<video controls autoplay id='myvideo'>"+
-  "<source src='/static/experiments/uh2_video/Aim2_Rest.mp4' type='video/mp4'>"+
+  "<source src='/static/experiments/uh2_video/Rest_v6.mp4' type='video/mp4'>"+
   "</video>",
   timing_post_trial: 0,
   timing_stim: -1,
