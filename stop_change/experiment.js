@@ -253,7 +253,12 @@ var appendData = function(){
 			chosen_forced_stim = forced_right_stim_color
 			chosen_forced_stim_type = forced_right_type
 			chosen_forced_correct_response = forced_right_correct		
+		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == -1 ){
+			chosen_forced_stim = ""
+			chosen_forced_stim_type = ""
+			chosen_forced_correct_response = ""	
 		}
+			
 		
 		jsPsych.data.addDataToLastTrial({
 			left_stim: forced_left_stim_color, 
@@ -273,6 +278,72 @@ var appendData = function(){
 	}
 }
 
+/* delete when done debugging
+shape1 = 0
+shape2 = 0
+shape3 = 0
+shape4 = 0
+shape1stop = 0
+shape2stop = 0
+shape3stop = 0
+shape4stop = 0
+
+shape1_c1 = 0
+shape1_c2 = 0
+shape1_c3 = 0
+shape1_c4 = 0
+
+for(var i = 0; i < 48; i++){
+	
+	
+	stim_color = temp.stim_color.pop()
+	stim = temp.stim.pop()
+	stop_type = temp.stop_type.pop()
+	stop_color = temp.stop_color.pop()
+	correct = temp.correct_response.pop()
+	
+	if (stim_color + '_' + stim == colors[0] + '_' + shapes[0]){
+		shape1 += 1
+		if ((stop_type == 'stop') && (correct == 90)){
+			shape1stop += 1
+		}
+		
+		
+	
+	} else if (stim_color + '_' + stim == colors[1] + '_' + shapes[1]){
+		shape2 += 1
+		if ((stop_type == 'stop') && (correct == 90)){
+			shape2stop += 1
+
+		}
+	
+	} else if (stim_color + '_' + stim == colors[2] + '_' + shapes[2]){
+		shape3 += 1
+		if ((stop_type == 'stop') && (correct == 90)){
+			shape3stop += 1
+			
+		}
+	
+	} else if (stim_color + '_' + stim == colors[3] + '_' + shapes[3]){
+		shape4 += 1
+		if ((stop_type == 'stop') && (correct == 90)){
+			shape4stop += 1
+			if (stop_color == colors[4]){
+				shape1_c1 += 1
+			} else if (stop_color == colors[5]){
+				shape1_c2 += 1
+			} else if (stop_color == colors[6]){
+				shape1_c3 += 1
+			} else if (stop_color == colors[7]){
+				shape1_c4 += 1
+			}
+		}
+	
+	} 
+	
+
+} */
+
 
 /* ************************************ */
 /*    Define Experimental Variables     */
@@ -281,7 +352,7 @@ var subject_ID = 469
 var practice_length = 48
 var test_length = 48 // 840 
 var numForcedTrials = 32
-var numBlocks = test_length/12
+var numBlocks = 1 //test_length/12
 var numTrialsPerBlock = test_length/numBlocks
 
 
