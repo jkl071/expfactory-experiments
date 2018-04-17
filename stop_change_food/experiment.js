@@ -587,7 +587,7 @@ var practice_rating_block = {
 	type: 'poldrack-single-stim',
 	stimulus: practiceRatingBoard1 + '/demo/MrsFields' + ratingBoard2,
 	is_html: true,
-	choices: [81],
+	choices: [13],
 	data: {
 		trial_id: 'pre_rating',
 	},
@@ -672,19 +672,16 @@ stoppingBlock = 0
 var stopping_node = {
 	timeline: stopping_trials,
 	loop_function: function(data){
-	stoppingBlock += 1
-	if (stoppingBlock == numTrainingIterations){
-		forced_stims = createForcedStims()
-		return false
+		stoppingBlock += 1
+		if (stoppingBlock == numTrainingIterations){
+			forced_stims = createForcedStims()
+			return false
 	
-	} else if (stoppingBlock < numTrainingIterations){
-		block_stims = createBlockStims(WTP_sort)
-		return true
+		} else if (stoppingBlock < numTrainingIterations){
+			block_stims = createBlockStims(WTP_sort)
+			return true
 	
-	
-	}
-	
-	
+		}
 	}
 }
 
