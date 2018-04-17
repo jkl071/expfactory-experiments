@@ -1,0 +1,201 @@
+.centerbox {
+ width: 90vw;
+ height: 100vh;
+ position:absolute;
+ top:50%;
+ left:50%;
+ margin-right:-50%;
+ transform: translate(-50%,-50%);
+ background: black;
+ background-color: black;
+}
+
+.fixationbox {
+ width: 5vw;
+ height: 5vh;
+ position:absolute;
+ top:50%;
+ left:50%;
+ margin-right:-50%;
+ transform: translate(-50%,-50%);
+ background: black;
+ background-color: black;
+}
+
+.practice_rating_text {
+width:80%;
+height: 10%;
+position:absolute;
+top:10%;
+left:50%;
+margin-right:-50%;
+transform: translate(-50%,-50%);
+background-color: black;
+text-align: center;
+}
+
+
+.decision-left {
+ width: 40vw;
+ height: 100vh;
+ position:absolute;
+ top:50%;
+ left:22.5%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: black;
+ text-align: center;
+}
+
+/*values are 30% for both left right width and height*/
+
+
+.decision-right {
+ height: 100vh;
+ width: 40vw;
+ position:absolute;
+ top:50%;
+ left:77.5%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: black;
+ text-align: center;
+}
+
+.selected{
+  border:solid 10px yellow; 
+}
+
+img.center {
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
+}
+
+.slider {
+	-webkit-appearance: none;
+    width: 75%;
+    height: 100%;
+    border-radius: 0px;
+    top: 70%
+    transform: translate(0%,0%);
+    background: white;
+}
+
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 55px;
+    border-radius: 0px;
+    background: blue;
+    cursor: pointer;
+}
+
+.picture_box {
+ width: 60%;
+ height: 60%;
+ position:absolute;
+ top:50%;
+ left:50%;
+ transform: translate(-50%,-50%);
+ margin-right:0%;
+ background-color: black;
+ text-align: center;
+}
+
+.slider_box {
+ width: 100%;
+ height: 5%;
+ position:absolute;
+ top:85%;
+ left:50%;
+ transform: translate(-50%,-50%);
+ margin-right:0%;
+ background-color: black;
+ text-align: center;
+}
+
+#number_box {
+  width: 100%;
+  height: 10%;
+  text-align: center;
+  font-size: 36px; /* IE 9/10 don't like font-size: 0; */
+  font-color: 
+  background: yellow;
+  transform: translate(0%,900%);
+}
+
+#number_box div {
+  width: 25%;
+  height: 100%;
+  display: inline-block;
+  background: black;
+}
+
+
+.bigbox {
+width:100%;
+margin: auto; 
+min-height: 100%;
+position:absolute;
+top:0%;
+left:0%;
+margin-right:0%;
+background-color: black;
+text-align: center;
+}
+
+
+
+/* Text based classes */
+/* Used for general instructions */
+.block-text {
+ width:100%;
+ height 100vw;
+ text-align: justify;
+ margin: 0 auto;
+ margin-bottom: 1em;
+ font-size: 22px;
+ line-height: 120%;
+ position: relative;
+ top: 15%;
+ 
+}
+
+/* As above but centeblack instead of justified. Good for instructions with few lines */
+.center-block-text {
+ width:100%;
+ height 100vw;
+ text-align: center;
+ margin: 0 auto;
+ margin-bottom: 1em;
+ font-size: 26px;
+ line-height: 120%;
+}
+
+
+/* used for large text shown in the center of the screen, like FB or stimuli */
+.center-textJamie {
+ text-align:center;
+ font-size: 26px;
+ position: relative;
+ top: 40%;
+ -ms-transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+ transform: translateY(-50%);
+}
+
+/* fixation should be used like this in: '<div class = centerbox><div class = fixation>+</div></div>'*/
+.fixation {
+ text-align: center;
+ font-size: 100px;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}

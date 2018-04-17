@@ -507,11 +507,11 @@ function getAllIndexesList(arr,val){
 			all_indexes.push(indexes)
 		}
 	}
-	//this function will return an array, temp, containing indexes for each item in the array, arr.  
-	//In the array, temp, the values will be the indexes for the searched value.  
-	//The LAST value in the array, temp, will be the index in the array, arr, for the value, val.  
+	//this function will return an array, temp, containing indexes for the item, val, in the list of lists, arr.  
+	//The list temp, will have as many lists as there are lists in arr.  The values in each list in temp, are the indexes for that list
+	//The LAST value in each of the lists in, temp, shows which of the lists in arr, the indexes were found from.  
 	
-	// this function searches an array of strings for a value.  Will itterively search each str in array, for a partial str.
+	// this function searches a list of list containing strings, for a value.  Will itterively search each list in lists, for a str.
 	return all_indexes
 }
 
