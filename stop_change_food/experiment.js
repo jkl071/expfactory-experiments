@@ -287,6 +287,7 @@ var getForcedText = function(){
 		  		'<p class = block-text><font color="white">On every trial, you will see two items. One on the right and one on the left.</font></p>'+
 		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right and left arrow keys to choose the right and left images, respectively.</font></p>'+
 		  		'<p class = block-text><font color="white">You will have 1.5 seconds to make your choice.</font></p>'+
+		  		'<p class = block-text><font color="white">At the end of the experiment, one trial will be randomly selected and you will receive the food item of your choice from that trial.</font></p>'+
 		  		'<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		   	   '</div></div>'
 	} else if (forcedCount == 1){
