@@ -282,9 +282,12 @@ var appendData = function(){
 
 var getForcedText = function(){
 	if (forcedCount == 0){
-		return '<div class = bigbox><div class = centerbox>'+
-		  		'<p class = center-textJamie><font color="white">We will now move onto the selection phase.</font></p>'+
-		  		'<p class = center-textJamie><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		return '<div class = bigbox><div class = picture_box>'+
+		  		'<p class = block-text><font color="white">We will now move onto the selection phase.</font></p>'+
+		  		'<p class = block-text><font color="white">On every trial, you will see two items. One on the right and one on the left.</font></p>'+
+		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right and left arrow keys to choose the right and left images, respectively.</font></p>'+
+		  		'<p class = block-text><font color="white">You will have 1.5 seconds to make your choice.</font></p>'+
+		  		'<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		   	   '</div></div>'
 	} else if (forcedCount == 1){
 		return '<div class = bigbox><div class = centerbox>'+
@@ -325,6 +328,7 @@ var subject_ID = 472
 
 var numStims = stims.length
 var stimArray = createStimsArray(numStims)
+var numTrainingIterations = 1 //12
 
 
 var preFileType = "<img class = center src='/static/experiments/stop_change_food/images/"
@@ -463,9 +467,13 @@ var stopping_intro_block = {
 		trial_id: "stopping_intro",
 	},
 	timing_response: -1,
-	text: '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie><font color="white">We will now move onto the stopping portion.</font></p>'+
-		  '<p class = center-textJamie><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+	text: '<div class = bigbox><div class = picture_box>'+
+		  '<p class = block-text><font color="white">We will now move onto the stopping portion.</font></p>'+
+		  '<p class = block-text><font color="white">You will see items come up on the screen one at a time.</font></p>'+
+		  '<p class = block-text><font color="white">For every item, please press the M key, as quickly and as accurately as possible.</font></p>'+
+		  '<p class = block-text><font color="white">Some items will also come with a tone.  If you hear this tone, please press the Z key instead of the M key.</font></p>'+
+		  '<p class = block-text><font color="white">Do not slow down your responses to the items in order to wait for the tone.</font></p>'+
+		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
 	timing_post_trial: 0
@@ -477,12 +485,12 @@ var post_rating_intro_block = {
 		trial_id: "stopping_intro",
 	},
 	timing_response: -1,
-	text: '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie><font color="white">In this phase, you will participate in a second auction.  Please input how much you are willing to pay for each food item on the screen.</font></p>'+
-		  '<p class = center-textJamie><font color="white">You will have $3 to spend on every food item.</font></p>'+
-		  '<p class = center-textJamie><font color="white">Please ensure that you are inputting your <strong>TRUE</strong> willingness to pay value for each item.</font></p>'+	
-		  '<p class = center-textJamie><font color="white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
-		  '<p class = center-textJamie><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+	text: '<div class = bigbox><div class = picture_box>'+
+		  '<p class = block-text><font color="white">In this phase, you will participate in a second auction.  Please input how much you are willing to pay for each food item on the screen.</font></p>'+
+		  '<p class = block-text><font color="white">You will have $3 to spend on every food item.</font></p>'+
+		  '<p class = block-text><font color="white">Use the slider to indicate your choice, then press enter to move on to the next trial.</font></p>'+	
+		  '<p class = block-text><font color="white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
+		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
@@ -514,12 +522,12 @@ var instructions_block = {
 		trial_id: "instructions",
 	},
 	timing_response: -1,
-	text: '<div class = bigbox><div class = centerbox>'+
+	text: '<div class = bigbox><div class = picture_box>'+
 			'<p class = block-text><font color = "white">This experiment is composed of four phases.</font></p>'+
 			'<p class = block-text><font color = "white">In this first phase, you will participate in an auction.  Food items will be presented on the screen one at a time.</font></p>'+
 			'<p class = block-text><font color = "white">For each item, please use the slider to input how much you are willing to pay for that item.  Once you have chosen your amount, press <strong>enter</strong> to move on to the next trial.</font></p>'+
 			'<p class = block-text><font color = "white">You will have $3 to spend for <strong>each food item on every trial</strong>.</font></p>'+	
-			'<p class = block-text><font color = "white">Please ensure that you are inputting your <strong>TRUE</strong> willingness to pay value for each item.</font></p>'+	
+			'<p class = block-text><font color = "white"></font></p>'+	
 			'<p class = block-text><font color = "white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
 			'<p class = block-text><font color = "white">We will start with a practice trial.</font></p>'+
 			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
@@ -660,10 +668,22 @@ for(var x= 0; x < stimArray.length; x++){
 	stopping_trials.push(fixation_block)
 };
 
+stoppingBlock = 0
 var stopping_node = {
 	timeline: stopping_trials,
 	loop_function: function(data){
-	forced_stims = createForcedStims()
+	stoppingBlock += 1
+	if (stoppingBlock == numTrainingIterations){
+		forced_stims = createForcedStims()
+		return false
+	
+	} else if (stoppingBlock < numTrainingIterations){
+		block_stims = createBlockStims(WTP_sort)
+		return true
+	
+	
+	}
+	
 	
 	}
 }
@@ -698,7 +718,7 @@ var getForcedFeedback = function(){
 		}
 		else if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt == -1){
 			return '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie><font color="white">Respond Faster</font></p>'+
+		  '<p class = center-textJamie><font color="white">Respond Faster!</font></p>'+
 		  '</div></div>'
 		
 		}
@@ -813,6 +833,7 @@ var post_rating_node = {
 /* ************************************ */
 
 var stop_change_food_experiment = []
+
 
 stop_change_food_experiment.push(welcome_block);
 
