@@ -175,10 +175,12 @@ document.addEventListener("keydown", function(e){
     	forcedButtonTracker.push(keynum)
     	if ((keynum == 37) &&  (forcedButtonTracker.indexOf(39) == -1)){
     		forced_chosen = stimLeft
+    		forced_chosen_WTP = stimLeftWTP
     		$('#image_left').addClass('selected');
     		hitKey(81)
     	} else if ((keynum == 39) && (forcedButtonTracker.indexOf(37) == -1)){
     		forced_chosen = stimRight
+    		forced_chosen_WTP = stimRightWTP
     		$('#image_right').addClass('selected');
     		hitKey(81)
     
@@ -235,14 +237,16 @@ var appendData = function(){
 	} else if (trial_id == "forced_choice"){
 		
 		jsPsych.data.addDataToLastTrial({
-			stim_left_number: stimLeft,
 			stim_left: stims[parseInt(stimLeft)],
+			stim_left_number: stimLeft,
 			stim_left_WTP: stimLeftWTP,
-			stim_right_number: stimRight,
 			stim_right: stims[parseInt(stimRight)],
+			stim_right_number: stimRight,
 			stim_right_WTP: stimRightWTP,
-			forced_chosen: forced_chosen,
-			current_exp_stage: exp_phase
+			forced_chosen: stims[parseInt(forced_chosen)],
+			forced_chosen_number: forced_chosen,
+			forced_chosen_WTP: forced_chosen_WTP,
+			current_exp_stage: exp_phase,
 		})
 	
 	} else if (trial_id == "stopping"){	
@@ -259,10 +263,16 @@ var appendData = function(){
 		})
 		
 	
-		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (SSD<884) && (stop_type == 'stop')){
+		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (SSD<900) && (stop_type == 'stop')){
 			SSD = SSD + 17
+			if(SSD > 900){
+				SSD = 900
+			}
 		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response) && (SSD>0) && (stop_type == 'stop')){
 			SSD = SSD - 50
+			if(SSD < 0){
+				SSD = 0
+			}
 		}
 	
 		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (stop_type == 'go')){
@@ -285,9 +295,9 @@ var getForcedText = function(){
 		return '<div class = bigbox><div class = picture_box>'+
 		  		'<p class = block-text><font color="white">We will now move onto the selection phase.</font></p>'+
 		  		'<p class = block-text><font color="white">On every trial, you will see two items. One on the right and one on the left.</font></p>'+
-		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right and left arrow keys to choose the right and left images, respectively.</font></p>'+
+		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right and left arrow keys to choose the right and left items, respectively.</font></p>'+
 		  		'<p class = block-text><font color="white">You will have 1.5 seconds to make your choice.</font></p>'+
-		  		'<p class = block-text><font color="white">At the end of the experiment, one trial will be randomly selected and you will receive the food item of your choice from that trial.</font></p>'+
+		  		'<p class = block-text><font color="white">At the end of the experiment, one trial will be randomly selected and you will receive the food item that you chose from that trial.</font></p>'+
 		  		'<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		   	   '</div></div>'
 	} else if (forcedCount == 1){
@@ -299,11 +309,13 @@ var getForcedText = function(){
 }
 
 var getSSD = function(){
+	console.log('SSD = ' +SSD)
 	return SSD
 
 }		
 			
 var getStopType = function(){
+	console.log('stop_type = '+stop_type)
 	return stop_type
 }
 
@@ -335,8 +347,8 @@ var numTrainingIterations = 1 //12
 var preFileType = "<img class = center src='/static/experiments/stop_change_food/images/"
 var forcedLeftFileType = "<img id = 'image_left' class = center src='/static/experiments/stop_change_food/images/"
 var forcedRightFileType = "<img id = 'image_right' class = center src='/static/experiments/stop_change_food/images/"
-var pathSource = "/static/experiments/stop_change_food/images/stim_numbered/"
-var fileTypePNG = ".png'></img>"
+var pathSource = "/static/experiments/stop_change_food/images/"
+var fileTypeBMP = ".bmp'></img>"
 
 
 var audioFiles = ['/static/experiments/stop_change_food/' + 'audio/100ms.wav']
@@ -344,7 +356,7 @@ jsPsych.pluginAPI.preloadAudioFiles(audioFiles)
 
 
 var stim = ''
-var SSD = 250
+var SSD = 850
 var WTP = ''
 var exp_phase = 'start'
 var block_stims = []
@@ -378,7 +390,7 @@ var ratingBoard1 = '<div class = bigbox><div class = centerbox>'+
 						'<div class = picture_box>'+
 						preFileType
 
-var ratingBoard2 = fileTypePNG +
+var ratingBoard2 = fileTypeBMP +
 						'</div>'+
 		  				'<div class = slider_box>'+
 		  					'<input type="range" step="0.01" min="0" max="3" value="1.50" class="slider" id="myRange">'+
@@ -398,7 +410,7 @@ var stoppingBoard1 = '<div class = bigbox><div class = centerbox>'+
 						'<div class = picture_box>'+
 						preFileType
 
-var stoppingBoard2 = fileTypePNG +
+var stoppingBoard2 = fileTypeBMP +
 						'</div>'+	
 		 			 '</div></div>'
 		 			 
@@ -408,10 +420,10 @@ var stoppingBoard2 = fileTypePNG +
 var forcedChoiceBoard1 = '<div class = bigbox>'+
 							'<div class = decision-left>'+forcedLeftFileType
 							
-var forcedChoiceBoard2 = 	fileTypePNG+'</div>'+
+var forcedChoiceBoard2 = 	fileTypeBMP+'</div>'+
 							'<div class = decision-right>'+forcedRightFileType
 							
-var forcedChoiceBoard3 = 	fileTypePNG+'</div>'+'<div class = fixationbox><div class = fixation><font color="white">+</font></div></div>'+
+var forcedChoiceBoard3 = 	fileTypeBMP+'</div>'+'<div class = fixationbox><div class = fixation><font color="white">+</font></div></div>'+
 		  				'</div>'
 
 
@@ -471,8 +483,8 @@ var stopping_intro_block = {
 	text: '<div class = bigbox><div class = picture_box>'+
 		  '<p class = block-text><font color="white">We will now move onto the stopping portion.</font></p>'+
 		  '<p class = block-text><font color="white">You will see items come up on the screen one at a time.</font></p>'+
-		  '<p class = block-text><font color="white">For every item, please press the M key, as quickly and as accurately as possible.</font></p>'+
-		  '<p class = block-text><font color="white">Some items will also come with a tone.  If you hear this tone, please press the Z key instead of the M key.</font></p>'+
+		  '<p class = block-text><font color="white">For every item, please press the M key, as quickly as possible.</font></p>'+
+		  '<p class = block-text><font color="white">On some trials, a tone will also appear.  If you hear this tone, please press the Z key instead of the M key.</font></p>'+
 		  '<p class = block-text><font color="white">Do not slow down your responses to the items in order to wait for the tone.</font></p>'+
 		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
@@ -552,19 +564,6 @@ var forced_intro_block = {
 };
 
 
-var fixation_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">+</font></div></div></div>',
-	is_html: true,
-	choices: 'none',
-	data: {
-		trial_id: "fixation",
-	},
-	timing_post_trial: 0,
-	timing_stim: getITI,
-	timing_response: getITI
-};
-
 var BIS11_block = {
 	type: 'poldrack-text',
 	data: {
@@ -596,7 +595,7 @@ var practice_rating_block = {
 	timing_stim: -1,
 	timing_response: -1,
 	response_ends_trial: true,
-	}
+}
 
 pre_rating_trials = []
 for(var x = 0; x < stimArray.length; x++){
@@ -613,7 +612,7 @@ for(var x = 0; x < stimArray.length; x++){
 	timing_response: -1,
 	response_ends_trial: true,
 	on_finish: appendData
-};
+	};
 	
 	pre_rating_trials.push(rating_block)
 }
@@ -626,9 +625,6 @@ var pre_rating_node = {
 		WTP_sort.reverse()
 		WTP_sort.unshift('placeholder')
 		block_stims = createBlockStims(WTP_sort)
-	
-	
-
 	}
 }
 
@@ -649,7 +645,8 @@ for(var x= 0; x < stimArray.length; x++){
 	SS_path:  '/static/experiments/stop_change_food/audio/100ms.wav', 
 	SS_delay:  getSSD, 
 	SS_trial_type: getStopType,
-	on_finish: appendData
+	on_finish: appendData,
+	response_ends_trial: false
 	};
 	
 	var fixation_block = {
@@ -658,7 +655,7 @@ for(var x= 0; x < stimArray.length; x++){
 	is_html: true,
 	choices: 'none',
 	data: {
-		trial_id: "fixation",
+		trial_id: "stopping_fixation",
 	},
 	timing_post_trial: 0,
 	timing_stim: -1,
@@ -756,7 +753,7 @@ for(var x = 0; x < numStims; x++){
 	is_html: true,
 	choices: 'none',
 	data: {
-		trial_id: "fixation",
+		trial_id: "forced_feedback",
 		},
 	timing_post_trial: 0,
 	timing_stim: -1,
@@ -769,7 +766,7 @@ for(var x = 0; x < numStims; x++){
 	is_html: true,
 	choices: 'none',
 	data: {
-		trial_id: "fixation",
+		trial_id: "forced_fixation",
 		},
 	timing_post_trial: 0,
 	timing_stim: -1,
