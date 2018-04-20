@@ -295,9 +295,9 @@ var getForcedText = function(){
 		return '<div class = bigbox><div class = picture_box>'+
 		  		'<p class = block-text><font color="white">We will now move onto the selection phase.</font></p>'+
 		  		'<p class = block-text><font color="white">On every trial, you will see two items. One on the right and one on the left.</font></p>'+
-		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right and left arrow keys to choose the right and left items, respectively.</font></p>'+
+		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right or left arrow key to choose the right or left item, respectively.</font></p>'+
 		  		'<p class = block-text><font color="white">You will have 1.5 seconds to make your choice.</font></p>'+
-		  		'<p class = block-text><font color="white">These are hypothetical choices, but please choose as if you are going to receive the item of your choice..</font></p>'+
+		  		'<p class = block-text><font color="white">These are hypothetical choices, but please choose as if you are going to receive the item of your choice.</font></p>'+
 		  		'<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		   	   '</div></div>'
 	} else if (forcedCount == 1){
@@ -499,8 +499,8 @@ var post_rating_intro_block = {
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = picture_box>'+
-		  '<p class = block-text><font color="white">In this phase, you will participate in a second auction.  Please input how much you are willing to pay for each food item on the screen.</font></p>'+
-		  '<p class = block-text><font color="white">You will have $3 to spend on every food item.</font></p>'+
+		  '<p class = block-text><font color="white">In this phase, you will participate in a second hypothetical auction.  Imagine that you have $3 to spend on every food item.</font></p>'+
+		  '<p class = block-text><font color="white">Please input how much you are willing to pay for each food item on the screen.</font></p>'+
 		  '<p class = block-text><font color="white">Use the slider to indicate your choice, then press enter to move on to the next trial.</font></p>'+	
 		  '<p class = block-text><font color="white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
 		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
@@ -537,10 +537,9 @@ var instructions_block = {
 	timing_response: -1,
 	text: '<div class = bigbox><div class = picture_box>'+
 			'<p class = block-text><font color = "white">This experiment is composed of four phases.</font></p>'+
-			'<p class = block-text><font color = "white">In this first phase, you will participate in an auction.  Food items will be presented on the screen one at a time.</font></p>'+
+			'<p class = block-text><font color = "white">In this first phase, you will participate in a hypothetical auction.  Food items will be presented on the screen one at a time.</font></p>'+
+			'<p class = block-text><font color = "white">Imagine you have $3 to spend for <strong>each food item on every trial</strong>.</font></p>'+	
 			'<p class = block-text><font color = "white">For each item, please use the slider to input how much you are willing to pay for that item.  Once you have chosen your amount, press <strong>enter</strong> to move on to the next trial.</font></p>'+
-			'<p class = block-text><font color = "white">You will have $3 to spend for <strong>each food item on every trial</strong>.</font></p>'+	
-			'<p class = block-text><font color = "white"></font></p>'+	
 			'<p class = block-text><font color = "white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
 			'<p class = block-text><font color = "white">We will start with a practice trial.</font></p>'+
 			'<p class = block-text><font color = "white">Press <strong>enter</strong> to continue.</font></p>'+		
