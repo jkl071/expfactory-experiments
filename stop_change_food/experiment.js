@@ -394,7 +394,7 @@ var subject_ID = 472
 
 var numStims = stims.length
 var stimArray = createStimsArray(numStims)
-var numTrainingIterations = 1 //12
+var numTrainingIterations = 12 //12
 var forcedTrials = 64
 
 
