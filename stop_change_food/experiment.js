@@ -176,13 +176,15 @@ document.addEventListener("keydown", function(e){
     	if ((keynum == 37) &&  (forcedButtonTracker.indexOf(39) == -1)){
     		forced_chosen = stimLeft
     		forced_chosen_WTP = stimLeftWTP
+    		forced_chosen_WTP_order = stimLeftOrder
     		$('#image_left').addClass('selected');
-    		hitKey(81)
+    		hitKey(76)
     	} else if ((keynum == 39) && (forcedButtonTracker.indexOf(37) == -1)){
     		forced_chosen = stimRight
     		forced_chosen_WTP = stimRightWTP
+    		forced_chosen_WTP_order = stimRightOrder
     		$('#image_right').addClass('selected');
-    		hitKey(81)
+    		hitKey(82)
     
     	}
     
@@ -199,16 +201,18 @@ var getRatingBoard = function(){
 
 var getForcedChoiceBoard = function(){
 		var forced_combo = forced_stims.pop()
-		var stimLeftTemp = forced_combo[0]
-		var stimRightTemp = forced_combo[1]
+		stimLeftOrder = forced_combo[0]
+		stimRightOrder = forced_combo[1]
 		
-		var stimLeftTemp2 = WTP_sort[stimLeftTemp]
-		var stimRightTemp2 = WTP_sort[stimRightTemp]
+		var stimLeftTemp2 = WTP_sort[stimLeftOrder]
+		var stimRightTemp2 = WTP_sort[stimRightOrder]
 		
 		stimLeft = stimLeftTemp2[5] + stimLeftTemp2[6]
 		stimLeftWTP = stimLeftTemp2[0] + stimLeftTemp2[1] + stimLeftTemp2[2]
 		stimRight = stimRightTemp2[5] + stimRightTemp2[6]
 		stimRightWTP = stimRightTemp2[0] + stimRightTemp2[1] + stimRightTemp2[2]
+		
+		
 		
 	return forcedChoiceBoard1 + stimLeft + forcedChoiceBoard2 + stimRight + forcedChoiceBoard3
 }
@@ -233,21 +237,28 @@ var appendData = function(){
 			stim_WTP: WTP,
 			current_exp_stage: exp_phase
 		})
-	
 	} else if (trial_id == "forced_choice"){
 		
 		jsPsych.data.addDataToLastTrial({
 			stim_left: stims[parseInt(stimLeft)],
 			stim_left_number: stimLeft,
 			stim_left_WTP: stimLeftWTP,
+			stim_left_WTP_order: stimLeftOrder,
 			stim_right: stims[parseInt(stimRight)],
 			stim_right_number: stimRight,
 			stim_right_WTP: stimRightWTP,
+			stim_right_WTP_order: stimRightOrder,
 			forced_chosen: stims[parseInt(forced_chosen)],
 			forced_chosen_number: forced_chosen,
 			forced_chosen_WTP: forced_chosen_WTP,
+			forced_chosen_WTP_order: forced_chosen_WTP_order,
 			current_exp_stage: exp_phase,
 		})
+		
+		
+		forced_chosen = ''
+		forced_chosen_WTP = ''
+		forced_chosen_WTP_order = ''
 	
 	} else if (trial_id == "stopping"){	
 		jsPsych.data.addDataToLastTrial({
@@ -262,7 +273,6 @@ var appendData = function(){
 			current_exp_stage: exp_phase
 		})
 		
-	
 		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (SSD<900) && (stop_type == 'stop')){
 			SSD = SSD + 17
 			if(SSD > 900){
@@ -297,7 +307,7 @@ var getForcedText = function(){
 		  		'<p class = block-text><font color="white">On every trial, you will see two items. One on the right and one on the left.</font></p>'+
 		  		'<p class = block-text><font color="white">Please choose which item you prefer by pressing the right or left arrow key to choose the right or left item, respectively.</font></p>'+
 		  		'<p class = block-text><font color="white">You will have 1.5 seconds to make your choice.</font></p>'+
-		  		'<p class = block-text><font color="white">These are hypothetical choices, but please choose as if you are going to receive the item of your choice.</font></p>'+
+		  		'<p class = block-text><font color="white">These are hypothetical choices, but please choose as if you will receive the item of your choice.</font></p>'+
 		  		'<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		   	   '</div></div>'
 	} else if (forcedCount == 1){
@@ -309,13 +319,11 @@ var getForcedText = function(){
 }
 
 var getSSD = function(){
-	console.log('SSD = ' +SSD)
 	return SSD
 
 }		
 			
 var getStopType = function(){
-	console.log('stop_type = '+stop_type)
 	return stop_type
 }
 
@@ -332,6 +340,51 @@ var getStoppingBoard = function(){
 	return stoppingBoard1 + stim_num + stoppingBoard2
 }
 
+var getFeedbackTiming = function(){
+	curr_trial = jsPsych.progress().current_trial_global
+	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial - 1).trial_id
+	if(trial_id == 'forced_choice'){
+		if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt != -1){
+			return 1
+		}
+		else if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt == -1){
+			return 500
+		}
+	}
+}
+
+
+var getForcedFeedback = function(){
+	curr_trial = jsPsych.progress().current_trial_global
+	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial - 1).trial_id
+	if(trial_id == 'forced_choice'){
+		if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt != -1){
+			return '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">+</font></div></div></div>'
+		}
+		else if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt == -1){
+			return '<div class = bigbox><div class = centerbox>'+
+		  '<p class = center-textJamie><font color="white">Respond Faster!</font></p>'+
+		  '</div></div>'
+		}
+	}	
+}
+
+
+var getStopFB = function(){
+	if (stoppingBlock == 0){
+		return '<div class = bigbox><div class = centerbox>'+
+		  '<p class = center-textJamie><font color="white">We will now begin training.</font></p>'+
+		  '<p class = center-textJamie><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		  '</div></div>'
+	} else if (stoppingBlock > 0){
+		return '<div class = bigbox><div class = centerbox>'+
+		  '<p class = center-textJamie><font color="white">Take a break!</font></p>'+
+		  '<p class = center-textJamie><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
+		  '</div></div>'
+	
+	}
+}
+
 
 /* ************************************ */
 /*    Define Experimental Variables     */
@@ -342,6 +395,7 @@ var subject_ID = 472
 var numStims = stims.length
 var stimArray = createStimsArray(numStims)
 var numTrainingIterations = 1 //12
+var forcedTrials = 64
 
 
 var preFileType = "<img class = center src='/static/experiments/stop_change_food/images/"
@@ -356,7 +410,7 @@ jsPsych.pluginAPI.preloadAudioFiles(audioFiles)
 
 
 var stim = ''
-var SSD = 850
+var SSD = 250
 var WTP = ''
 var exp_phase = 'start'
 var block_stims = []
@@ -373,6 +427,9 @@ var stimLeftWTP = ''
 var stimRight = ''
 var stimRightWTP = ''
 var forced_chosen = ''
+var forced_chosen_WTP = ''
+var forced_chosen_WTP_order = ''
+
 
 /* ************************************ */
 /*          Define Game Boards          */
@@ -484,8 +541,8 @@ var stopping_intro_block = {
 		  '<p class = block-text><font color="white">We will now move onto the stopping portion.</font></p>'+
 		  '<p class = block-text><font color="white">You will see items come up on the screen one at a time.</font></p>'+
 		  '<p class = block-text><font color="white">For every item, please press the M key, as quickly as possible.</font></p>'+
-		  '<p class = block-text><font color="white">On some trials, a tone will also appear.  If you hear this tone, please press the Z key instead of the M key.</font></p>'+
-		  '<p class = block-text><font color="white">Do not slow down your responses to the items in order to wait for the tone.</font></p>'+
+		  '<p class = block-text><font color="white">On some trials, a tone will also occur concurrently or shortly after the food item. When you hear this tone, please try to press the Z key instead of the M key.</font></p>'+
+		  '<p class = block-text><font color="white">Do not slow down your responses to the food items in order to wait to for the tone.</font></p>'+
 		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
@@ -495,11 +552,11 @@ var stopping_intro_block = {
 var post_rating_intro_block = {
 	type: 'poldrack-text',
 	data: {
-		trial_id: "stopping_intro",
+		trial_id: "post_rating_intro",
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = picture_box>'+
-		  '<p class = block-text><font color="white">In this phase, you will participate in a second hypothetical auction.  Imagine that you have $3 to spend on every food item.</font></p>'+
+		  '<p class = block-text><font color="white">In this phase, you will participate in a second hypothetical auction.  Imagine you have up to $3 to spend on each food item.</font></p>'+
 		  '<p class = block-text><font color="white">Please input how much you are willing to pay for each food item on the screen.</font></p>'+
 		  '<p class = block-text><font color="white">Use the slider to indicate your choice, then press enter to move on to the next trial.</font></p>'+	
 		  '<p class = block-text><font color="white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
@@ -515,7 +572,7 @@ var post_rating_intro_block = {
 var pre_rating_intro_block = {
 	type: 'poldrack-text',
 	data: {
-		trial_id: "stopping_intro",
+		trial_id: "pre_rating_intro",
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
@@ -538,7 +595,7 @@ var instructions_block = {
 	text: '<div class = bigbox><div class = picture_box>'+
 			'<p class = block-text><font color = "white">This experiment is composed of four phases.</font></p>'+
 			'<p class = block-text><font color = "white">In this first phase, you will participate in a hypothetical auction.  Food items will be presented on the screen one at a time.</font></p>'+
-			'<p class = block-text><font color = "white">Imagine you have $3 to spend for <strong>each food item on every trial</strong>.</font></p>'+	
+			'<p class = block-text><font color = "white">Imagine you have up to $3 to spend on <strong>each food item on every trial</strong>.</font></p>'+	
 			'<p class = block-text><font color = "white">For each item, please use the slider to input how much you are willing to pay for that item.  Once you have chosen your amount, press <strong>enter</strong> to move on to the next trial.</font></p>'+
 			'<p class = block-text><font color = "white">This phase is self-paced, so take your time to decide the amount of money you are willing to spend on each item.</font></p>'+	
 			'<p class = block-text><font color = "white">We will start with a practice trial.</font></p>'+
@@ -566,13 +623,12 @@ var forced_intro_block = {
 var BIS11_block = {
 	type: 'poldrack-text',
 	data: {
-		trial_id: "stopping_intro",
+		trial_id: "BIS11_intro",
 	},
 	timing_response: -1,
 	text: '<div class = bigbox><div class = centerbox>'+
 		  '<p class = center-textJamie><font color="white">Please get the experimenter.</font></p>'+	
 		  '<p class = center-textJamie><font color="white">You will complete a survey in the next phase.</font></p>'+	
-		  '<p class = center-textJamie><font color="white">Patrick, press Q to escape this page.</font></p>'+	
 		  '</div></div>',
 	cont_key: [81],
 	timing_post_trial: 0,
@@ -588,7 +644,7 @@ var practice_rating_block = {
 	is_html: true,
 	choices: [13],
 	data: {
-		trial_id: 'pre_rating',
+		trial_id: 'pre_rating_practice',
 	},
 	timing_post_trial: 0,
 	timing_stim: -1,
@@ -627,8 +683,22 @@ var pre_rating_node = {
 	}
 }
 
-
 stopping_trials = []
+var stop_start_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "stopping_feedback",
+	},
+	timing_response: -1,
+	text: getStopFB,
+	cont_key: [13],
+	timing_post_trial: 0,
+	on_finish: function(){
+	exp_phase = 'pre_rating'
+	}
+};
+stopping_trials.push(stop_start_block)
+
 for(var x= 0; x < stimArray.length; x++){
 	var stopping_block = {
 	type: 'poldrack-single-audio',
@@ -684,54 +754,15 @@ var stopping_node = {
 
 
 
-var getFeedbackTiming = function(){
-	curr_trial = jsPsych.progress().current_trial_global
-	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial - 1).trial_id
-	if(trial_id == 'forced_choice'){
-		if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt != -1){
-			return 1
-		
-		}
-		else if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt == -1){
-			return 500
-		
-		}
-	
-	}
-	
-}
-
-
-var getForcedFeedback = function(){
-	curr_trial = jsPsych.progress().current_trial_global
-	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial - 1).trial_id
-	if(trial_id == 'forced_choice'){
-		if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt != -1){
-			return '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">+</font></div></div></div>'
-		
-		}
-		else if (jsPsych.data.getDataByTrialIndex(curr_trial - 1).rt == -1){
-			return '<div class = bigbox><div class = centerbox>'+
-		  '<p class = center-textJamie><font color="white">Respond Faster!</font></p>'+
-		  '</div></div>'
-		
-		}
-	
-	}
-
-	
-
-}
-
 forced_choice_trials = []
 forced_choice_trials.push(forced_intro_block)
 
-for(var x = 0; x < numStims; x++){
+for(var x = 0; x < forcedTrials; x++){
 	var forced_choice_block = {
 	type: 'poldrack-single-stim',
 	stimulus: getForcedChoiceBoard,
 	is_html: true,
-	choices: [81],
+	choices: [76,82],
 	data: {
 		trial_id: 'forced_choice',
 	},
@@ -752,7 +783,7 @@ for(var x = 0; x < numStims; x++){
 	is_html: true,
 	choices: 'none',
 	data: {
-		trial_id: "forced_feedback",
+		trial_id: "forced_choice_feedback",
 		},
 	timing_post_trial: 0,
 	timing_stim: -1,
@@ -765,7 +796,7 @@ for(var x = 0; x < numStims; x++){
 	is_html: true,
 	choices: 'none',
 	data: {
-		trial_id: "forced_fixation",
+		trial_id: "forced_choice_fixation",
 		},
 	timing_post_trial: 0,
 	timing_stim: -1,
