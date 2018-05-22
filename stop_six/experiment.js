@@ -211,7 +211,7 @@ var appendData = function(){
 var subject_ID = 469
 var practice_length = 36 //18
 var test_length = 1008 // 720
-var numBlocks = test_length/84 
+var numBlocks = test_length/84 //12blocks
 var numTrialsPerBlock = test_length/numBlocks
 
 

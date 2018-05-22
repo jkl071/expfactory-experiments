@@ -30,8 +30,12 @@ if (ITI > 12000){
 	ITI = 12000
 
 } else if (ITI < 1000){
-	ITI = 1000
+	ITI = 1001
 
+}
+
+if (exp_phase == 'stop_change_trials') {
+	ITI = ITI - 1000
 }
 	return ITI
 }
@@ -177,18 +181,28 @@ document.addEventListener("keydown", function(e){
     		forced_chosen = stimLeft
     		forced_chosen_WTP = stimLeftWTP
     		forced_chosen_WTP_order = stimLeftOrder
+    		forced_chosen_condition = all_lists_names[getAllIndexesList(all_lists,stimLeftOrder)[0][1]]
+    		
     		$('#image_left').addClass('selected');
     		hitKey(76)
     	} else if ((keynum == 39) && (forcedButtonTracker.indexOf(37) == -1)){
     		forced_chosen = stimRight
     		forced_chosen_WTP = stimRightWTP
     		forced_chosen_WTP_order = stimRightOrder
+    		forced_chosen_condition = all_lists_names[getAllIndexesList(all_lists,stimRightOrder)[0][1]]
+
     		$('#image_right').addClass('selected');
     		hitKey(82)
     
     	}
     
     } 
+    
+    if (exp_phase == 'stop_change_trials'){
+    	stoppingTracker.push(keynum)
+    	stoppingTimeTracker.push(jsPsych.totalTime())
+    
+    }
     
 });
 
@@ -238,20 +252,25 @@ var appendData = function(){
 			current_exp_stage: exp_phase
 		})
 	} else if (trial_id == "forced_choice"){
+		stimLeftCondition = all_lists_names[getAllIndexesList(all_lists,stimLeftOrder)[0][1]]
+		stimRightCondition = all_lists_names[getAllIndexesList(all_lists,stimRightOrder)[0][1]]
 		
 		jsPsych.data.addDataToLastTrial({
 			stim_left: stims[parseInt(stimLeft)],
 			stim_left_number: stimLeft,
 			stim_left_WTP: stimLeftWTP,
 			stim_left_WTP_order: stimLeftOrder,
+			stim_left_condition: stimLeftCondition,
 			stim_right: stims[parseInt(stimRight)],
 			stim_right_number: stimRight,
 			stim_right_WTP: stimRightWTP,
 			stim_right_WTP_order: stimRightOrder,
+			stim_right_condition: stimRightCondition,
 			forced_chosen: stims[parseInt(forced_chosen)],
 			forced_chosen_number: forced_chosen,
 			forced_chosen_WTP: forced_chosen_WTP,
 			forced_chosen_WTP_order: forced_chosen_WTP_order,
+			forced_chosen_condition: forced_chosen_condition,
 			current_exp_stage: exp_phase,
 		})
 		
@@ -259,6 +278,7 @@ var appendData = function(){
 		forced_chosen = ''
 		forced_chosen_WTP = ''
 		forced_chosen_WTP_order = ''
+		forced_chosen_condition = ''
 	
 	} else if (trial_id == "stopping"){	
 		jsPsych.data.addDataToLastTrial({
@@ -270,13 +290,15 @@ var appendData = function(){
 			correct_response: correct_response,
 			stop_type: stop_type,
 			SSD: SSD,
-			current_exp_stage: exp_phase
+			current_exp_stage: exp_phase,
+			stoppingTimeTracker: stoppingTimeTracker,
+			stoppingTracker: stoppingTracker
 		})
 		
-		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (SSD<900) && (stop_type == 'stop')){
+		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (SSD < maxSSD) && (stop_type == 'stop')){
 			SSD = SSD + 17
-			if(SSD > 900){
-				SSD = 900
+			if(SSD > maxSSD){
+				SSD = maxSSD
 			}
 		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response) && (SSD>0) && (stop_type == 'stop')){
 			SSD = SSD - 50
@@ -294,6 +316,45 @@ var appendData = function(){
 		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == stim.correct_response) && (stim.stop_type == 'stop')){
 			jsPsych.data.addDataToLastTrial({stop_change_acc: 1})
 		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != stim.correct_response) && (stim.stop_type == 'stop')){
+			jsPsych.data.addDataToLastTrial({stop_change_acc: 0})
+		}
+	}  else if (trial_id == "stopping_respond_fixation"){	
+		console.log('here')
+		jsPsych.data.addDataToLastTrial({
+			stim: stim,
+			stim_num: stim_num,
+			stim_WTP: stim_WTP,
+			condition: stim_condition,
+			stim_WTP_order_number: stim_WTP_order_number,
+			correct_response: correct_response,
+			stop_type: stop_type,
+			SSD: SSD,
+			current_exp_stage: exp_phase,
+			stoppingTimeTracker: stoppingTimeTracker,
+			stoppingTracker: stoppingTracker
+		})
+		
+		if((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (SSD < maxSSD) && (stop_type == 'stop') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
+			SSD = SSD + 17 + 50
+			if(SSD > maxSSD){
+				SSD = maxSSD
+			}
+		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response) && (SSD>0) && (stop_type == 'stop') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
+			SSD = SSD - 50 + 17
+			if(SSD < 0){
+				SSD = 0
+			}
+		}
+	
+		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response) && (stop_type == 'go') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
+			jsPsych.data.addDataToLastTrial({no_stop_change_acc: 1})
+		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response) && (stop_type == 'go') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
+			jsPsych.data.addDataToLastTrial({no_stop_change_acc: 0})
+		}
+	
+		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press == stim.correct_response) && (stim.stop_type == 'stop') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
+			jsPsych.data.addDataToLastTrial({stop_change_acc: 1})
+		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != stim.correct_response) && (stim.stop_type == 'stop') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
 			jsPsych.data.addDataToLastTrial({stop_change_acc: 0})
 		}
 	}
@@ -319,6 +380,7 @@ var getForcedText = function(){
 }
 
 var getSSD = function(){
+	console.log('SSD = '+SSD)
 	return SSD
 
 }		
@@ -411,10 +473,13 @@ jsPsych.pluginAPI.preloadAudioFiles(audioFiles)
 
 var stim = ''
 var SSD = 250
+var maxSSD = 750
 var WTP = ''
 var exp_phase = 'start'
 var block_stims = []
 var forcedButtonTracker = []
+var stoppingTracker = []
+var stoppingTimeTracker = []
 var forced_sitms = []
 var WTP_sort = []
 var all_lists = [[8, 11, 12, 15],[9, 10, 13, 14],[46, 49, 50, 53],[47, 48, 51, 52],[16, 19, 20, 23],[17, 18, 21, 22],[38, 41, 42, 45],[39, 40, 43, 44],[1,2,3,4,5,6,7,24,25,26,27,28,29,30,31,32,33,34,35,36,37,54,55,56,57,58,59,60]]
@@ -429,6 +494,7 @@ var stimRightWTP = ''
 var forced_chosen = ''
 var forced_chosen_WTP = ''
 var forced_chosen_WTP_order = ''
+var forced_chosen_condition = ''
 
 
 /* ************************************ */
@@ -546,7 +612,10 @@ var stopping_intro_block = {
 		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
 	cont_key: [13],
-	timing_post_trial: 0
+	timing_post_trial: 0,
+	on_finish: function(){
+	forced_stims = createForcedStims()
+	}
 };
 
 var post_rating_intro_block = {
@@ -693,9 +762,6 @@ var stop_start_block = {
 	text: getStopFB,
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: function(){
-	exp_phase = 'pre_rating'
-	}
 };
 stopping_trials.push(stop_start_block)
 
@@ -715,7 +781,30 @@ for(var x= 0; x < stimArray.length; x++){
 	SS_delay:  getSSD, 
 	SS_trial_type: getStopType,
 	on_finish: appendData,
-	response_ends_trial: false
+	response_ends_trial: false,
+	on_start: function(){
+		stoppingTracker = []
+		stoppingTimeTracker = []
+		}
+	};
+	
+	var fixation_respond_block = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">+</font></div></div></div>',
+	is_html: true,
+	choices: [77,90],
+	data: {
+		trial_id: "stopping_respond_fixation",
+	},
+	timing_post_trial: 0,
+	timing_stim: 1000,
+	timing_response: 1000,
+	response_ends_trial: false,
+	on_finish: appendData,
+	on_start: function(){
+		stoppingTracker = []
+		stoppingTimeTracker = []
+		}
 	};
 	
 	var fixation_block = {
@@ -732,6 +821,7 @@ for(var x= 0; x < stimArray.length; x++){
 	};
 	
 	stopping_trials.push(stopping_block)
+	stopping_trials.push(fixation_respond_block)
 	stopping_trials.push(fixation_block)
 };
 
@@ -871,7 +961,7 @@ stop_change_food_experiment.push(pre_rating_node);
 stop_change_food_experiment.push(stopping_intro_block);
 stop_change_food_experiment.push(stopping_node);
 
-stop_change_food_experiment.push(BIS11_block)
+//stop_change_food_experiment.push(BIS11_block)
 
 stop_change_food_experiment.push(forced_choice_node);
 
