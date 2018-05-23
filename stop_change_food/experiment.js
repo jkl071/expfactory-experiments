@@ -342,7 +342,6 @@ var appendData = function(){
 				SSD = maxSSD
 			}
 		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response) && (SSD>0) && (stop_type == 'stop') && (jsPsych.data.getDataByTrialIndex(curr_trial-1).rt == -1)){
-			SSD = SSD - 50 + 17
 			if(SSD < 0){
 				SSD = 0
 			}
