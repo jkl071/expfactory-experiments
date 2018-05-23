@@ -37,6 +37,8 @@ if (ITI > 12000){
 if (exp_phase == 'stop_change_trials') {
 	ITI = ITI - 1000
 }
+
+	ITI = Math.round(ITI)
 	return ITI
 }
 
