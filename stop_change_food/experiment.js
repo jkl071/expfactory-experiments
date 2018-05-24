@@ -607,8 +607,8 @@ var stopping_intro_block = {
 	text: '<div class = bigbox><div class = picture_box>'+
 		  '<p class = block-text><font color="white">We will now move onto the stopping portion.</font></p>'+
 		  '<p class = block-text><font color="white">You will see items come up on the screen one at a time.</font></p>'+
-		  '<p class = block-text><font color="white">For every item, please press the M key, as quickly as possible.</font></p>'+
-		  '<p class = block-text><font color="white">On some trials, a tone will also occur concurrently or shortly after the food item. When you hear this tone, please try to press the Z key instead of the M key.</font></p>'+
+		  '<p class = block-text><font color="white">For every item, please press the M key, as quickly as possible with your right index finger.</font></p>'+
+		  '<p class = block-text><font color="white">On some trials, a tone will also occur concurrently or shortly after the food item. When you hear this tone please try to press the Z key with your left index finger, instead of the M key.</font></p>'+
 		  '<p class = block-text><font color="white">Do not slow down your responses to the food items in order to wait to for the tone.</font></p>'+
 		  '<p class = block-text><font color="white">Press<strong> enter</strong> to continue.</font></p>'+
 		  '</div></div>',
