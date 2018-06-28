@@ -29,7 +29,7 @@ ITI = randomExponential(1200) * 60 * 60 * 1000 // 1200 because mean is 3s, so 12
 if (ITI > 12000){
 	ITI = 12000
 
-} else if (ITI < 1000){
+} else if (ITI < 1001){
 	ITI = 1001
 
 }
