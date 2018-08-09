@@ -178,18 +178,6 @@ var appendData = function(){
 		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != jsPsych.data.getDataByTrialIndex(curr_trial).correct_response) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'go')){
 			jsPsych.data.addDataToLastTrial({go_acc: 0})
 		}
-	
-		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_presses[0] == jsPsych.data.getDataByTrialIndex(curr_trial).correct_response[0]) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
-			jsPsych.data.addDataToLastTrial({go_stop_acc: 1})
-		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_presses[0] != jsPsych.data.getDataByTrialIndex(curr_trial).correct_response[0]) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
-			jsPsych.data.addDataToLastTrial({go_stop_acc: 0})
-		}
-		
-		if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_presses[1] == jsPsych.data.getDataByTrialIndex(curr_trial).correct_response[1]) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
-			jsPsych.data.addDataToLastTrial({stop_acc: 1})
-		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_presses[1] != jsPsych.data.getDataByTrialIndex(curr_trial).correct_response[1]) && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_type == 'stop')){
-			jsPsych.data.addDataToLastTrial({stop_acc: 0})
-		}
 		
 	}
 	
@@ -216,7 +204,7 @@ document.addEventListener("keydown", function(e){
 /* ************************************ */
 var subject_ID = 469
 var practice_length = 24 // 24 
-var test_length = 1260 //1260 
+var test_length = 1200 //1260 
 var numBlocks = test_length/60
 var numTrialsPerBlock = test_length/numBlocks
 
@@ -228,8 +216,7 @@ var SSD = ''
 var rt_thresh = 1000;
 var missed_response_thresh = 0.15;
 var accuracy_thresh = 0.80;
-var star_respond_thresh = 0.80;
-var go_trials_mult_response_thresh = 0.20;
+var go_trials_mult_response_thresh = 0.10;
 
 
 
@@ -601,11 +588,10 @@ var practiceStopNode = {
 		practiceStopCount = practiceStopCount + 1
 		var sum_rt = 0;
 		var sumGo_correct = 0;
+		var sumStop_correct = 0;
 		var go_length = 0;
 		var go_multiple_responses = 0;
 		var num_responses = 0;
-		var sumStopGo_correct = 0;
-		var sumStop_correct = 0;
 		var stop_length = 0
 		
 		for (i = 0; i < data.length; i++) {
@@ -628,26 +614,24 @@ var practiceStopNode = {
 					num_responses += 1
 					sum_rt += data[i].rt
 				}
-				if (data[i].key_presses[0] == data[i].correct_response[0]){
-					sumStopGo_correct += 1
-				} 
-				if (data[i].key_presses[1] == data[i].correct_response[1]){
-					sumStop_correct += 1
+				
+				for (x = 0; x < data[i].key_presses.length; x++){
+					if ((data[i].correct_response.indexOf(data[i].key_presses[x]) != -1) && (data[i].key_presses.length == 2) && (data[i].key_presses[0] != data[i].key_presses[1])){
+						sumStop_correct += 1
+					} 
 				}
 				
 			}
 		}
 		var average_rt = sum_rt / num_responses;
 		var missed_responses = (go_length + stop_length - num_responses) / (go_length + stop_length)
-		var aveShapeRespondCorrect = (sumGo_correct + sumStopGo_correct) / (go_length + stop_length)
-		var aveStarRespondCorrect = sumStop_correct / stop_length
+		var aveShapeRespondCorrect = sumGo_correct / go_length 
 		var go_mult_responses = go_multiple_responses / go_length
 		
 		console.log('go length = ' + go_length)
 		console.log('stop length = ' +stop_length)
 		console.log('shape go correct = ' + sumGo_correct)
-		console.log('shape stop correct = ' + sumStopGo_correct)
-		console.log('star responded = ' + sumStop_correct)
+		console.log('star correct = '+ sumStop_correct)
 		console.log('go mult responses raw = ' + go_multiple_responses)
 		console.log('go mult responses percent = ' + go_mult_responses)
 		console.log(go_mult_responses > go_trials_mult_response_thresh)
@@ -656,7 +640,7 @@ var practiceStopNode = {
 		
 
 		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
-		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(average_rt) + " ms. 	Accuracy: " + Math.round(aveShapeRespondCorrect * 100)+ "%</strong>"
+		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(average_rt) + " ms. 	Accuracy for non-starred trials: " + Math.round(aveShapeRespondCorrect * 100)+ "%</strong>"
 
 		if (practiceStopCount == 1) {
 			if (aveShapeRespondCorrect < accuracy_thresh) {
@@ -681,10 +665,6 @@ var practiceStopNode = {
 				}
 			}
 			
-			if (aveStarRespondCorrect < star_respond_thresh){
-				feedback_text += 
-					'</p><p class = block_text>You have not been pressing the '+stop_change_shape_response[0]+  ' during trials when a star appears.  Please ensure that you are also pressing the ' + stop_change_shape_response[0] + ' when the star appears, in addition to responding quickly and accurately to the shapes.'
-			}
 			
 			if (go_mult_responses > go_trials_mult_response_thresh){
 				feedback_text +=
@@ -739,12 +719,12 @@ var testNode = {
 	loop_function: function(data) {
 		var sum_rt = 0;
 		var sumGo_correct = 0;
-		var go_length = 0;
-		var num_responses = 0;
-		var sumStopGo_correct = 0;
 		var sumStop_correct = 0;
-		var stop_length = 0
+		var go_length = 0;
 		var go_multiple_responses = 0;
+		var num_responses = 0;
+		var stop_length = 0
+		
 		for (i = 0; i < data.length; i++) {
 			if (data[i].stop_type == "go") {
 				go_length += 1
@@ -755,6 +735,7 @@ var testNode = {
 						sumGo_correct += 1
 					}
 				}
+				
 				if(data[i].key_presses.length > 1){
 					go_multiple_responses += 1
 				}
@@ -764,26 +745,24 @@ var testNode = {
 					num_responses += 1
 					sum_rt += data[i].rt
 				}
-				if (data[i].key_presses[0] == data[i].correct_response[0]){
-					sumStopGo_correct += 1
-				} 
-				if (data[i].key_presses[1] == data[i].correct_response[1]){
-					sumStop_correct += 1
+				
+				for (x = 0; x < data[i].key_presses.length; x++){
+					if ((data[i].correct_response.indexOf(data[i].key_presses[x]) != -1) && (data[i].key_presses.length == 2) && (data[i].key_presses[0] != data[i].key_presses[1])){
+						sumStop_correct += 1
+					} 
 				}
 				
 			}
 		}
 		var average_rt = sum_rt / num_responses;
 		var missed_responses = (go_length + stop_length - num_responses) / (go_length + stop_length)
-		var aveShapeRespondCorrect = (sumGo_correct + sumStopGo_correct) / (go_length + stop_length)
-		var aveStarRespondCorrect = sumStop_correct / stop_length
+		var aveShapeRespondCorrect = sumGo_correct / go_length 
 		var go_mult_responses = go_multiple_responses / go_length
 		
 		console.log('go length = ' + go_length)
 		console.log('stop length = ' +stop_length)
 		console.log('shape go correct = ' + sumGo_correct)
-		console.log('shape stop correct = ' + sumStopGo_correct)
-		console.log('star responded = ' + sumStop_correct)
+		console.log('star correct = '+ sumStop_correct)
 		console.log('go mult responses raw = ' + go_multiple_responses)
 		console.log('go mult responses percent = ' + go_mult_responses)
 		console.log(go_mult_responses > go_trials_mult_response_thresh)
@@ -792,7 +771,7 @@ var testNode = {
 		testCount += 1
 
 		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
-		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(average_rt) + " ms. Accuracy: " + Math.round(aveShapeRespondCorrect * 100)+ "%</strong>"
+		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(average_rt) + " ms. Accuracy for non-starred trials: " + Math.round(aveShapeRespondCorrect * 100)+ "%</strong>"
 
 		if (testCount == numBlocks) {
 			feedback_text += '</p><p class = block-text>Done with this test.'
@@ -822,10 +801,6 @@ var testNode = {
 				}
 			}
 			
-			if (aveStarRespondCorrect < star_respond_thresh){
-				feedback_text += 
-					'</p><p class = block_text>You have not been pressing the '+stop_change_shape_response[0]+  ' during trials when a star appears.  Please ensure that you are also pressing the ' + stop_change_shape_response[0] + ' when the star appears, in addition to responding quickly and accurately to the shapes.'
-			}
 			
 			if (go_mult_responses > go_trials_mult_response_thresh){
 				feedback_text +=
