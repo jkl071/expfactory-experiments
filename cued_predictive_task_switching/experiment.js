@@ -37,6 +37,55 @@ function getAllIndexesList(arr,val){
 }
 
 
+var getFeedback = function() {
+	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
+}
+
+
+var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
+var feedback_block = {
+	type: 'poldrack-single-stim',
+	data: {
+		exp_id: "cued_predictive_task_switching",
+		trial_id: "practice-no-stop-feedback"
+	},
+	choices: [13],
+	stimulus: getFeedback,
+	timing_post_trial: 0,
+	is_html: true,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true, 
+
+};
+
+
+var getCue = function(){
+	stim = stims.shift()
+	magnitude = stim.magnitude
+	color = stim.color
+	parity = stim.parity
+	size = stim.size
+	number = stim.number
+	whichQuadrant = stim.whichQuad
+	
+	cued_condition = stim.cued_condition
+	cued_dimension = stim.cued_dimension
+	predictive_condition = stim.predictive_condition
+	predictive_dimension = stim.predictive_dimension
+	
+	return '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">' + cued_dimension + '</font></div></div></div>'	
+}
+
+
+var getStim = function(){	
+		
+	return task_boards[whichQuadrant - 1][0] + preFileType + size + '_' + color + '_' + 
+	magnitude + '_' + parity + '_' + number + fileTypePNG + task_boards[whichQuadrant - 1][1]
+	
+}
+
+
 var createTrialTypes = function(numTrialsPerBlock){
 	// 1 or 3 is stay for predictive
 	// 2 or 4 is switch for predictive
@@ -218,13 +267,6 @@ var appendData = function(){
 		
 	} 
 }
-
-
-
-var response_combos =  [['high_small', 'high_blue','odd_small', 'odd_blue'],
-				   		['high_large', 'high_orange', 'odd_large', 'odd_orange'],
- 				   		['low_small', 'low_blue', 'even_small', 'even_blue'],
- 				   		['low_large', 'low_orange', 'even_large', 'even_orange']]
 
 /* ************************************ */
 /*    Define Experimental Variables     */
@@ -448,55 +490,6 @@ var fixation_block = {
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
-
-var getFeedback = function() {
-	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
-}
-
-
-var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
-var feedback_block = {
-	type: 'poldrack-single-stim',
-	data: {
-		exp_id: "cued_predictive_task_switching",
-		trial_id: "practice-no-stop-feedback"
-	},
-	choices: [13],
-	stimulus: getFeedback,
-	timing_post_trial: 0,
-	is_html: true,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true, 
-
-};
-
-
-var getCue = function(){
-	stim = stims.shift()
-	magnitude = stim.magnitude
-	color = stim.color
-	parity = stim.parity
-	size = stim.size
-	number = stim.number
-	whichQuadrant = stim.whichQuad
-	
-	cued_condition = stim.cued_condition
-	cued_dimension = stim.cued_dimension
-	predictive_condition = stim.predictive_condition
-	predictive_dimension = stim.predictive_dimension
-	
-	return '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">' + cued_dimension + '</font></div></div></div>'	
-}
-
-
-var getStim = function(){	
-		
-	return task_boards[whichQuadrant - 1][0] + preFileType + size + '_' + color + '_' + 
-	magnitude + '_' + parity + '_' + number + fileTypePNG + task_boards[whichQuadrant - 1][1]
-	
-}
-
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)

@@ -373,8 +373,7 @@ var practice_stop_intro = {
 	stimulus: '<div class = centerbox>'+
 			  	'<p class = block-text>We will now start the second practice for the experiment.</p>'+
 			  	'<p class = block-text>On some trials, a star will appear around the shape.  If the star appears, please press the <strong>' + stop_change_shape_response[0] + '</strong> in addition to the <strong>' + possible_responses[0][0] + ' </strong>or the <strong>' + possible_responses[2][0] + '</strong>.</p>'+
-				'<p class = block-text>Please continue to respond to each shape as quickly and as accurately as possible.</p>'+
-				'<p class = block-text>Do not slow down to wait for the star.</p>'+
+				'<p class = block-text>Please continue to respond to each stimuli as quickly and as accurately as possible.</p>'+
 				'<p class = block-text>Remember these rules before you proceed.</p>'+
 				prompt_text +
 			    '<p class = block-text>Press <strong> enter</strong> to begin.</p>'+
@@ -401,8 +400,7 @@ var test_intro = {
 		prompt_text +
 		'</p><p class = block-text>Remember these rules before you proceed, as they will no longer be presented during the trial.</p>'+
 		'<p class = block-text>If the star appears, please press the <strong>' + stop_change_shape_response[0] + '</strong> in addition to the <strong>' + possible_responses[0][0] + ' </strong>or the <strong>' + possible_responses[2][0] + '</strong>.</p>'+
-		'<p class = block-text>Please continue to respond to each shape as quickly and as accurately as possible.</p>'+
-		'<p class = block-text>Do not slow down to wait for the star.</p>'+
+		'<p class = block-text>Please continue to respond to each stimuli as quickly and as accurately as possible.</p>'+
 		'<p class = block-text>Press <strong> enter</strong> to begin.</p></div>',
 	is_html: true,
 	choices: [13],
@@ -531,10 +529,10 @@ var practiceNode = {
 			if (missed_responses > missed_response_thresh){
 				if(averageGo_correct < accuracy_thresh){
 				feedback_text +=
-					'</p><p class = block-text>We have detected a number of trials that <strong>required a response</strong>, where no response was made.  Please <strong>ensure that you are quickly responding </strong>to shapes that require a response.'
+					'</p><p class = block-text>We have detected a number of trials that <strong>required a response</strong>, where no response was made.  Please <strong>ensure that you are quickly responding </strong>to the shapes.'
 				} else {
 				feedback_text +=
-					'</p><p class = block-text>We have detected a number of trials that <strong>required a response</strong>, where no response was made.  Please <strong>ensure that you are quickly responding </strong>to shapes that require a response.<br>' +
+					'</p><p class = block-text>We have detected a number of trials that <strong>required a response</strong>, where no response was made.  Please <strong>ensure that you are quickly responding </strong>to the shapes.<br>' +
 					prompt_text
 				}
 			}
