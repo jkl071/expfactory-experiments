@@ -41,25 +41,6 @@ var getFeedback = function() {
 	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
 }
 
-
-var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
-var feedback_block = {
-	type: 'poldrack-single-stim',
-	data: {
-		exp_id: "cued_predictive_task_switching",
-		trial_id: "practice-no-stop-feedback"
-	},
-	choices: [13],
-	stimulus: getFeedback,
-	timing_post_trial: 0,
-	is_html: true,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true, 
-
-};
-
-
 var getCue = function(){
 	stim = stims.shift()
 	magnitude = stim.magnitude
@@ -486,6 +467,26 @@ var fixation_block = {
 	timing_stim: 500,
 	timing_response: 500
 };
+
+
+
+var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
+var feedback_block = {
+	type: 'poldrack-single-stim',
+	data: {
+		exp_id: "cued_predictive_task_switching",
+		trial_id: "practice-no-stop-feedback"
+	},
+	choices: [13],
+	stimulus: getFeedback,
+	timing_post_trial: 0,
+	is_html: true,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true, 
+
+};
+
 
 /* ************************************ */
 /*        Set up timeline blocks        */

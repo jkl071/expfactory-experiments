@@ -49,6 +49,11 @@ var getInstructFeedback = function() {
 		'</p></div>'
 }
 
+var getFeedback = function() {
+	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
+}
+
+
 var randomDraw = function(lst) {
   var index = Math.floor(Math.random() * (lst.length))
   return lst[index]
@@ -156,9 +161,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 		} else if (shape_matching_condition[2] == 'N'){
 			distractor_i = 'none'
 		}
-	
-		//console.log('probe = '+probe_i+', target = '+target_i+', distractor = '+distractor_i+', shape_cond: '+shape_matching_condition+', predictive_dimension: '+predictive_dimension+', which_quad: '+quadIndex)
-		
+			
 		stim = {
 			whichQuad: quadIndex,
 			predictive_condition: predictive_cond_array[i%2],
@@ -246,8 +249,14 @@ var credit_var = 0
 
 // task specific variables
 // Set up variables for stimuli
+var practice_len = 28
+var exp_len = 336 //336 must be divisible by 28
+var numTrialsPerBlock = 84; // divisible by 28
+var numTestBlocks = exp_len / numTrialsPerBlock
 
-var numTrialsPerBlock = 28;
+var accuracy_thresh = 0.80
+var practice_thresh = 3 // 3 blocks of 28 trials
+ 
 
 var predictive_conditions = [['switch','stay'],
 							 ['stay','switch']]
@@ -279,9 +288,7 @@ var practice_stims = createTrialTypes(numTrialsPerBlock)
 // probe-target, target-distractor, distractor-probe of the form
 // SDS where "S" = match and "D" = non-match, N = "Neutral"
 //['SSS', 'SDD', 'SNN', 'DSD', 'DDD', 'DDS', 'DNN']
-var practice_len = 28
-var exp_len = 280 
-var numblocks = 4
+
 
 
 var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = leftbox>'],['</div><div class = distractorbox>'],['</div><div class = rightbox>'],['</div></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
@@ -294,9 +301,14 @@ var mask_boards = [[['<div class = bigbox><div class = decision-top-left><div cl
 				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right><div class = leftbox>'],['</div><div class = rightbox>'],['</div></div><div class = decision-bottom-left></div></div>']],
 				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left><div class = leftbox>'],['</div><div class = rightbox>'],['</div></div></div>']]]
 
-var stims = createTrialTypes(28)
+var stims = createTrialTypes(practice_len)
 
-
+var prompt_text = '<ul list-text>'+
+				  	'<li>Top 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[0]+'es</li>' +
+					'<li>Bottom 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[2]+'es</li>' +
+					'<li>Yes: ' + possible_responses[0][0] + '</li>' +
+					'<li>No: ' + possible_responses[1][0] + '</li>' +
+				  '</ul>'
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -319,7 +331,7 @@ var test_img_block = {
 var post_task_block = {
    type: 'survey-text',
    data: {
-       trial_id: "post task questions"
+       trial_id: "post_task_questions"
    },
    questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
               '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
@@ -332,8 +344,25 @@ var response_keys =
 	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
 
 
+var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_block = {
+	type: 'poldrack-single-stim',
+	data: {
+		exp_id: "shape_matching_with_predictive_task_switching",
+		trial_id: "feedback_block"
+	},
+	choices: [13],
+	stimulus: getFeedback,
+	timing_post_trial: 0,
+	is_html: true,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true, 
+
+};
+
 var feedback_instruct_text =
-	'Welcome to the experiment. This experiment will take less than 20 minutes. Press <strong>enter</strong> to begin.'
+	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_instruct_block = {
 	type: 'poldrack-text',
 	data: {
@@ -344,6 +373,7 @@ var feedback_instruct_block = {
 	timing_post_trial: 0,
 	timing_response: 180000
 };
+
 /// This ensures that the subject does not read through the instructions too quickly.  If they do it too quickly, then we will go over the loop again.
 var instructions_block = {
 	type: 'poldrack-instructions',
@@ -366,7 +396,7 @@ var instructions_block = {
 		' </strong> if no.</p>'+
 		
 		'<p class = block-text>On some trials a red shape will also be presented on the left. '+
-		'You should ignore the red shape - your task is only to respond based on whether the white and green shapes are the same.</p>'+
+		'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
 		
 		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
 	],
@@ -415,9 +445,29 @@ var start_test_block = {
 		trial_id: "instruction"
 	},
 	timing_response: 180000,
-	text: '<div class = centerbox><p class = center-block-text>We will now start the test. Respond exactly like you did during practice. There will be three short breaks throughout the test.</p><p class = center-block-text>Press <strong>enter</strong> to begin the test.</p></div>',
+	text: '<div class = centerbox>'+
+			'<p class = block-text>We will now start the test portion</p>'+
+			
+			'<p class = block-text>Please judge if the green shape matches or mismatches the white shape, depending on which quadrant '+
+			'the shapes are in.</p>'+
+	
+			'<p class = block-text>When in the top two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
+			'  </strong>if yes, and the <strong>'+possible_responses[1][0]+'  </strong>if no.</p>'+
+	
+			'<p class = block-text>When in the bottom two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[2]+'es.</strong>'+
+			' Press the <strong>'+possible_responses[0][0]+' </strong> if yes, and the <strong>'+possible_responses[1][0]+
+			' </strong> if no.</p>'+
+	
+			'<p class = block-text>On some trials a red shape will also be presented on the left. '+
+			'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
+	
+			'<p class = block-text>Press Enter to continue.</p>'+
+		 '</div>',
 	cont_key: [13],
-	timing_post_trial: 1000
+	timing_post_trial: 1000,
+	on_finish: function(){
+		feedback_text = "We will now start the test portion. Press enter to begin."
+	}
 };
 
 var rest_block = {
@@ -434,7 +484,7 @@ var rest_block = {
 
 
 var practiceTrials = []
-//practiceTrials.push(feedback_block)
+practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
@@ -444,7 +494,7 @@ for (i = 0; i < practice_len; i++) {
 		data: {
 			trial_id: "practice_fixation"
 		},
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0,
 		on_finish: getNextStim
 	}
@@ -458,7 +508,7 @@ for (i = 0; i < practice_len; i++) {
 			"trial_id": "mask",
 		},
 		choices: 'none',
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0,
 		response_ends_trial: false
 	}
@@ -476,8 +526,9 @@ for (i = 0; i < practice_len; i++) {
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
 		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
 		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
-		timing_response: 200,
-		timing_feedback: 100, //500
+		timing_stim: 2000, //2000
+		timing_response: 2000,
+		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
 		on_finish: appendData
@@ -487,23 +538,73 @@ for (i = 0; i < practice_len; i++) {
 	practiceTrials.push(practice_block)
 }
 
+
 var practiceCount = 0
 var practiceNode = {
 	timeline: practiceTrials,
-	loop_function: function(data) {
-	practiceCount += 1
+	loop_function: function(data){
+		practiceCount += 1
+		stims = createTrialTypes(practice_len)
 	
-	if (practiceCount == 1){
-		stims = createTrialTypes(28)
-		return false
-	}
+		var sum_rt = 0
+		var sum_responses = 0
+		var correct = 0
+		var total_trials = 0
+	
+		for (var i = 0; i < data.length; i++){
+			if (data[i].trial_id == "practice_trial"){
+				total_trials+=1
+				if (data[i].rt != -1){
+					sum_rt += data[i].rt
+					sum_responses += 1
+					if (data[i].key_press == data[i].correct_response){
+						correct += 1
 		
+					}
+				}
+		
+			}
+	
+		}
+	
+		var accuracy = correct / total_trials
+		var missed_responses = (total_trials - sum_responses) / total_trials
+		var ave_rt = sum_rt / sum_responses
+	
+		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
+		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</strong>"
+
+		if (accuracy > accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Done with this practice. Press Enter to continue.' 
+			stims = createTrialTypes(numTrialsPerBlock)
+			return false
+	
+		} else if (accuracy < accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+		
+			if (practiceCount == practice_thresh){
+				feedback_text +=
+					'</p><p class = block-text>Done with this practice.' 
+					stims = createTrialTypes(numTrialsPerBlock)
+					return false
+			}
+			
+			feedback_text +=
+				'</p><p class = block-text>Redoing this practice. Press Enter to continue.' 
+			
+			return true
+		
+		}
+	
 	}
+	
 }
 
 
 var testTrials = []
-//testTrials.push(feedback_block)
+testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
@@ -513,7 +614,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		data: {
 			trial_id: "test_fixation"
 		},
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0,
 		on_finish: getNextStim
 	}
@@ -527,7 +628,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 			"trial_id": "test_mask",
 		},
 		choices: 'none',
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0,
 		response_ends_trial: false
 	}
@@ -541,8 +642,8 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 200, //2000
-		timing_response: 200, //2000
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -556,7 +657,53 @@ var testCount = 0
 var testNode = {
 	timeline: testTrials,
 	loop_function: function(data) {
+	testCount += 1
+	stims = createTrialTypes(numTrialsPerBlock)
+	console.log('hereherhe')
+	
+	var sum_rt = 0
+		var sum_responses = 0
+		var correct = 0
+		var total_trials = 0
+	
+		for (var i = 0; i < data.length; i++){
+			if (data[i].trial_id == "test_trial"){
+				total_trials+=1
+				if (data[i].rt != -1){
+					sum_rt += data[i].rt
+					sum_responses += 1
+					if (data[i].key_press == data[i].correct_response){
+						correct += 1
 		
+					}
+				}
+		
+			}
+	
+		}
+	
+		var accuracy = correct / total_trials
+		var missed_responses = (total_trials - sum_responses) / total_trials
+		var ave_rt = sum_rt / sum_responses
+	
+		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
+		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</strong>"
+		feedback_text += "</p><p class = block-text>You have completed: "+testCount+" out of "+numTestBlocks+" blocks of trials."
+		
+		if (accuracy < accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+		}
+	
+		if (testCount == numTestBlocks){
+			feedback_text +=
+					'</p><p class = block-text>Done with this test. Press Enter to continue.'
+			return false
+		} else {
+		
+			return true
+		}
+	
 	}
 }
 
