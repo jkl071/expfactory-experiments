@@ -8,7 +8,7 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'cued_predictive_task_switching', subject_ID: subject_ID})
+  jsPsych.data.addDataToLastTrial({exp_id: 'cued_predictive_task_switching'})
 }
 
 function getAllIndexes(arr, val) {
@@ -325,7 +325,7 @@ for (var i = 0; i < 1; i++){
 	all_dimensions.push(dimension3)
 	all_dimensions.push(dimension4)
 	
-	//all_dimensions = jsPsych.randomization.repeat(all_dimensions,1)
+	all_dimensions = jsPsych.randomization.repeat(all_dimensions,1)
 	
 }
 
