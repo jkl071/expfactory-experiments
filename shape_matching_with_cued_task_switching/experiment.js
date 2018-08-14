@@ -265,13 +265,14 @@ var credit_var = 0
 
 // task specific variables
 // Set up variables for stimuli
-var practice_len = 14
-var exp_len = 168 //336 must be divisible by 28
+var practice_len = 28
+var exp_len = 336 //336 must be divisible by 28
 var numTrialsPerBlock = 84; // divisible by 28
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
-var practice_thresh = 1 // 3 blocks of 28 trials
+var missed_thresh = 0.10
+var practice_thresh = 3 // 3 blocks of 28 trials
  
 
 var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
@@ -492,7 +493,7 @@ var rest_block = {
 };
 
 var getCue = function(){
-	return '<div class = centerbox><div class = picture_box><font size=22>'+cued_dimension+'</font></div></div>'
+	return '<div class = centerbox><div class = fixation><font size = 36>'+cued_dimension+'</font></div></div>'	
 
 }
 
@@ -507,7 +508,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		data: {
 			trial_id: "practice_cue"
 		},
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0
 	}
 	
@@ -516,11 +517,10 @@ for (i = 0; i < practice_len + 1; i++) {
 		stimulus: getMask,
 		is_html: true,
 		data: {
-			exp_id: "shape_matching_with_cued_task_switching",
 			"trial_id": "mask",
 		},
 		choices: 'none',
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0,
 		response_ends_trial: false
 	}
@@ -538,8 +538,8 @@ for (i = 0; i < practice_len + 1; i++) {
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
 		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
 		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
-		timing_stim: 200, //2000
-		timing_response: 200,
+		timing_stim: 2000, //2000
+		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
@@ -596,6 +596,10 @@ var practiceNode = {
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
 					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+			if (missed_responses > missed_thresh){
+				feedback_text +=
+						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
+			}
 		
 			if (practiceCount == practice_thresh){
 				feedback_text +=
@@ -625,9 +629,9 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 		is_html: true,
 		choices: 'none',
 		data: {
-			trial_id: "test_fixation"
+			trial_id: "test_cue"
 		},
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0
 	}
 	
@@ -636,11 +640,10 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 		stimulus: getMask,
 		is_html: true,
 		data: {
-			exp_id: "shape_matching_with_cued_task_switching",
 			"trial_id": "test_mask",
 		},
 		choices: 'none',
-		timing_response: 100, //500
+		timing_response: 500, //500
 		timing_post_trial: 0,
 		response_ends_trial: false
 	}
@@ -650,12 +653,11 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 		stimulus: getStim,
 		is_html: true,
 		data: {
-			exp_id: "shape_matching_with_cued_task_switching",
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 200, //2000
-		timing_response: 200, //2000
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -705,6 +707,11 @@ var testNode = {
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
 					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+		}
+		
+		if (missed_responses > missed_thresh){
+			feedback_text +=
+					'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
 		}
 	
 		if (testCount == numTestBlocks){

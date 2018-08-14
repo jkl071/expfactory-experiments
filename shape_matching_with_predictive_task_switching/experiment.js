@@ -80,7 +80,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 	shape_matching_trial_type_list.push(shape_matching_trial_types3)
 	shape_matching_trial_type_list.push(shape_matching_trial_types4)
 	
-	shape_matching_condition = shape_matching_trial_type_list[whichQuadStart - 1].pop()
+	shape_matching_condition = jsPsych.randomization.repeat(['DDD','SDD','DSD','DDS','SSS','SNN','DNN'], 1).pop()
 	predictive_dimension = predictive_dimensions[whichQuadStart - 1]
 	
 	var probe_i = randomDraw([1,2,3,4,5,6,7,8,9,10])
@@ -128,7 +128,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 		}
 	stims.push(first_stim)
 	
-	for (var i = 0; i < numTrialsPerBlock - 1; i++){
+	for (var i = 0; i < numTrialsPerBlock; i++){
 		whichQuadStart += 1
 		quadIndex = whichQuadStart%4
 		if (quadIndex == 0){
@@ -259,6 +259,7 @@ var numTrialsPerBlock = 84; // divisible by 28
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
+var missed_thresh = 0.10
 var practice_thresh = 3 // 3 blocks of 28 trials
  
 
@@ -287,7 +288,6 @@ for (var i = 1; i<11; i++) {
 }
 jsPsych.pluginAPI.preloadImages(shape_stim.concat(path+'mask.png'))
 
-var practice_stims = createTrialTypes(numTrialsPerBlock)
 // Trial types denoted by three letters for the relationship between:
 // probe-target, target-distractor, distractor-probe of the form
 // SDS where "S" = match and "D" = non-match, N = "Neutral"
@@ -489,7 +489,7 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len; i++) {
+for (i = 0; i < practice_len + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
 		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
@@ -587,6 +587,11 @@ var practiceNode = {
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
 					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					
+			if (missed_responses > missed_thresh){
+				feedback_text +=
+						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
+			}
 		
 			if (practiceCount == practice_thresh){
 				feedback_text +=
@@ -609,7 +614,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-for (i = 0; i < numTrialsPerBlock; i++) {
+for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
 		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
@@ -697,6 +702,11 @@ var testNode = {
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
 					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+		}
+		
+		if (missed_responses > missed_thresh){
+			feedback_text +=
+					'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
 		}
 	
 		if (testCount == numTestBlocks){
