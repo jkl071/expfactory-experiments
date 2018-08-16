@@ -222,7 +222,7 @@ var getCue = function(){
 
 	console.log('cued condition = '+cued_condition+', flanker_condition: '+ flanker_condition+', cued_dimension: '+cued_dimension+', correct_response: '+correct_response+', number: '+number+', flankers: '+flanking_number)
 	
-	return '<div class = centerbox><div class = flanker-text><font size = 36>'+cued_dimension+'</font></div></div>'	
+	return '<div class = centerbox><div class = cue-text><font size = 36>'+cued_dimension+'</font></div></div>'	
 
 }
 
