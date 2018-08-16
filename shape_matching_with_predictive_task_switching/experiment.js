@@ -352,7 +352,6 @@ var feedback_text = 'We will start practice. Press <strong>enter</strong> to beg
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "shape_matching_with_predictive_task_switching",
 		trial_id: "feedback_block"
 	},
 	choices: [13],
@@ -524,7 +523,6 @@ for (i = 0; i < practice_len + 1; i++) {
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		key_answer: getResponse,
 		data: {
-			exp_id: "shape_matching_with_predictive_task_switching",
 			trial_id: "practice_trial"
 			},
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
