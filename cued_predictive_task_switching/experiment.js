@@ -141,7 +141,7 @@ var getCue = function(){
 	predictive_condition = stim.predictive_condition
 	predictive_dimension = stim.predictive_dimension
 	
-	return '<div class = centerbox><div class = fixation><font size = 36>'+cued_dimension+'</font></div></div>'	
+	return '<div class = centerbox><div class = cue-text><font size = 36>'+cued_dimension+'</font></div></div>'	
 }
 
 

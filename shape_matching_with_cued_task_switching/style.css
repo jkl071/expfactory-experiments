@@ -25,6 +25,14 @@
  text-align: center;
 }
 
+.cue-text {
+	text-align: center;
+	font-size: 50px;
+	position: relative;
+    top: 50%; 
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
 
 .bigbox {
 width:100%;
