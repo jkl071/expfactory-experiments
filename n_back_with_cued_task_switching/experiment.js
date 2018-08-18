@@ -8,7 +8,7 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'n_back_with_predictive_task_switching'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'n_back_with_cued_task_switching'})
 }
 
 function assessPerformance() {
@@ -55,7 +55,6 @@ function assessPerformance() {
 }
 
 
-
 var getResponse = function() {
 	return correct_response
 }
@@ -77,106 +76,153 @@ var randomDraw = function(lst) {
 };
 
 var createTrialTypes = function(numTrialsPerBlock){
-	// 1 or 3 is stay for predictive
-	// 2 or 4 is switch for predictive
-	var whichQuadStart = jsPsych.randomization.repeat([1,2,3,4],1).pop()
-	//1 2
-	//4 3
-	var predictive_cond_array = predictive_conditions[whichQuadStart%2]
+	cued_dimension = cued_dimensions[Math.floor(Math.random() * 2)]
+	cued_condition = 'N/A'
+	n_back_condition = 'N/A'
+	probe = randomDraw(letters)
+	correct_response = possible_responses[1][1]
+		
 	
-	var n_back_trial_type_list = []
-	var n_back_trial_types1 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	var n_back_trial_types2 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	var n_back_trial_types3 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	var n_back_trial_types4 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	n_back_trial_type_list.push(n_back_trial_types1)
-	n_back_trial_type_list.push(n_back_trial_types2)
-	n_back_trial_type_list.push(n_back_trial_types3)
-	n_back_trial_type_list.push(n_back_trial_types4)
+	first_stim = {
+		n_back_condition: n_back_condition,
+		cued_dimension: cued_dimension[0],
+		cued_condition: cued_condition,
+		probe: probe,
+		correct_response: correct_response,
+		delay: cued_dimension[1]
+		
 	
-	predictive_dimensions = predictive_dimensions_list[0]
-
+	}	
 	
-	stims = []		
+	n_back_condition = jsPsych.randomization.repeat(['match','mismatch'],1).pop()
+	cued_condition = cued_conditions[Math.floor(Math.random() * 2)]
+	last_dim = cued_dimension[0]
+	if (cued_condition == "switch"){
+		cued_dimension = randomDraw(['1-back','2-back'].filter(function(y) {return $.inArray(y, [last_dim]) == -1}))
+	} else if (cued_condition == "stay"){
+		cued_dimension = last_dim
+	}
 	
-	for (var i = 0; i < numTrialsPerBlock + 2; i++){
-		quadIndex = whichQuadStart%4
-		if (quadIndex == 0){
-			quadIndex = 4
+	delay = parseInt(cued_dimension[0])
+	
+	if ((n_back_condition == "match") && (cued_dimension == '1-back')){
+		probe = randomDraw([first_stim.probe.toUpperCase(), first_stim.probe.toLowerCase()])
+		correct_response = possible_responses[0][1]
+	} else if ((n_back_condition == "mismatch") && (cued_dimension == '1-back')){
+		probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stim.probe.toLowerCase(), first_stim.probe.toUpperCase()]) == -1}))
+		correct_response = possible_responses[1][1]
+	
+	} else if (delay == 2) {
+		probe = randomDraw(letters)
+		correct_response = possible_responses[1][1]
+		n_back_condition = 'N/A'
+	
+	}
+	
+	second_stim = {
+		n_back_condition: n_back_condition,
+		cued_dimension: cued_dimension,
+		cued_condition: cued_condition,
+		probe: probe,
+		correct_response: correct_response,
+		delay: delay
+	}
+	
+	stims = []
+	
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/4; numIterations++){
+		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
+			for (var numCuedConds = 0; numCuedConds < cued_conditions.length; numCuedConds++){
+			
+				cued_dimension = 'N/A'
+				cued_condition = cued_conditions[numCuedConds]
+				n_back_condition = n_back_conditions[numNBackConds]
+				
+				stim = {
+					cued_dimension: cued_dimension,
+					cued_condition: cued_condition,
+					n_back_condition: n_back_condition
+					}
+			
+				stims.push(stim)
+			}
+			
+		}
+	}
+	
+	stims = jsPsych.randomization.repeat(stims,1)
+	stims.push(second_stim)
+	stims.push(first_stim)
+	
+	stim_len = stims.length
+	
+	new_stims = []
+	for (var i = 0; i < stim_len; i++){
+		if (i < 2){
+			stim = stims.pop()
+			n_back_condition = stim.n_back_condition
+			cued_dimension = stim.cued_dimension
+			cued_condition = stim.cued_condition
+			probe = stim.probe
+			correct_response = stim.correct_response
+			delay = stims.delay
+		} else if (i > 1){
+			stim = stims.pop()
+			n_back_condition = stim.n_back_condition
+			cued_condition = stim.cued_condition
+			
+			last_dim = cued_dimension
+			if (cued_condition == "switch"){
+				cued_dimension = randomDraw(['1-back','2-back'].filter(function(y) {return $.inArray(y, [last_dim]) == -1}))
+			} else if (cued_condition == "stay"){
+				cued_dimension = last_dim
+			}
+	
+			delay = parseInt(cued_dimension[0])
+		
+			if (n_back_condition == "match"){
+				probe = randomDraw([new_stims[i - delay].probe.toUpperCase(), new_stims[i - delay].probe.toLowerCase()])
+				correct_response = possible_responses[0][1]
+			} else if (n_back_condition == "mismatch"){
+				probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [new_stims[i - delay].probe.toLowerCase(), new_stims[i - delay].probe.toUpperCase()]) == -1}))
+				correct_response = possible_responses[1][1]
+		
+			}
 		}
 		
-		
-		predictive_condition = predictive_cond_array[i%2]	
-		predictive_dimension = predictive_dimensions[quadIndex - 1][0]
-		delay = predictive_dimensions[quadIndex - 1][1]
-		
-		if ( i == 0){
-			n_back_cond = 'N/A'
-			probe = randomDraw(letters)
-			correct_response = possible_responses[1][1]
-			predictive_dimension = 'N/A'
-		
-		} else if ( i == 1){
-			n_back_cond = jsPsych.randomization.repeat(['match','mismatch'],1).pop()
-			
-			if ((n_back_cond == "match") && (predictive_dimension == '1-back')){
-				probe = randomDraw([stims[i - delay].probe.toUpperCase(), stims[i - delay].probe.toLowerCase()])
-				correct_response = possible_responses[0][1]
-			} else if ((n_back_cond == "mismatch") && (predictive_dimension == '1-back')){
-				probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [stims[i - delay].probe.toLowerCase(), stims[i - delay].probe.toUpperCase()]) == -1}))
-				correct_response = possible_responses[1][1]
-			
-			} else if (delay == 2) {
-				probe = randomDraw(letters)
-			    correct_response = possible_responses[1][1]
-			    predictive_dimension = 'N/A'
-			    n_back_cond = 'N/A'
-			
-			}
-		
-		} else if ( i > 1){
-			n_back_cond = n_back_trial_type_list[quadIndex - 1].pop()
-			
-			if (n_back_cond == "match"){
-				probe = randomDraw([stims[i - delay].probe.toUpperCase(), stims[i - delay].probe.toLowerCase()])
-				correct_response = possible_responses[0][1]
-			} else if (n_back_cond == "mismatch"){
-				probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [stims[i - delay].probe.toLowerCase(), stims[i - delay].probe.toUpperCase()]) == -1}))
-				correct_response = possible_responses[1][1]
-			
-			}
-		}
-	
 		stim = {
-			whichQuad: quadIndex,
-			n_back_condition: n_back_cond,
-			predictive_dimension: predictive_dimension,
-			predictive_condition: predictive_condition,
+			n_back_condition: n_back_condition,
+			cued_dimension: cued_dimension,
+			cued_condition: cued_condition,
 			probe: probe,
 			correct_response: correct_response,
 			delay: delay
 		}
 		
-		stims.push(stim)	
-		whichQuadStart += 1
-	}
-	return stims
+		new_stims.push(stim)	
+		}
+	return new_stims
 }
 
 
 var getStim = function(){	
+		
+	return task_boards[0] + probe
+		   task_boards[1]
+	
+}
+
+var getCueStim = function(){
 	stim = stims.shift()
-	whichQuadrant = stim.whichQuad
 	n_back_condition = stim.n_back_condition
-	predictive_dimension = stim.predictive_dimension
-	predictive_condition = stim.predictive_condition
+	cued_dimension = stim.cued_dimension
+	cued_condition = stim.cued_condition
 	probe = stim.probe
 	correct_response = stim.correct_response
 	delay = stim.delay
-		
-	return task_boards[whichQuadrant - 1][0] + probe
-		   task_boards[whichQuadrant - 1][1]
-	
+
+	return task_boards[0] + cued_dimension
+		   task_boards[1]
 }
 
 var getResponse =  function(){
@@ -196,18 +242,16 @@ var appendData = function(){
 	}
 		
 	jsPsych.data.addDataToLastTrial({
-		whichQuadrant: whichQuadrant,
 		n_back_condition: n_back_condition,
-		predictive_dimension: predictive_dimension,
-		predictive_condition: predictive_condition,
+		cued_dimension: cued_dimension,
+		cued_condition: cued_condition,
 		probe: probe,
 		correct_response: correct_response,
 		delay: delay,
 		current_trial: current_trial,
-		current_block: current_block	
+		current_block: current_block
 	})
-	
-	
+		
 	if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response){
 		jsPsych.data.addDataToLastTrial({
 			correct_trial: 1,
@@ -219,6 +263,8 @@ var appendData = function(){
 		})
 	
 	}
+				
+	 
 }
 
 /* ************************************ */
@@ -231,50 +277,42 @@ var credit_var = 0
 
 
 var practice_len = 8 // 24
-var exp_len = 16 //320 must be divisible by 8
+var exp_len = 32 //320 must be divisible by 8
 var numTrialsPerBlock = 16 // must be divisible by 8
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 
-var practice_thresh = 4 // 3 blocks of 24 trials
+var practice_thresh = 1 // 3 blocks of 24 trials
 
-var pathSource = "/static/experiments/n_back_with_predictive_task_switching/images/"
+var pathSource = "/static/experiments/n_back_with_cued_task_switching/images/"
 var fileTypePNG = ".png'></img>"
-var preFileType = "<img class = center src='/static/experiments/n_back_with_predictive_task_switching/images/"
+var preFileType = "<img class = center src='/static/experiments/n_back_with_cued_task_switching/images/"
 
 
 
 var n_back_conditions = ['match','mismatch']
-var predictive_conditions = [['stay','switch'],
-							 ['switch','stay']]
-
-var predictive_dimensions_list = jsPsych.randomization.repeat([[['1-back',1], ['1-back',1], ['2-back',2], ['2-back',2]],
-							 								   [['2-back',2], ['2-back',2], ['1-back',1], ['1-back',1]]],1)
+var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
+var cued_dimensions = jsPsych.randomization.repeat([['1-back',1],['2-back',2]],1)
+var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 							 
 var letters = 'bBdDgGtTvV'.split("")
 							 
 
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
 
 var prompt_text = '<ul list-text>'+
-				  	'<li>Top 2 quadrants: '+predictive_dimensions[0]+'</li>' +
-				  	'<li>Top 2 quadrants: '+predictive_dimensions[2]+'</li>' +
+				  	'<li>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</li>' +
 				  '</ul>'
-				  
+
 var current_trial = 0
 var current_block = 0
-
 /* ************************************ */
 /*          Define Game Boards          */
 /* ************************************ */
 
-var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = n_back_letter><div class = fixation>'],['</div></div></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right><div class = n_back_letter><div class = fixation>'],['</div></div></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right><div class = n_back_letter><div class = fixation>'],['</div></div></div><div class = decision-bottom-left></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left><div class = n_back_letter><div class = fixation>'],['</div></div></div></div>']]]
+var task_boards = [['<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'],['</font></div></div></div>']]
 
 
 
@@ -333,10 +371,7 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>When in the top two, do a '+predictive_dimensions[0]+'.</p> '+
-			'<p class = block-text>When in the bottom two, do a '+predictive_dimensions[2]+'.</p> '+
 			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</p> '+
-			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -378,9 +413,8 @@ var start_test_block = {
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
 			
-			'<p class = block-text>When in the top two, do a '+predictive_dimensions[0]+'.</p> '+
-			'<p class = block-text>When in the bottom two, do a '+predictive_dimensions[2]+'.</p> '+
-	
+			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</p> '+
+				
 			'<p class = block-text>Press Enter to continue.</p>'+
 		 '</div>',
 	cont_key: [13],
@@ -408,7 +442,7 @@ var feedback_text = 'We will now start with a practice session. In this practice
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "n_back_with_predictive_task_switching",
+		exp_id: "n_back_with_cued_task_switching",
 		trial_id: "practice-no-stop-feedback"
 	},
 	choices: [13],
@@ -428,7 +462,19 @@ var feedback_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len; i++) {
+for (i = 0; i < practice_len + 2; i++) {
+	var cue_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getCueStim,
+		is_html: true,
+		data: {
+			trial_id: "practice_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000
+	};
 	
 	var practice_block = {
 		type: 'poldrack-categorize',
@@ -450,6 +496,7 @@ for (i = 0; i < practice_len; i++) {
 		on_finish: appendData
 	}
 	//practiceTrials.push(fixation_block)
+	practiceTrials.push(cue_block)
 	practiceTrials.push(practice_block)
 }
 
@@ -522,7 +569,19 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-for (i = 0; i < numTrialsPerBlock; i++) {
+for (i = 0; i < numTrialsPerBlock + 2; i++) {
+	var cue_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getCueStim,
+		is_html: true,
+		data: {
+			trial_id: "test_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000
+	};
 	
 	var test_block = {
 		type: 'poldrack-single-stim',
@@ -538,6 +597,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		response_ends_trial: false,
 		on_finish: appendData
 	}
+	testTrials.push(cue_block)
 	testTrials.push(test_block)
 }
 
@@ -604,14 +664,14 @@ var testNode = {
 /*          Set up Experiment           */
 /* ************************************ */
 
-var n_back_with_predictive_task_switching_experiment = []
+var n_back_with_cued_task_switching_experiment = []
 
-n_back_with_predictive_task_switching_experiment.push(instruction_node);
+n_back_with_cued_task_switching_experiment.push(instruction_node);
 
-n_back_with_predictive_task_switching_experiment.push(practiceNode);
+n_back_with_cued_task_switching_experiment.push(practiceNode);
 
-n_back_with_predictive_task_switching_experiment.push(start_test_block);
+n_back_with_cued_task_switching_experiment.push(start_test_block);
 
-n_back_with_predictive_task_switching_experiment.push(testNode);
+n_back_with_cued_task_switching_experiment.push(testNode);
 
-n_back_with_predictive_task_switching_experiment.push(end_block);
+n_back_with_cued_task_switching_experiment.push(end_block);

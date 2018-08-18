@@ -242,6 +242,18 @@ var appendData = function(){
 		
 	})
 	
+	if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 1,
+		})
+	
+	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 0,
+		})
+	
+	}
+	
 	if (trial_id == 'practice_trial'){
 		if (current_trial <= practice_len){
 			getNextStim()

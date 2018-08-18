@@ -286,7 +286,7 @@ var appendData = function(){
 	
 	if (trial_id == 'practice_trial'){
 		current_block = practiceCount
-	}else{
+	} else if (trial_id == 'test_trial'){
 		current_block = testCount
 	}
 	
@@ -304,6 +304,18 @@ var appendData = function(){
 		current_trial: current_trial
 		
 	})
+	
+	if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 1,
+		})
+	
+	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 0,
+		})
+	
+	}
 }
 
 
@@ -332,17 +344,17 @@ var getTrainingStim = function(){
 }
 
 var getDirectedCueStim = function(){
-	return '<div class = bigbox><div class = centerbox><div class = cue-text>'+cue+'</font></div></div></div>'	
+	return '<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'+cue+'</font></div></div></div>'	
 
 }
 
 var getSwitchingCueStim = function(){
-	return '<div class = bigbox><div class = centerbox><div class = cue-text>'+cued_dimension+'</font></div></div></div>'	
+	return '<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'+cued_dimension+'</font></div></div></div>'	
 
 }
 
 var getProbeStim = function(){
-	return '<div class = bigbox><div class = centerbox><div class = cue-text>'+probe+'</font></div></div></div>'	
+	return '<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'+probe+'</font></div></div></div>'	
 
 }
 
