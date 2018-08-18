@@ -1,0 +1,153 @@
+.display_stage {
+    position: fixed;
+    background: black;
+    left: 5vw;
+    top: 2vh;
+    height: 94vh;
+    width: 90vw;
+    border-radius: 15px;
+    border: 1vh solid #D0D0D0;
+    z-index: 0;
+}
+
+.display_stage > div, .display_stage > p {
+  color: white;
+}
+
+.cue-text {
+	text-align: center;
+	font-size: 50px;
+	position: relative;
+    top: 50%; 
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
+
+.decision-top-left {
+ width: 25vw;
+ height: 25vh;
+ position:absolute;
+ top:25%;
+ left:25%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: black;
+ text-align: center;
+}
+
+.decision-bottom-left {
+ width: 25vw;
+ height: 25vh;
+ position:absolute;
+ top:75%;
+ left:25%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: black;
+ text-align: center;
+}
+
+/*values are 30% for both left right width and height*/
+
+
+.decision-top-right {
+ height: 25vh;
+ width: 25vw;
+ position:absolute;
+ top:25%;
+ left:75%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: black;
+ text-align: center;
+}
+
+.decision-bottom-right {
+ height: 25vh;
+ width: 25vw;
+ position:absolute;
+ top:75%;
+ left:75%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: black;
+ text-align: center;
+}
+
+img.center {
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
+}
+
+.n_back_letter {
+width: 20vw;
+height: 20vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-50%,-50%);
+}
+
+
+.picture_box {
+ width: 60%;
+ height: 60%;
+ position:absolute;
+ top:50%;
+ left:50%;
+ transform: translate(-50%,-50%);
+ margin-right:0%;
+ background-color: black;
+ text-align: center;
+}
+
+.fb_box {
+  width:35vw;
+  height: 20vh;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-175%);
+}
+
+.bigbox {
+width:100%;
+margin: auto; 
+min-height: 100%;
+position:absolute;
+top:0%;
+left:0%;
+margin-right:0%;
+background-color: black;
+text-align: center;
+}
+
+
+/* As above but centeblack instead of justified. Good for instructions with few lines */
+.center-block-text {
+ width:100%;
+ height 100vw;
+ text-align: center;
+ margin: 0 auto;
+ margin-bottom: 1em;
+ font-size: 26px;
+ line-height: 120%;
+}
+
+
+
+/* fixation should be used like this in: '<div class = centerbox><div class = fixation>+</div></div>'*/
+.fixation {
+ text-align: center;
+ font-size: 100px;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
