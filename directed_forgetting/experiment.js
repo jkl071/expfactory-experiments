@@ -441,7 +441,17 @@ var instructions_block = {
 		trial_id: 'instruction'
 	},
 	pages: [
-		'<div class = centerbox><p class = block-text>In this experiment, on each trial you will be presented with 6 letters. You must memorize all 6 letters. </p><p class = block-text>After the presentation of 6 letters, there will be a short delay. You will then be presented with a cue, either <strong>TOP</strong> or <strong>BOT</strong>. This will instruct you to <strong>forget</strong> the 3 letters located at either the top or bottom (respectively) of the screen.</p> <p class = block-text> The three remaining letters that you must remember are called your <strong>memory set</strong>. You should remember these three letters while forgetting the other three.</p><p class = block-text>You will then be presented with a single letter. Respond with the <strong> Left</strong> arrow key if it is in the memory set, and the <strong> Right </strong> arrow key if it was not in the memory set.</p><p class = block-text>Please make sure you understand these instructions before continuing. You will see an example trial after you end the instructions.</p></div>',
+		'<div class = centerbox>'+
+		'<p class = block-text>In this experiment, on each trial you will be presented with '+
+		'6 letters. You must memorize all 6 letters. </p><p class = block-text>After the '+
+		'presentation of 6 letters, there will be a short delay. You will then be presented with a cue, '+
+		'either <strong>TOP</strong> or <strong>BOT</strong>. This will instruct you to <strong>forget</strong> the '+
+		'3 letters located at either the top or bottom (respectively) of the screen.</p> <p class = block-text> '+
+		'The three remaining letters that you must remember are called your <strong>memory set</strong>. You should remember '+
+		'these three letters while forgetting the other three.</p><p class = block-text>You will then be presented with a single '+
+		'letter. Respond with the <strong> Left</strong> arrow key if it is in the memory set, and the <strong> Right </strong> arrow '+
+		'key if it was not in the memory set.</p><p class = block-text>Please make sure you understand these instructions '+
+		'before continuing. You will see an example trial after you end the instructions.</p></div>',
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
