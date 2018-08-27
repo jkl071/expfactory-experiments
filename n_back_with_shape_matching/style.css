@@ -14,13 +14,34 @@
   color: white;
 }
 
-.cue-text {
-	text-align: center;
-	font-size: 50px;
-	position: relative;
-    top: 50%; 
-    transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
+.fixation {
+ text-align: center;
+ font-size: auto;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
+
+.cue_text {
+ text-align: center;
+ font-size: auto;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
+
+
+.distractor_text {
+  width: 10%;
+  height: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: none;
+  text-align: center;
+  transform: translate(-70%, -70%);
 }
 
 img.center {
@@ -87,16 +108,4 @@ text-align: center;
  margin-bottom: 1em;
  font-size: 26px;
  line-height: 120%;
-}
-
-
-
-/* fixation should be used like this in: '<div class = centerbox><div class = fixation>+</div></div>'*/
-.fixation {
- text-align: center;
- font-size: 100px;
- position: relative;
- top: 50%; 
- transform: translateY(-50%);
- -webkit-transform: translateY(-50%);
 }
