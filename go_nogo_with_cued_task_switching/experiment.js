@@ -2,8 +2,9 @@
 /* Define helper functions */
 /* ************************************ */
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_predictive_task_switching'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_cued_task_switching'})
 }
+
 
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
@@ -81,7 +82,7 @@ var randomDraw = function(lst) {
   return lst[index]
 }
 
-var getCorrectResponse = function(number, predictive_dimension, go_nogo_condition){
+var getCorrectResponse = function(number, cued_dimension, go_nogo_condition){
 	if (number > 5){
 		var magnitude = 'high'
 	} else if (number < 5){
@@ -94,18 +95,18 @@ var getCorrectResponse = function(number, predictive_dimension, go_nogo_conditio
 		parity = 'odd'
 	}
 	
-	par_ind = predictive_dimensions_list[0].values.indexOf(parity)
+	par_ind = cued_dimensions_list[0].values.indexOf(parity)
 	if (par_ind == -1){
-		par_ind = predictive_dimensions_list[1].values.indexOf(parity)
-		mag_ind = predictive_dimensions_list[0].values.indexOf(magnitude)
+		par_ind = cued_dimensions_list[1].values.indexOf(parity)
+		mag_ind = cued_dimensions_list[0].values.indexOf(magnitude)
 	} else {
-		mag_ind = predictive_dimensions_list[1].values.indexOf(magnitude)
+		mag_ind = cued_dimensions_list[1].values.indexOf(magnitude)
 	}
 	
 	
-	if (predictive_dimension == 'magnitude'){
+	if (cued_dimension == 'magnitude'){
 		correct_response = possible_responses[mag_ind][1]
-	} else if (predictive_dimension == 'parity'){
+	} else if (cued_dimension == 'parity'){
 		correct_response = possible_responses[par_ind][1]
 	}
 	
@@ -117,134 +118,130 @@ var getCorrectResponse = function(number, predictive_dimension, go_nogo_conditio
 
 }
 
-							 
+	 
 var createTrialTypes = function(numTrialsPerBlock){
-	var whichQuadStart = jsPsych.randomization.repeat([1,2,3,4],1).pop()
-	var predictive_cond_array = predictive_conditions[whichQuadStart%2]
-	var predictive_dimensions = [predictive_dimensions_list[0].dim,
-								 predictive_dimensions_list[0].dim,
-								 predictive_dimensions_list[1].dim,
-								 predictive_dimensions_list[1].dim]
-		
-	numbers_list = [[6,8],[7,9],[2,4],[1,3]]
-	numbers = [1,2,3,4,6,7,8,9]	
+	go_nogo_trial_types = ['go','go','go','go','stop']
 	
-	var go_nogo_trial_type_list = []
-	var go_nogo_trial_types1 = jsPsych.randomization.repeat(['go','go','go','go','stop'], numTrialsPerBlock/20)
-	var go_nogo_trial_types2 = jsPsych.randomization.repeat(['go','go','go','go','stop'], numTrialsPerBlock/20)
-	var go_nogo_trial_types3 = jsPsych.randomization.repeat(['go','go','go','go','stop'], numTrialsPerBlock/20)
-	var go_nogo_trial_types4 = jsPsych.randomization.repeat(['go','go','go','go','stop'], numTrialsPerBlock/20)
-	go_nogo_trial_type_list.push(go_nogo_trial_types1)
-	go_nogo_trial_type_list.push(go_nogo_trial_types2)
-	go_nogo_trial_type_list.push(go_nogo_trial_types3)
-	go_nogo_trial_type_list.push(go_nogo_trial_types4)
+	cued_dimension = cued_dimensions[Math.floor(Math.random() * 2)]
+	go_nogo_condition = go_nogo_trial_types[Math.floor(Math.random() * 5)]
+	numbers = [1,2,3,4,6,7,8,9]		
 	
-	predictive_dimension = predictive_dimensions[whichQuadStart - 1]
-	
-	number = numbers[Math.floor((Math.random() * 8))]
-	go_nogo_condition = jsPsych.randomization.repeat(['go','go','go','go','stop'],1).pop()
-	
-	if (go_nogo_condition == 'go'){
-		number_color = 'green'
-	} else {
-		number_color = 'red'	
+	first_stim = {
+		cued_dimension: cued_dimension,
+		cued_condition: 'N/A',
+		go_nogo_condition: go_nogo_condition
 	}
 	
-	response_arr = getCorrectResponse(number,predictive_dimension, go_nogo_condition)
-	
 	var stims = []
-	
-	var first_stim = {
-		whichQuadrant: whichQuadStart,
-		predictive_condition: 'N/A',
-		predictive_dimension: predictive_dimension,
-		go_nogo_condition: go_nogo_condition,
-		number: number,
-		number_color: number_color,
-		magnitude: response_arr[1],
-		parity: response_arr[2],
-		correct_response: response_arr[0]
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/10; numIterations++){
+		for (var numgo_nogoConds = 0; numgo_nogoConds < go_nogo_trial_types.length; numgo_nogoConds++){
+			for (var numCuedConds = 0; numCuedConds < cued_conditions.length; numCuedConds++){
+			
+				cued_dimension = 'N/A'
+				cued_condition = cued_conditions[numCuedConds]
+				go_nogo_condition = go_nogo_trial_types[numgo_nogoConds]
+				
+				
+				stim = {
+					cued_dimension: cued_dimension,
+					cued_condition: cued_condition,
+					go_nogo_condition: go_nogo_condition
+					}
+			
+				stims.push(stim)
+			}
+			
 		}
+	}
+	
+	stims = jsPsych.randomization.repeat(stims,1)
 	stims.push(first_stim)
+	stim_len = stims.length
 	
-	for (var i = 0; i < numTrialsPerBlock; i++){
-		whichQuadStart += 1
-		quadIndex = whichQuadStart%4
-		if (quadIndex == 0){
-			quadIndex = 4
-		}
-		go_nogo_condition = go_nogo_trial_type_list[quadIndex - 1].pop()
-		predictive_dimension = predictive_dimensions[quadIndex - 1]
-		number = numbers[Math.floor((Math.random() * 8))]
+	var new_stims = []
+	for(var i = 0; i < stim_len; i++){
 		
+		if (i > 0){
+			last_dim = cued_dimension 
+		} 
+		
+		stim = stims.pop()
+		cued_condition = stim.cued_condition
+		go_nogo_condition = stim.go_nogo_condition
+		cued_dimension = stim.cued_dimension
+		
+		if (cued_condition == "switch"){
+			cued_dimension = randomDraw(['magnitude','parity'].filter(function(y) {return $.inArray(y, [last_dim]) == -1}))
+		} else if (cued_condition == "stay"){
+			cued_dimension = last_dim
+		}
+		//console.log('condition = '+cued_condition+', go_nogo_condition: '+ go_nogo_condition+', cued_dimension: '+cued_dimension)
+		
+		number = numbers[Math.floor((Math.random() * 8))]
 		if (go_nogo_condition == 'go'){
 			number_color = 'green'
 		} else {
-			number_color = 'red'	
+			number_color = 'red'
 		}
 	
-		response_arr = getCorrectResponse(number,predictive_dimension, go_nogo_condition)
+		response_arr = getCorrectResponse(number, cued_dimension, go_nogo_condition)
 		
+			
 		stim = {
-			whichQuadrant: quadIndex,
-			predictive_condition: predictive_cond_array[i%2],
-			predictive_dimension: predictive_dimension,
+			cued_dimension: cued_dimension,
+			cued_condition: cued_condition,
 			go_nogo_condition: go_nogo_condition,
-			number: number,
-			number_color: number_color,
 			magnitude: response_arr[1],
 			parity: response_arr[2],
-			correct_response: response_arr[0]
+			correct_response: response_arr[0],
+			number: number,
+			number_color: number_color
 			}
 		
-		stims.push(stim)
+		new_stims.push(stim)
 		
-		
-	}
 
-	return stims	
+	}
+	return new_stims	
 }
-	
-var getNextStim = function(){
-	stim = stims.shift()
-	predictive_condition = stim.predictive_condition
-	predictive_dimension = stim.predictive_dimension
-	go_nogo_condition = stim.go_nogo_condition
-	number = stim.number
-	number_color = stim.number_color
-	correct_response = stim.correct_response
-	whichQuadrant = stim.whichQuadrant
-	magnitude = stim.magnitude
-	parity = stim.parity
-	
-	/*console.log('# = '+number+', other_# = '+flanking_number+', flank_cond = '+go_nogo_condition+
-				', whichQuad = '+whichQuadrant+', pred_dim = '+predictive_dimension+
-				'pred_cond = '+predictive_condition+ ', correct_response = '+correct_response)
-	*/
-}
+
 
 var getResponse = function() {
 	return correct_response
 }
 
-
 var getStim = function(){
 	
-	return task_boards[whichQuadrant - 1][0] + 
+	return task_boards[0] + 
 				number_color +
-		   task_boards[whichQuadrant - 1][1] +
+		   task_boards[1] +
 				number +
-		   task_boards[whichQuadrant - 1][2]
-		   		   
-	
+		   task_boards[2]
 }
+	
+		
+var getCue = function(){
+	stim = stims.shift()
+	cued_condition = stim.cued_condition
+	cued_dimension = stim.cued_dimension
+	go_nogo_condition = stim.go_nogo_condition
+	number = stim.number
+	number_color = stim.number_color
+	correct_response = stim.correct_response
+	magnitude = stim.magnitude
+	parity = stim.parity
 
+	//console.log('cued condition = '+cued_condition+', go_nogo_condition: '+ go_nogo_condition+', cued_dimension: '+cued_dimension+', correct_response: '+correct_response+', number: '+number+', go_nogos: '+flanking_number)
+	
+	return '<div class = centerbox><div class = cue-text><font size = 36>'+cued_dimension+'</font></div></div>'	
+
+}
 
 var appendData = function(){
 	curr_trial = jsPsych.progress().current_trial_global
 	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
-	current_trial+=1
 	
+	current_trial+=1
 	
 	if (trial_id == 'practice_trial'){
 		current_block = practiceCount
@@ -253,17 +250,16 @@ var appendData = function(){
 	}
 	
 	jsPsych.data.addDataToLastTrial({
-		predictive_condition: predictive_condition,
-		predictive_dimension: predictive_dimension,
+		cued_condition: cued_condition,
+		cued_dimension: cued_dimension,
 		go_nogo_condition: go_nogo_condition,
 		number: number,
 		number_color: number_color,
 		correct_response: correct_response,
-		whichQuadrant: whichQuadrant,
-		magnitude: magnitude,
-		parity: parity,
+		current_block: current_block,
 		current_trial: current_trial,
-		current_block: current_block
+		magnitude: magnitude,
+		parity: parity
 		
 	})
 	
@@ -278,6 +274,9 @@ var appendData = function(){
 		})
 	
 	}
+	
+	
+	
 }
 
 /* ************************************ */
@@ -292,57 +291,54 @@ var credit_var = 0
 // Set up variables for stimuli
 var practice_len = 20 // 20  must be divisible by 20 [5 (go go go go stop), by 2 (switch or stay) by 2 (mag or parity)]
 var exp_len = 40 //320 must be divisible by 20
-var numTrialsPerBlock = 20; //  60 divisible by 20
+var numTrialsPerBlock = 20; // divisible by 20
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.30 // must it be higher than standard 10% since stopping is part of task??
-var practice_thresh = 2 // 3 blocks of 24 trials
+var practice_thresh = 2 // 3 blocks of 28 trials
  
 
-var predictive_conditions = [['switch','stay'],
-							 ['stay','switch']]
-							 
-var predictive_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magnitude', values: jsPsych.randomization.repeat(['high','low'],1)},
-								  							   stim = {dim:'parity', values: jsPsych.randomization.repeat(['odd','even'],1)}],1)
-							 	  
+var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
+var cued_dimensions = jsPsych.randomization.repeat(['magnitude','parity'],1)
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
 
-
+var current_trial = 0
+var current_block = 0
 
 var fileTypePNG = ".png'></img>"
-var preFileType = "<img class = center src='/static/experiments/go_nogo_with_predictive_task_switching/images/"
+var preFileType = "<img class = center src='/static/experiments/go_nogo_with_cued_task_switching/images/"
 
-var current_trial = 0
+var cued_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magnitude', values: jsPsych.randomization.repeat(['high','low'],1)},
+								  						 stim = {dim:'parity', values: jsPsych.randomization.repeat(['odd','even'],1)}],1)
 
-var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']],
-				   [['<div class = bigbox><div class = decision-top-right><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']],
-				   [['<div class = bigbox><div class = decision-bottom-right><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']],
-				   [['<div class = bigbox><div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']]]
 
+
+var task_boards = ['<div class = bigbox><div class = centerbox><div class = cue-text><font size = "10" color = "','">','</font><div></div><div></div>']				
+
+				   
 
 var stims = createTrialTypes(practice_len)
 
 var prompt_text = '<ul list-text>'+
 					'<li>Do not respond if the number is red!  Only respond if the number is green.</li>' +
-				  	'<li>Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</li>' +
-				  	'<li>'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
-					'<li>Bottom 2 quadrants: Judge number on '+predictive_dimensions_list[1].dim+'</li>' +
-					'<li>'+predictive_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
+				  	'<li>Cue was '+cued_dimensions_list[0].dim+': Judge number on '+cued_dimensions_list[0].dim+'</li>' +
+				  	'<li>'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
+					'<li>'+cued_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
+					'<li>Cue was '+cued_dimensions_list[1].dim+': '+cued_dimensions_list[1].dim+'</li>' +
+					'<li>'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
+					'<li>'+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
-
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
 
 var test_img_block = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = decision-top-left>'+
+	stimulus: '<div class = bigbox>'+
 				'<div class = centerbox><div class = go_nogo-text>fffff</div></div>'+
-			  '</div></div>',
+			  '</div>',
 	is_html: true,
 	choices: [32],
 	data: {
@@ -353,7 +349,6 @@ var test_img_block = {
 	timing_response: -1,
 	response_ends_trial: true
 };
-
 
 //Set up post task questionnaire
 var post_task_block = {
@@ -367,11 +362,16 @@ var post_task_block = {
    columns: [60,60]
 };
 
+/* define static blocks */
+var response_keys =
+	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
+
 
 var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
+		exp_id: "go_nogo_with_cued_task_switching",
 		trial_id: "feedback_block"
 	},
 	choices: [13],
@@ -405,36 +405,28 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>In this experiment, across trials you will see a single number moving clockwise on the screen in 4 quadrants.  '+
-			'On any trial, one quadrant will have a single number.</p> '+
+		'<p class = block-text>In this experiment you will see a cue, either magnitude or parity, followed by a single colored number.</p> '+
 		
-			'<p class = block-text>You will be asked to judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which quadrant '+
-			'the number are in.</p>'+
+		'<p class = block-text>You will be asked to judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which cue you see.</p>'+
 		
-			'<p class = block-text>In the top two quadrants, please judge the number based on <strong>'+predictive_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  if '+predictive_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+predictive_dimensions_list[0].values[1]+'</strong>.</p>'+
+		'<p class = block-text>If you see the cue '+cued_dimensions_list[0].dim+', please judge the number based on <strong>'+cued_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
+			'  if '+cued_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+cued_dimensions_list[0].values[1]+'</strong>.</p>'+
 		
-			'<p class = block-text>In the bottom two quadrants, please judge the number based on <strong>'+predictive_dimensions_list[1].dim+'.</strong>'+
-			' Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
-			' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
+		'<p class = block-text>If you see the cue '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
+		' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+ ' if ' +cued_dimensions_list[1].values[1]+'</strong>.</p>'+
 		
-			'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
-			
-			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
-		'</div>'
+		'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
+		
+		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
 	timing_post_trial: 1000
 };
 
-
-
-/* This function defines stopping criteria */
-
 var instruction_node = {
 	timeline: [feedback_instruct_block, instructions_block],
-	
+	/* This function defines stopping criteria */
 	loop_function: function(data) {
 		for (i = 0; i < data.length; i++) {
 			if ((data[i].trial_type == 'poldrack-instructions') && (data[i].rt != -1)) {
@@ -457,6 +449,7 @@ var end_block = {
 	type: 'poldrack-text',
 	data: {
 		trial_id: "end",
+    	exp_id: 'go_nogo_with_cued_task_switching'
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
@@ -474,16 +467,14 @@ var start_test_block = {
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
 			
-			'<p class = block-text>Please judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which quadrant '+
-			'the numbers are in.</p>'+
+			'<p class = block-text>Please judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on the cue.</p>'+
 	
-			'<p class = block-text>In the top two quadrants, please judge the center number based on <strong>'+predictive_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  if '+predictive_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+predictive_dimensions_list[0].values[1]+'</strong>.</p>'+
+			'<p class = block-text>If you see the cue '+cued_dimensions_list[0].dim+', please judge the number based on <strong>'+cued_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
+			'  if '+cued_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+cued_dimensions_list[0].values[1]+'</strong>.</p>'+
 		
-			'<p class = block-text>In the bottom two quadrants, please judge the center number based on <strong>'+predictive_dimensions_list[1].dim+'.</strong>'+
-			' Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
-			' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
-	
+			'<p class = block-text>If you see the cue '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
+			' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
+		
 			'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
 	
 			'<p class = block-text>Press Enter to continue.</p>'+
@@ -507,21 +498,19 @@ var rest_block = {
 };
 
 
-
 var practiceTrials = []
 practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len + 1; i++) {
-	var fixation_block = {
+	var cue_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getCue,
 		is_html: true,
 		choices: 'none',
 		data: {
-			trial_id: "practice_fixation"
+			trial_id: "practice_cue"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0,
-		on_finish: getNextStim
+		timing_post_trial: 0
 	}
 	
 	var practice_block = {
@@ -531,7 +520,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		key_answer: getResponse,
 		data: {
-			exp_id: "go_nogo_with_predictive_task_switching",
+			exp_id: "go_nogo_with_cued_task_switching",
 			trial_id: "practice_trial"
 			},
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
@@ -544,7 +533,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		timing_post_trial: 0,
 		on_finish: appendData
 	}
-	practiceTrials.push(fixation_block)
+	practiceTrials.push(cue_block)
 	practiceTrials.push(practice_block)
 }
 
@@ -595,8 +584,8 @@ var practiceNode = {
 			feedback_text +=
 					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
 			if (missed_responses > missed_thresh){
-			feedback_text +=
-					'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
+				feedback_text +=
+						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
 			}
 		
 			if (practiceCount == practice_thresh){
@@ -621,25 +610,24 @@ var practiceNode = {
 var testTrials = []
 testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
-	var fixation_block = {
+	var cue_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getCue,
 		is_html: true,
 		choices: 'none',
 		data: {
-			trial_id: "test_fixation"
+			trial_id: "test_cue"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0,
-		on_finish: getNextStim
+		timing_post_trial: 0
 	}
+	
 	
 	var test_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getStim,
 		is_html: true,
 		data: {
-			exp_id: "go_nogo_with_predictive_task_switching",
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
@@ -649,7 +637,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 		response_ends_trial: false,
 		on_finish: appendData
 	}
-	testTrials.push(fixation_block)
+	testTrials.push(cue_block)
 	testTrials.push(test_block)
 }
 
@@ -715,18 +703,18 @@ var testNode = {
 
 
 /* create experiment definition array */
-go_nogo_with_predictive_task_switching_experiment = []
+go_nogo_with_cued_task_switching_experiment = []
 
-//go_nogo_with_predictive_task_switching_experiment.push(test_img_block)
+//go_nogo_with_cued_task_switching_experiment.push(test_img_block)
 
-go_nogo_with_predictive_task_switching_experiment.push(instruction_node)
+go_nogo_with_cued_task_switching_experiment.push(instruction_node)
 
-go_nogo_with_predictive_task_switching_experiment.push(practiceNode)
+go_nogo_with_cued_task_switching_experiment.push(practiceNode)
 
-go_nogo_with_predictive_task_switching_experiment.push(start_test_block)
+go_nogo_with_cued_task_switching_experiment.push(start_test_block)
 
-go_nogo_with_predictive_task_switching_experiment.push(testNode)
+go_nogo_with_cued_task_switching_experiment.push(testNode)
 
-go_nogo_with_predictive_task_switching_experiment.push(post_task_block)
+go_nogo_with_cued_task_switching_experiment.push(post_task_block)
 
-go_nogo_with_predictive_task_switching_experiment.push(end_block)
+go_nogo_with_cued_task_switching_experiment.push(end_block)

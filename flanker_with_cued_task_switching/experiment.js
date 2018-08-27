@@ -212,7 +212,7 @@ var getCue = function(){
 	stim = stims.shift()
 	cued_condition = stim.cued_condition
 	cued_dimension = stim.cued_dimension
-	flanker_condition = stim.shape_matching_condition
+	flanker_condition = stim.flanker_condition
 	
 	number = stim.number
 	flanking_number = stim.flanking_number
@@ -251,6 +251,18 @@ var appendData = function(){
 		parity: parity
 		
 	})
+	
+	if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 1,
+		})
+	
+	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 0,
+		})
+	
+	}
 	
 	
 	
