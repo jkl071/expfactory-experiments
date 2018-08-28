@@ -2,7 +2,7 @@
 /* Define helper functions */
 /* ************************************ */
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'directed_forgetting_with_shape_matching'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_directed_forgetting'})
 }
 
 function evalAttentionChecks() {
@@ -73,6 +73,33 @@ var getFeedback = function() {
 	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
 }
 
+var getCategorizeIncorrectText = function(){
+	if (go_nogo_condition == 'go'){
+	
+		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'
+	} else {
+	
+		return '<div class = fb_box><div class = center-text><font size = 20>Letter is red</font></div></div>'
+	}
+
+}
+
+var getTimeoutText = function(){
+	if (go_nogo_condition == "go"){
+		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'
+	} else {
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+	}
+}
+
+var getCorrectText = function(){
+	if (go_nogo_condition == "go"){
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+	} else {
+		return '<div class = fb_box><div class = center-text><font size = 20>Letter is red</font></div></div>'
+	}
+}
+
 var randomDraw = function(lst) {
   var index = Math.floor(Math.random() * (lst.length))
   return lst[index]
@@ -82,41 +109,56 @@ var randomDraw = function(lst) {
 var createTrialTypes = function(numTrialsPerBlock){
 	
 	var stims = []
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/8; numIterations++){
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/20; numIterations++){
 		for (var numDirectedConds = 0; numDirectedConds < directed_cond_array.length; numDirectedConds++){
-			for (var numShapeConds = 0; numShapeConds < shape_matching_conditions.length; numShapeConds++){
+			for (var numgo_nogoConds = 0; numgo_nogoConds < go_nogo_conditions.length; numgo_nogoConds++){
 			
-				shape_matching_condition = shape_matching_conditions[numShapeConds]
+				go_nogo_condition = go_nogo_conditions[numgo_nogoConds]
 				directed_condition = directed_cond_array[numDirectedConds]
 				
-				letters = getTrainingSet()
-				cue = getCue()
-				probe = getProbe(directed_condition, letters, cue)
-				correct_response = getCorrectResponse(cue, probe, letters)
-				 if (shape_matching_condition == 'match'){
-				 	distractor = probe
-				 } else {
-				 	distractor = randomDraw(stimArray.filter(function(y) {return $.inArray(y, [probe]) == -1}))
-				 }
-				
 				stim = {
-					shape_matching_condition: shape_matching_condition,
-					directed_condition: directed_condition,
-					letters: letters,
-					cue: cue,
-					probe: probe,
-					distractor: distractor,
-					correct_response: correct_response
-					}
-			
+					go_nogo_condition: go_nogo_condition,
+					directed_condition: directed_condition
+				}
+				
 				stims.push(stim)
 			}
-			
 		}
 	}
-	
+		
 	stims = jsPsych.randomization.repeat(stims,1)
-	return stims
+	new_len = stims.length
+	new_stims = []
+	
+	for (var i = 0; i < new_len; i++){
+		stim = stims.shift()
+		go_nogo_condition = stim.go_nogo_condition
+		directed_condition = stim.directed_condition
+
+		letters = getTrainingSet()
+		cue = getCue()
+		probe = getProbe(directed_condition, letters, cue)
+		correct_response = getCorrectResponse(cue, probe, letters, go_nogo_condition)
+		 if (go_nogo_condition == 'go'){
+			probe_color = 'green'
+		 } else {
+			probe_color = 'red'
+		 }
+		
+		stim = {
+			go_nogo_condition: go_nogo_condition,
+			directed_condition: directed_condition,
+			letters: letters,
+			cue: cue,
+			probe: probe,
+			probe_color: probe_color,
+			correct_response: correct_response
+			}
+	
+		new_stims.push(stim)
+		
+	}	
+	return new_stims
 		
 }
 
@@ -181,7 +223,11 @@ var getProbe = function(directed_cond, letters, cue) {
 	return probe
 };
 
-var getCorrectResponse = function(cue,probe,letters) {
+var getCorrectResponse = function(cue,probe,letters,go_nogo_condition) {
+	if (go_nogo_condition == 'stop'){
+		return correct_response = -1
+	}
+	
 	if (cue == 'TOP') {
 		if (jQuery.inArray(probe, letters.slice(3)) != -1) {
 			return possible_responses[0][1]
@@ -194,7 +240,9 @@ var getCorrectResponse = function(cue,probe,letters) {
 		} else {
 			return possible_responses[1][1]
 		}
-	}		
+	}	
+	
+		
 }
 
 var getResponse = function() {
@@ -216,27 +264,40 @@ var appendData = function(){
 	current_trial+=1
 	
 	jsPsych.data.addDataToLastTrial({
-		shape_matching_condition: shape_matching_condition,
+		go_nogo_condition: go_nogo_condition,
 		directed_condition: directed_condition,
 		probe: probe,
+		probe_color: probe_color,
 		letters: letters,
 		cue: cue,
-		distractor: distractor,
 		correct_response: correct_response,
-		current_trial: current_trial
+		current_trial: current_trial,
+		current_block: current_block
 		
 	})
+	
+	if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 1,
+		})
+	
+	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response){
+		jsPsych.data.addDataToLastTrial({
+			correct_trial: 0,
+		})
+	
+	}
 }
 
 
 var getNextStim = function(){
 	stim = stims.shift()
-	shape_matching_condition = stim.shape_matching_condition
+	go_nogo_condition = stim.go_nogo_condition
 	directed_condition = stim.directed_condition
 	probe = stim.probe
+	probe_color = stim.probe_color
 	letters = stim.letters
 	cue = stim.cue
-	distractor = stim.distractor
 	correct_response = stim.correct_response
 	
 	return stim
@@ -260,13 +321,11 @@ var getDirectedCueStim = function(){
 
 
 var getProbeStim = function(){
-	return '<div class = bigbox><div class = centerbox>'+
-	
-			'<div class = distractor_text><font color="red" size="10">'+distractor+'</font></div>'+
-	
-			'<div class = cue_text><font size="10">'+probe+'</font></div>'+
-		   
-		   '</div></div>'	
+	return go_nogo_boards[0]+ 
+			probe_color+
+		   go_nogo_boards[1]+
+		    probe+
+		   go_nogo_boards[2] 
 		   
 	
 	
@@ -284,18 +343,18 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = true
 
 // new vars
-var practice_len = 16  // must be divisible by 8
-var exp_len = 320 //320 must be divisible by 8
-var numTrialsPerBlock = 64; // divisible by 64
+var practice_len = 20  // must be divisible by 20  [5 (go,go,go,go,stop) vs 4 (pos,pos,con,neg)]
+var exp_len = 320 //320 must be divisible by 20
+var numTrialsPerBlock = 20; // 60 divisible by 20
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
-var practice_thresh = 3 // 3 blocks of 16 trials
+var practice_thresh = 2 // 3 blocks of 16 trials
 
 var directed_cond_array = ['pos', 'pos', 'neg', 'con']
 var directed_cue_array = ['TOP','BOT']
-var shape_matching_conditions = ['match','mismatch']
+var go_nogo_conditions = ['go','go','go','go','stop']
 
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 							 
@@ -311,9 +370,11 @@ var stimArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'
 var stims = createTrialTypes(practice_len)
 
 var task_boards = [['<div class = bigbox><div class = topLeft><div class = fixation>'],['</div></div><div class = topMiddle><div class = fixation>'],['</div></div><div class = topRight><div class = fixation>'],['</div></div><div class = bottomLeft><div class = fixation>'],['</div></div><div class = bottomMiddle><div class = fixation>'],['</div></div><div class = bottomRight><div class = fixation>'],['</div></div></div>']]
+var go_nogo_boards = [['<div class = bigbox><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div>']]				
 				   
 
 var prompt_text = '<ul list-text>'+
+					'<li>Do not respond if probe is red, only respond if green!</li>' +
 					'<li>Please respond if the probe (single letter) was in the memory set.</li>'+
 					'<li>Yes: ' + possible_responses[0][0] + '</li>' +
 					'<li>No: ' + possible_responses[1][0] + '</li>' +
@@ -347,7 +408,7 @@ var feedback_text = 'We will start practice. Press <strong>enter</strong> to beg
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "shape_matching_with_predictive_task_switching",
+		exp_id: "go_nogo_with_predictive_task_switching",
 		trial_id: "feedback_block"
 	},
 	choices: [13],
@@ -393,7 +454,7 @@ var end_block = {
 	type: 'poldrack-text',
 	data: {
 		trial_id: "end",
-		exp_id: 'directed_forgetting_with_shape_matching'
+		exp_id: 'go_nogo_with_directed_forgetting'
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
@@ -446,12 +507,12 @@ var instructions_block = {
 		
 		'<p class = block-text>So for example, if you get the cue TOP, please forget the top 3 letters and remember the bottom 3 letters.</p>'+
 		
-		'<p class = block-text>After a short delay, you will be presented with a probe - a single white letter.  Please indicate whether this probe was in your memory set.</p>'+
+		'<p class = block-text>After a short delay, you will be presented with a probe - a single colored letter.  Please indicate whether this probe was in your memory set.</p>'+
 		
 		'<p class = block-text>Press the <strong>'+possible_responses[0][0]+
 		' </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
 		
-		'<p class = block-text>You will see an additional red letter overlapping with the white probe, please ignore the red letter.  Your job is only to respond if the probe (white letter) was in the memory set.</p>'+
+		'<p class = block-text>Only respond if the probe was green, not if red!</p>'+
 
 		
 		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
@@ -498,12 +559,12 @@ var start_test_block = {
 			
 			'<p class = block-text>So for example, if you get the cue TOP, please forget the top 3 letters and remember the bottom 3 letters.</p>'+
 		
-			'<p class = block-text>After a short delay, you will be presented with a probe - a single white letter.  Please indicate whether this probe was in your memory set.</p>'+
+			'<p class = block-text>After a short delay, you will be presented with a probe - a single colored letter.  Please indicate whether this probe was in your memory set.</p>'+
 		
 			'<p class = block-text>Press the <strong>'+possible_responses[0][0]+
 			' </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
 		
-			'<p class = block-text>You will see an additional red letter overlapping with the white probe, please ignore the red letter.  Your job is only to respond if the probe (white letter) was in the memory set.</p>'+
+			'<p class = block-text>Only respond if the probe was green, not if red!</p>'+
 			
 			'<p class = block-text>Press Enter to continue.</p>'+
 		 '</div>',
@@ -608,9 +669,9 @@ var practice_probe_block = {
 	key_answer: getResponse,
 	choices: [possible_responses[0][1],possible_responses[1][1]],
 	data: {trial_id: "practice_trial"},
-	correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-	incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-	timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
+	correct_text: getCorrectText,
+	incorrect_text: getCategorizeIncorrectText,
+	timeout_message: getTimeoutText,
 	timing_stim: 2000, //2000
 	timing_response: 2000,
 	timing_feedback_duration: 500,
@@ -771,19 +832,19 @@ var testNode = {
 
 
 /* create experiment definition array */
-var directed_forgetting_with_shape_matching_experiment = [];
+var go_nogo_with_directed_forgetting_experiment = [];
 
-//directed_forgetting_with_shape_matching_experiment.push(test_img_block);
+//go_nogo_with_directed_forgetting_experiment.push(test_img_block);
 
 
-directed_forgetting_with_shape_matching_experiment.push(instruction_node);
+go_nogo_with_directed_forgetting_experiment.push(instruction_node);
 
-directed_forgetting_with_shape_matching_experiment.push(practiceNode);
+go_nogo_with_directed_forgetting_experiment.push(practiceNode);
 
-directed_forgetting_with_shape_matching_experiment.push(start_test_block);
+go_nogo_with_directed_forgetting_experiment.push(start_test_block);
 
-directed_forgetting_with_shape_matching_experiment.push(testNode);
+go_nogo_with_directed_forgetting_experiment.push(testNode);
 
-directed_forgetting_with_shape_matching_experiment.push(post_task_block);
+go_nogo_with_directed_forgetting_experiment.push(post_task_block);
 
-directed_forgetting_with_shape_matching_experiment.push(end_block);
+go_nogo_with_directed_forgetting_experiment.push(end_block);

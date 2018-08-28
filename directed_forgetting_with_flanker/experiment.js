@@ -89,34 +89,51 @@ var createTrialTypes = function(numTrialsPerBlock){
 				flanker_condition = flanker_conditions[numFlankerConds]
 				directed_condition = directed_cond_array[numDirectedConds]
 				
-				letters = getTrainingSet()
-				cue = getCue()
-				probe = getProbe(directed_condition, letters, cue)
-				correct_response = getCorrectResponse(cue, probe, letters)
-				 if (flanker_condition == 'congruent'){
-				 	flanking_letter = probe
-				 } else {
-				 	flanking_letter = randomDraw(stimArray.filter(function(y) {return $.inArray(y, [probe]) == -1}))
-				 }
-				
 				stim = {
 					flanker_condition: flanker_condition,
-					directed_condition: directed_condition,
-					letters: letters,
-					cue: cue,
-					probe: probe,
-					flanking_letter: flanking_letter,
-					correct_response: correct_response
-					}
-			
+					directed_condition: directed_condition
+				}
+				
 				stims.push(stim)
 			}
-			
 		}
 	}
-	
+		
 	stims = jsPsych.randomization.repeat(stims,1)
-	return stims
+	new_len = stims.length
+	new_stims = []
+	
+	for (var i = 0; i < new_len; i++){
+		stim = stims.shift()
+		flanker_condition = stim.flanker_condition
+		directed_condition = stim.directed_condition		
+				
+				
+		letters = getTrainingSet()
+		cue = getCue()
+		probe = getProbe(directed_condition, letters, cue)
+		correct_response = getCorrectResponse(cue, probe, letters)
+		 if (flanker_condition == 'congruent'){
+			flanking_letter = probe
+		 } else {
+			flanking_letter = randomDraw(stimArray.filter(function(y) {return $.inArray(y, [probe]) == -1}))
+		 }
+		
+		stim = {
+			flanker_condition: flanker_condition,
+			directed_condition: directed_condition,
+			letters: letters,
+			cue: cue,
+			probe: probe,
+			flanking_letter: flanking_letter,
+			correct_response: correct_response
+			}
+	
+		new_stims.push(stim)
+	}
+			
+		
+	return new_stims
 		
 }
 
@@ -445,6 +462,8 @@ var instructions_block = {
 		'This will instruct you to <strong>FORGET</strong> the 3 letters located at either the top or bottom (respectively) of the screen. '+
 		'The three remaining letters that you must remember are called your <strong>MEMORY SET</strong>. Please forget the letters not in the memory set.</p>'+
 		
+		'<p class = block-text>So for example, if you get the cue TOP, please forget the top 3 letters and remember the bottom 3 letters.</p>'+
+		
 		'<p class = block-text>After a short delay, you will be presented with a probe - a single white letter.  Please indicate whether this probe was in your memory set.</p>'+
 		
 		'<p class = block-text>Press the <strong>'+possible_responses[0][0]+
@@ -494,6 +513,8 @@ var start_test_block = {
 		
 			'<p class = block-text>This will instruct you to <strong>FORGET</strong> the 3 letters located at either the top or bottom (respectively) of the screen. '+
 			'The three remaining letters that you must remember are called your <strong>MEMORY SET</strong>. Please forget the letters not in the memory set.</p>'+
+			
+			'<p class = block-text>So for example, if you get the cue TOP, please forget the top 3 letters and remember the bottom 3 letters.</p>'+
 		
 			'<p class = block-text>After a short delay, you will be presented with a probe - a single white letter.  Please indicate whether this probe was in your memory set.</p>'+
 		
