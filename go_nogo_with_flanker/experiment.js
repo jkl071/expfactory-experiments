@@ -2,7 +2,7 @@
 /* Define helper functions */
 /* ************************************ */
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_shape_matching'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_flanker'})
 }
 
 
@@ -89,66 +89,41 @@ var randomDraw = function(lst) {
   var index = Math.floor(Math.random() * (lst.length))
   return lst[index]
 }
-
-var getPTD = function(shape_matching_condition, go_nogo_condition){
-	var probe_i = randomDraw([1,2,3,4,5,6,7,8,9,10])
-	var target_i = 0
-	var distractor_i = 0
-	if (shape_matching_condition[0] == 'S') {
-		target_i = probe_i
-		correct_response = possible_responses[0][1]		
-	} else {
-		target_i = randomDraw([1,2,3,4,5,6,7,8,9,10].filter(function(y) {return y != probe_i}))				
-		correct_response = possible_responses[1][1]
-	}
-	//console.log('probe = ' + probe + ', target = ' + target)
-	if (shape_matching_condition[1] == 'S') {
-		distractor_i = target_i
-	} else if (shape_matching_condition[2] == 'S') {
-		distractor_i = probe_i
-	} else if (shape_matching_condition[2] == 'D') {
-		distractor_i = randomDraw([1,2,3,4,5,6,7,8,9,10].filter(function(y) {return $.inArray(y, [target_i, probe_i]) == -1}))
-	} else if (shape_matching_condition[2] == 'N'){
-		distractor_i = 'none'
-	}
-	
-	if (go_nogo_condition == 'go'){
-		probe_color = 'green'
-	} else if (go_nogo_condition == 'stop'){
-		probe_color = 'red'	
-	
-	}
-	return [probe_i, target_i, distractor_i, correct_response, probe_color]
-}
 	 
 var createTrialTypes = function(numTrialsPerBlock){
 	go_nogo_trial_types = ['go','go','go','go','stop']
-	shape_matching_trial_types = ['DDD','SDD','DSD','DDS','SSS','SNN','DNN']
+	flanker_trial_types = ['congruent','incongruent']
 	
 	var stims = []
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/35; numIterations++){
-		for (var numShapeConds = 0; numShapeConds < shape_matching_trial_types.length; numShapeConds++){
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/10; numIterations++){
+		for (var numFlankerConds = 0; numFlankerConds < flanker_trial_types.length; numFlankerConds++){
 			for (var numgo_nogoConds = 0; numgo_nogoConds < go_nogo_trial_types.length; numgo_nogoConds++){
 			
-				shape_matching_condition = shape_matching_trial_types[numShapeConds]
+				flanker_condition = flanker_trial_types[numFlankerConds]
 				go_nogo_condition = go_nogo_trial_types[numgo_nogoConds]
 				
-				answer_arr = getPTD(shape_matching_condition, go_nogo_condition)
+				if (go_nogo_condition == 'stop'){
+					correct_response = possible_responses[1][1]
+					color = 'red'
+				} else {
+					color = 'green'
+					correct_response = possible_responses[0][1]
+				}
 				
-				probe = answer_arr[0]
-				target = answer_arr[1]
-				distractor = answer_arr[2]
-				correct_response = answer_arr[3]
-				probe_color = answer_arr[4]
+				if (flanker_condition == 'congruent'){
+					flanker_color = color
+				} else {
+					flanker_color = randomDraw(['red','green'].filter(function(y) {return $.inArray(y, [color]) == -1}))
+				}
+				
 				
 				stim = {
 					go_nogo_condition: go_nogo_condition,
-					shape_matching_condition: shape_matching_condition,
-					probe: probe,
-					target: target,
-					distractor: distractor,
-					probe_color: probe_color,
-					correct_response: correct_response
+					flanker_condition: flanker_condition,
+					correct_response: correct_response,
+					color: color,
+					flanker_color: flanker_color
+					
 					}
 			
 				stims.push(stim)
@@ -166,38 +141,21 @@ var getResponse = function() {
 }
 
 var getStim = function(){
-	if ((shape_matching_condition == "SNN") || (shape_matching_condition == "DNN")){
-		return task_boards[0]+ preFileType + target + '_green' + fileTypePNG + 
-			   task_boards[1]+
-			   task_boards[2]+ preFileType + probe + '_'+ probe_color + fileTypePNG + 
-			   task_boards[3]		   
-		
-	} else {
-
-		return task_boards[0]+ preFileType + target + '_green' + fileTypePNG + 
-			   task_boards[1]+ preFileType + distractor + '_red' + fileTypePNG + 
-			   task_boards[2]+ preFileType + probe + '_' + probe_color + fileTypePNG + 
-			   task_boards[3]		   
-	}
-}
-
-		
-var getMask = function(){
 	stim = stims.shift()
+	flanker_condition = stim.flanker_condition
 	go_nogo_condition = stim.go_nogo_condition
-	shape_matching_condition = stim.shape_matching_condition
-	probe = stim.probe
-	target = stim.target
-	distractor = stim.distractor
 	correct_response = stim.correct_response
-	probe_color = stim.probe_color
+	color = stim.color
+	flanker_color = stim.flanker_color
 	
-	return mask_boards[0]+ preFileType + 'mask' + fileTypePNG + 
-		   mask_boards[1]+ preFileType + 'mask' + fileTypePNG + 
-		   mask_boards[2]
-
-
+	return  task_boards[0] + flanker_color +
+		 	task_boards[1] + flanker_color +
+		 	task_boards[2] + color +
+		 	task_boards[3] + flanker_color +
+		 	task_boards[4] + flanker_color +
+		 	task_boards[5] 
 }
+
 
 var appendData = function(){
 	curr_trial = jsPsych.progress().current_trial_global
@@ -212,13 +170,11 @@ var appendData = function(){
 	}
 	
 	jsPsych.data.addDataToLastTrial({
-		shape_matching_condition: shape_matching_condition,
+		flanker_condition: flanker_condition,
 		go_nogo_condition: go_nogo_condition,
 		correct_response: correct_response,
-		probe_color: probe_color,
-		probe: probe,
-		target: target,
-		distractor: distractor,
+		flanker_color: flanker_color,
+		center_color: color,
 		current_block: current_block,
 		current_trial: current_trial
 	})
@@ -248,40 +204,33 @@ var credit_var = 0
 
 // task specific variables
 // Set up variables for stimuli
-var practice_len = 35 // must be divisible by 35, [5 (go,go,go,go,stop) by 7 (shape matching conditions)]
-var exp_len = 70 //350 must be divisible by 35
-var numTrialsPerBlock = 35; // 70 divisible by 35
+var practice_len = 10 // must be divisible by 10, [5 (go,go,go,go,stop) by 2 (flanker conditions)]
+var exp_len = 20 //350 must be divisible by 10
+var numTrialsPerBlock = 10; // 70 divisible by 10
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
-var missed_thresh = 0.10
+var missed_thresh = 0.30
 var practice_thresh = 2 // 3 blocks of 28 trials
  
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['Spacebar', 32],['No Response', -1]]
 
 
 var current_trial = 0
 var current_block = 0
 
 var fileTypePNG = '.png"></img>'
-var preFileType = '<img class = center src="/static/experiments/go_nogo_with_shape_matching/images/'
+var preFileType = '<img class = center src="/static/experiments/go_nogo_with_flanker/images/'
 
 
-
-
-var task_boards = [['<div class = bigbox><div class = leftbox>'],['</div><div class = distractorbox>'],['</div><div class = rightbox>'],['</div></div>']]
-				
-
-var mask_boards = [['<div class = bigbox><div class = leftbox>'],['</div><div class = rightbox>'],['</div></div>']]				   
-		
+var task_boards = [['<div class = bigbox><div class = leftbox1 style="background-color:'],['"></div><div class = leftbox2 style="background-color:'],['"></div><div class = centerimg style="background-color:'],['"></div><div class = rightbox1 style="background-color:'],['"></div><div class = rightbox2 style="background-color:'],['"></div></div>']]
 
 
 var stims = createTrialTypes(practice_len)
 
 var prompt_text = '<ul list-text>'+
-					'<li>Do not respond if shape on right is red, only respond if green!</li>' +
-				  	'<li>Match: ' + possible_responses[0][0] + '</li>' +
-				  	'<li>Mismatch: ' + possible_responses[1][0] + '</li>' +
+					'<li>Press the '+possible_responses[0][0] +' if the center square is green</li>' +
+					'<li>Ignore the other squares</li>' +
 				  '</ul>'
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -289,14 +238,11 @@ var prompt_text = '<ul list-text>'+
 
 var test_img_block = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox>'+
-				'<div class = leftbox>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = distractorbox>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox1>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox2>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox_center>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox3>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox4>'+preFileType+'1_green'+fileTypePNG+'</div>'+
+	stimulus: '<div class = bigbox><div class = leftbox1 style="background-color:lightblue"></div>'+
+				'<div class = leftbox2 style="background-color:lightblue"></div>'+
+				'<div class = centerimg style="background-color:lightblue"></div>'+
+				'<div class = rightbox1 style="background-color:lightblue"></div>'+
+				'<div class = rightbox2 style="background-color:lightblue"></div>'+
 			  '</div>',
 	is_html: true,
 	choices: [32],
@@ -330,7 +276,7 @@ var feedback_text = 'We will start practice. Press <strong>enter</strong> to beg
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "go_nogo_with_shape_matching",
+		exp_id: "go_nogo_with_flanker",
 		trial_id: "feedback_block"
 	},
 	choices: [13],
@@ -364,16 +310,12 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see a red and green shape on the left side of the screen, and a red OR green shape on the right.</p> '+
-		
-		'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the shape on the right.</p>'+
-		
-		'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
-		
-		'<p class = block-text>Please only respond if the shape on the right is green!</p>'+
-		
-		'<p class = block-text>Ignore the red shape on the left.</p>'+
+		'<p class = block-text>In this experiment you will see a row of colored squares.</p> '+
 				
+		'<p class = block-text>If the center square is green, please press the '+possible_responses[0][0]+' as quickly as possible.  If the center square is red, make '+possible_responses[1][0]+'.</p>'+
+		
+		'<p class = block-text>Ignore the squares not in the center!</p>'+
+						
 		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
 	],
 	allow_keys: false,
@@ -406,7 +348,7 @@ var end_block = {
 	type: 'poldrack-text',
 	data: {
 		trial_id: "end",
-    	exp_id: 'go_nogo_with_shape_matching'
+    	exp_id: 'go_nogo_with_flanker'
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
@@ -424,13 +366,11 @@ var start_test_block = {
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
 			
-			'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the shape on the right..</p>'+
+			'<p class = block-text>In this experiment you will see a row of colored squares.</p> '+
+				
+			'<p class = block-text>If the center square is green, please press the '+possible_responses[0][0]+' as quickly as possible.  If the center square is red, make '+possible_responses[1][0]+'.</p>'+
 		
-			'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[0][0]+'.</p>'+
-		
-			'<p class = block-text>Please only respond if the shape on the right is green!</p>'+
-		
-			'<p class = block-text>Ignore the red shape on the left.</p>'+
+			'<p class = block-text>Ignore the squares not in the center!</p>'+
 	
 			'<p class = block-text>Press Enter to continue.</p>'+
 		 '</div>',
@@ -457,19 +397,6 @@ var rest_block = {
 var practiceTrials = []
 practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len; i++) {
-	var mask_block = {
-		type: 'poldrack-single-stim',
-		stimulus: getMask,
-		is_html: true,
-		data: {
-			"trial_id": "practice_mask",
-		},
-		choices: 'none',
-		timing_response: 500, //500
-		timing_post_trial: 0,
-		response_ends_trial: false
-	}
-	
 	var practice_block = {
 		type: 'poldrack-categorize',
 		stimulus: getStim,
@@ -477,7 +404,6 @@ for (i = 0; i < practice_len; i++) {
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		key_answer: getResponse,
 		data: {
-			exp_id: "shape_matching_with_cued_task_switching",
 			trial_id: "practice_trial"
 			},
 		correct_text: getCorrectText,
@@ -490,7 +416,6 @@ for (i = 0; i < practice_len; i++) {
 		timing_post_trial: 0,
 		on_finish: appendData
 	}
-	practiceTrials.push(mask_block)
 	practiceTrials.push(practice_block)
 }
 
@@ -539,7 +464,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -567,19 +492,6 @@ var practiceNode = {
 var testTrials = []
 testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock; i++) {
-	var mask_block = {
-		type: 'poldrack-single-stim',
-		stimulus: getMask,
-		is_html: true,
-		data: {
-			"trial_id": "test_mask",
-		},
-		choices: 'none',
-		timing_response: 500, //500
-		timing_post_trial: 0,
-		response_ends_trial: false
-	}
-	
 	var test_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getStim,
@@ -590,11 +502,10 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		timing_stim: 2000, //2000
 		timing_response: 2000, //2000
-		timing_post_trial: 0,
+		timing_post_trial: 500,
 		response_ends_trial: false,
 		on_finish: appendData
 	}
-	testTrials.push(mask_block)
 	testTrials.push(test_block)
 }
 
@@ -660,18 +571,18 @@ var testNode = {
 
 
 /* create experiment definition array */
-go_nogo_with_shape_matching_experiment = []
+go_nogo_with_flanker_experiment = []
 
-//go_nogo_with_shape_matching_experiment.push(test_img_block)
+//go_nogo_with_flanker_experiment.push(test_img_block)
 
-go_nogo_with_shape_matching_experiment.push(instruction_node)
+go_nogo_with_flanker_experiment.push(instruction_node)
 
-go_nogo_with_shape_matching_experiment.push(practiceNode)
+go_nogo_with_flanker_experiment.push(practiceNode)
 
-go_nogo_with_shape_matching_experiment.push(start_test_block)
+go_nogo_with_flanker_experiment.push(start_test_block)
 
-go_nogo_with_shape_matching_experiment.push(testNode)
+go_nogo_with_flanker_experiment.push(testNode)
 
-go_nogo_with_shape_matching_experiment.push(post_task_block)
+go_nogo_with_flanker_experiment.push(post_task_block)
 
-go_nogo_with_shape_matching_experiment.push(end_block)
+go_nogo_with_flanker_experiment.push(end_block)
