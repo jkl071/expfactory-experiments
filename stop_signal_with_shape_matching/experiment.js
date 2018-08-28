@@ -2,7 +2,7 @@
 /* Define helper functions */
 /* ************************************ */
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_with_predictive_task_switching'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_with_shape_matching'})
 }
 
 function assessPerformance() {
@@ -57,156 +57,76 @@ var getFeedback = function() {
 	return '<div class = bigbox><div class = picture_box><p class = block-text>' + feedback_text + '</p></div></div>'
 }
 
-var getCategorizeIncorrectText = function(){
-	if (stop_signal_condition == 'go'){
-	
-		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'
-	} else {
-	
-		return '<div class = fb_box><div class = center-text><font size = 20>Number is red.</font></div></div>'
-	}
-
-}
-
-var getTimeoutText = function(){
-	if (stop_signal_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'
-	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
-	}
-}
-
 var randomDraw = function(lst) {
   var index = Math.floor(Math.random() * (lst.length))
   return lst[index]
 }
 
-var getCorrectResponse = function(number, predictive_dimension, stop_signal_condition){
-	if (number > 5){
-		var magnitude = 'high'
-	} else if (number < 5){
-		magnitude = 'low'
-	}
-
-	if (number%2 == 0){
-		var parity = 'even'
-	} else if (number%2 != 0) {
-		parity = 'odd'
-	}
-	
-	par_ind = predictive_dimensions_list[0].values.indexOf(parity)
-	if (par_ind == -1){
-		par_ind = predictive_dimensions_list[1].values.indexOf(parity)
-		mag_ind = predictive_dimensions_list[0].values.indexOf(magnitude)
+var getPTD = function(shape_matching_condition, stop_signal_condition){
+	var probe_i = randomDraw([1,2,3,4,5,6,7,8,9,10])
+	var target_i = 0
+	var distractor_i = 0
+	if (shape_matching_condition[0] == 'S') {
+		target_i = probe_i
+		correct_response = possible_responses[0][1]		
 	} else {
-		mag_ind = predictive_dimensions_list[1].values.indexOf(magnitude)
+		target_i = randomDraw([1,2,3,4,5,6,7,8,9,10].filter(function(y) {return y != probe_i}))				
+		correct_response = possible_responses[1][1]
+	}
+	//console.log('probe = ' + probe + ', target = ' + target)
+	if (shape_matching_condition[1] == 'S') {
+		distractor_i = target_i
+	} else if (shape_matching_condition[2] == 'S') {
+		distractor_i = probe_i
+	} else if (shape_matching_condition[2] == 'D') {
+		distractor_i = randomDraw([1,2,3,4,5,6,7,8,9,10].filter(function(y) {return $.inArray(y, [target_i, probe_i]) == -1}))
+	} else if (shape_matching_condition[2] == 'N'){
+		distractor_i = 'none'
 	}
 	
-	
-	if (predictive_dimension == 'magnitude'){
-		correct_response = possible_responses[mag_ind][1]
-	} else if (predictive_dimension == 'parity'){
-		correct_response = possible_responses[par_ind][1]
-	}
-	
-	if (stop_signal_condition == "stop"){
+	if (stop_signal_condition == 'stop'){
 		correct_response = -1
-	}
 	
-	return [correct_response,magnitude,parity]
-
+	}
+	return [probe_i, target_i, distractor_i, correct_response]
 }
 
 							 
 var createTrialTypes = function(numTrialsPerBlock){
-	var whichQuadStart = jsPsych.randomization.repeat([1,2,3,4],1).pop()
-	var predictive_cond_array = predictive_conditions[whichQuadStart%2]
-	var predictive_dimensions = [predictive_dimensions_list[0].dim,
-								 predictive_dimensions_list[0].dim,
-								 predictive_dimensions_list[1].dim,
-								 predictive_dimensions_list[1].dim]
-		
-	numbers_list = [[6,8],[7,9],[2,4],[1,3]]
-	numbers = [1,2,3,4,6,7,8,9]	
-	
-	var stop_signal_trial_type_list = []
-	var stop_signal_trial_types1 = jsPsych.randomization.repeat(['go','go','stop'], numTrialsPerBlock/12)
-	var stop_signal_trial_types2 = jsPsych.randomization.repeat(['go','go','stop'], numTrialsPerBlock/12)
-	var stop_signal_trial_types3 = jsPsych.randomization.repeat(['go','go','stop'], numTrialsPerBlock/12)
-	var stop_signal_trial_types4 = jsPsych.randomization.repeat(['go','go','stop'], numTrialsPerBlock/12)
-	stop_signal_trial_type_list.push(stop_signal_trial_types1)
-	stop_signal_trial_type_list.push(stop_signal_trial_types2)
-	stop_signal_trial_type_list.push(stop_signal_trial_types3)
-	stop_signal_trial_type_list.push(stop_signal_trial_types4)
-	
-	predictive_dimension = predictive_dimensions[whichQuadStart - 1]
-	
-	number = numbers[Math.floor((Math.random() * 8))]
-	stop_signal_condition = jsPsych.randomization.repeat(['go','go','stop'],1).pop()
-	
-	
-	response_arr = getCorrectResponse(number,predictive_dimension, stop_signal_condition)
+	stop_signal_trial_types = ['go','go','stop']
+	shape_matching_trial_types = ['DDD','SDD','DSD','DDS','SSS','SNN','DNN']
 	
 	var stims = []
-	
-	var first_stim = {
-		whichQuadrant: whichQuadStart,
-		predictive_condition: 'N/A',
-		predictive_dimension: predictive_dimension,
-		stop_signal_condition: stop_signal_condition,
-		number: number,
-		magnitude: response_arr[1],
-		parity: response_arr[2],
-		correct_response: response_arr[0]
-		}
-	stims.push(first_stim)
-	
-	for (var i = 0; i < numTrialsPerBlock; i++){
-		whichQuadStart += 1
-		quadIndex = whichQuadStart%4
-		if (quadIndex == 0){
-			quadIndex = 4
-		}
-		stop_signal_condition = stop_signal_trial_type_list[quadIndex - 1].pop()
-		predictive_dimension = predictive_dimensions[quadIndex - 1]
-		number = numbers[Math.floor((Math.random() * 8))]
-	
-		response_arr = getCorrectResponse(number,predictive_dimension, stop_signal_condition)
-		
-		stim = {
-			whichQuadrant: quadIndex,
-			predictive_condition: predictive_cond_array[i%2],
-			predictive_dimension: predictive_dimension,
-			stop_signal_condition: stop_signal_condition,
-			number: number,
-			magnitude: response_arr[1],
-			parity: response_arr[2],
-			correct_response: response_arr[0]
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/35; numIterations++){
+		for (var numShapeConds = 0; numShapeConds < shape_matching_trial_types.length; numShapeConds++){
+			for (var stop_signal_nogoConds = 0; stop_signal_nogoConds < stop_signal_trial_types.length; stop_signal_nogoConds++){
+			
+				shape_matching_condition = shape_matching_trial_types[numShapeConds]
+				stop_signal_condition = stop_signal_trial_types[stop_signal_nogoConds]
+				
+				answer_arr = getPTD(shape_matching_condition, stop_signal_condition)
+				
+				probe = answer_arr[0]
+				target = answer_arr[1]
+				distractor = answer_arr[2]
+				correct_response = answer_arr[3]
+				
+				stim = {
+					stop_signal_condition: stop_signal_condition,
+					shape_matching_condition: shape_matching_condition,
+					probe: probe,
+					target: target,
+					distractor: distractor,
+					correct_response: correct_response
+					}
+			
+				stims.push(stim)
 			}
-		
-		stims.push(stim)
-		
-		
+			
+		}
 	}
-
+	stims = jsPsych.randomization.repeat(stims,1)
 	return stims	
-}
-	
-var getNextStim = function(){
-	stim = stims.shift()
-	predictive_condition = stim.predictive_condition
-	predictive_dimension = stim.predictive_dimension
-	stop_signal_condition = stim.stop_signal_condition
-	number = stim.number
-	correct_response = stim.correct_response
-	whichQuadrant = stim.whichQuadrant
-	magnitude = stim.magnitude
-	parity = stim.parity
-	
-	console.log('# = '+number+', stop_cond = '+stop_signal_condition+
-				', whichQuad = '+whichQuadrant+', pred_dim = '+predictive_dimension+
-				'pred_cond = '+predictive_condition+ ', correct_response = '+correct_response)
-	
 }
 
 function getSSD(){
@@ -219,19 +139,43 @@ function getSSType(){
 }
 
 var getStopStim = function(){
-	return stop_boards[whichQuadrant - 1][0] + 
+	return stop_boards[0] + 
 		   	preFileType + 'stopSignal' + fileTypePNG + 
-		   stop_boards[whichQuadrant - 1][1] 
+		   stop_boards[1] 
 }
 
 
 var getStim = function(){
+	if ((shape_matching_condition == "SNN") || (shape_matching_condition == "DNN")){
+		return task_boards[0]+ preFileType + target + '_green' + fileTypePNG + 
+			   task_boards[1]+
+			   task_boards[2]+ preFileType + probe + '_white' + fileTypePNG + 
+			   task_boards[3]		   
+		
+	} else {
+
+		return task_boards[0]+ preFileType + target + '_green' + fileTypePNG + 
+			   task_boards[1]+ preFileType + distractor + '_red' + fileTypePNG + 
+			   task_boards[2]+ preFileType + probe + '_white' + fileTypePNG + 
+			   task_boards[3]		   
+	}
+}
+
+		
+var getMask = function(){
+	stim = stims.shift()
+	stop_signal_condition = stim.stop_signal_condition
+	shape_matching_condition = stim.shape_matching_condition
+	probe = stim.probe
+	target = stim.target
+	distractor = stim.distractor
+	correct_response = stim.correct_response
 	
-	return task_boards[whichQuadrant - 1][0] + 
-				number +
-		   task_boards[whichQuadrant - 1][1]
-		   		   
-	
+	return mask_boards[0]+ preFileType + 'mask' + fileTypePNG + 
+		   mask_boards[1]+ preFileType + 'mask' + fileTypePNG + 
+		   mask_boards[2]
+
+
 }
 
 
@@ -248,14 +192,13 @@ var appendData = function(){
 	}
 	
 	jsPsych.data.addDataToLastTrial({
-		predictive_condition: predictive_condition,
-		predictive_dimension: predictive_dimension,
 		stop_signal_condition: stop_signal_condition,
-		number: number,
 		correct_response: correct_response,
-		whichQuadrant: whichQuadrant,
-		magnitude: magnitude,
-		parity: parity,
+		probe: probe,
+		target: target,
+		distractor: distractor,
+		shape_matching_condition: shape_matching_condition,
+		
 		current_trial: current_trial,
 		current_block: current_block,
 		SSD: SSD
@@ -295,56 +238,51 @@ var credit_var = 0
 
 // task specific variables
 // Set up variables for stimuli
-var practice_len = 12 // 24  must be divisible by 12 [3 (go go stop), by 2 (switch or stay) by 2 (mag or parity)]
-var exp_len = 24 //324 must be divisible by 12
-var numTrialsPerBlock = 12; //  60 divisible by 12
+var practice_len = 21 // must be divisible by 21, [3 (go,go,stop) by 7 (shape matching conditions)]
+var exp_len = 42 //378 must be divisible by 21
+var numTrialsPerBlock = 21; // 63 divisible by 21
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
-var missed_thresh = 0.30 // must it be higher than standard 10% since stopping is part of task??
-var practice_thresh = 2 // 3 blocks of 24 trials
+var missed_thresh = 0.30
+var practice_thresh = 2 // 3 blocks of 28 trials
+
 var SSD = 250
 var maxSSD = 850
 var minSSD = 0 
 
-var predictive_conditions = [['switch','stay'],
-							 ['stay','switch']]
-							 
-var predictive_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magnitude', values: jsPsych.randomization.repeat(['high','low'],1)},
-								  							   stim = {dim:'parity', values: jsPsych.randomization.repeat(['odd','even'],1)}],1)
-							 	  
+ 
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
 
-
-
-var fileTypePNG = ".png'></img>"
-var preFileType = "<img class = center src='/static/experiments/stop_signal_with_predictive_task_switching/images/"
-
 var current_trial = 0
+var current_block = 0
 
-var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = centerbox><div class = cue-text><font size = "10">'],['</font></div></div></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-right><div class = centerbox><div class = cue-text><font size = "10">'],['</font></div></div></div></div>']],
-				   [['<div class = bigbox><div class = decision-bottom-right><div class = centerbox><div class = cue-text><font size = "10">'],['</font></div></div></div></div>']],
-				   [['<div class = bigbox><div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10">'],['</font></div></div></div></div>']]]
+var fileTypePNG = '.png"></img>'
+var preFileType = '<img class = center src="/static/experiments/stop_signal_with_shape_matching/images/'
 
-var stop_boards = [[['<div class = decision-top-left>'],['</div>']],
-				   [['<div class = decision-top-right>'],['</div>']],
-				   [['<div class = decision-bottom-right>'],['</div>']],
-				   [['<div class = decision-bottom-left>'],['</div>']]]
+
+
+
+var task_boards = [['<div class = bigbox><div class = leftbox>'],['</div><div class = distractorbox>'],['</div><div class = rightbox>'],['</div></div>']]
+				
+
+var mask_boards = [['<div class = bigbox><div class = leftbox>'],['</div><div class = rightbox>'],['</div></div>']]		
+
+var stop_boards = ['<div class = starbox>','</div>']
+		   
+		
 
 
 var stims = createTrialTypes(practice_len)
 
 var prompt_text = '<ul list-text>'+
-					'<li>Do not respond if a star appears!</li>' +
-				  	'<li>Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</li>' +
-				  	'<li>'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
-					'<li>Bottom 2 quadrants: Judge number on '+predictive_dimensions_list[1].dim+'</li>' +
-					'<li>'+predictive_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
+					'<li>Do not respond if you see a star around the shapes!</li>' +
+					'<li>Do not slow down your responses to the shape to wait for the star.</li>' +
+				  	'<li>Match: ' + possible_responses[0][0] + '</li>' +
+				  	'<li>Mismatch: ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
+
 
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -418,20 +356,15 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>In this experiment, across trials you will see a single number moving clockwise on the screen in 4 quadrants.  '+
-			'On any trial, one quadrant will have a single number.</p> '+
+			'<p class = block-text>In this experiment you will see a red and green shape on the left side of the screen, and a white shape on the right.</p> '+
 		
-			'<p class = block-text>You will be asked to judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which quadrant '+
-			'the number are in.</p>'+
+			'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the shape on the right.</p>'+
 		
-			'<p class = block-text>In the top two quadrants, please judge the number based on <strong>'+predictive_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  if '+predictive_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+predictive_dimensions_list[0].values[1]+'</strong>.</p>'+
+			'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
+				
+			'<p class = block-text>On some trials, a red shape will overlap the green shape. Ignore this red shape, your job is to match the green shape to the white shape.</p>'+
 		
-			'<p class = block-text>In the bottom two quadrants, please judge the number based on <strong>'+predictive_dimensions_list[1].dim+'.</strong>'+
-			' Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
-			' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
-		
-			'<p class = block-text>On some trials, you will see a star appear with or shortly after the number. Do not respond if you see a star.  Do not slow down your responses to the number in order to wait for the star.</p>'+
+			'<p class = block-text>On some trials, you will see a star appear with or shortly after the shapes. Do not respond if you see a star.  Do not slow down your responses to the shapes in order to wait for the star.</p>'+
 			
 			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
 		'</div>'
@@ -487,17 +420,15 @@ var start_test_block = {
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
 			
-			'<p class = block-text>Please judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which quadrant '+
-			'the numbers are in.</p>'+
-	
-			'<p class = block-text>In the top two quadrants, please judge the center number based on <strong>'+predictive_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  if '+predictive_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+predictive_dimensions_list[0].values[1]+'</strong>.</p>'+
+			'<p class = block-text>In this experiment you will see a red and green shape on the left side of the screen, and a white shape on the right.</p> '+
 		
-			'<p class = block-text>In the bottom two quadrants, please judge the center number based on <strong>'+predictive_dimensions_list[1].dim+'.</strong>'+
-			' Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
-			' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
-	
-			'<p class = block-text>On some trials, you will see a star appear with or shortly after the number. Do not respond if you see a star.  Do not slow down your responses to the number in order to wait for the star.</p>'+
+			'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the shape on the right.</p>'+
+		
+			'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
+				
+			'<p class = block-text>On some trials, a red shape will overlap the green shape. Ignore this red shape, your job is to match the green shape to the white shape.</p>'+
+		
+			'<p class = block-text>On some trials, you will see a star appear with or shortly after the shapes. Do not respond if you see a star.  Do not slow down your responses to the shapes in order to wait for the star.</p>'+
 	
 			'<p class = block-text>Press Enter to continue.</p>'+
 		 '</div>',
@@ -523,18 +454,18 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len + 1; i++) {
-	var fixation_block = {
+for (i = 0; i < practice_len; i++) {
+	var mask_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getMask,
 		is_html: true,
-		choices: 'none',
 		data: {
-			trial_id: "practice_fixation"
+			"trial_id": "practice_mask",
 		},
+		choices: 'none',
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		on_finish: getNextStim
+		response_ends_trial: false
 	}
 	
 	var practice_block = {
@@ -560,7 +491,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		}
 	}
 	
-	practiceTrials.push(fixation_block)
+	practiceTrials.push(mask_block)
 	practiceTrials.push(practice_block)
 }
 
@@ -636,18 +567,18 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-for (i = 0; i < numTrialsPerBlock + 1; i++) {
-	var fixation_block = {
+for (i = 0; i < numTrialsPerBlock; i++) {
+	var mask_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getMask,
 		is_html: true,
-		choices: 'none',
 		data: {
-			trial_id: "test_fixation"
+			"trial_id": "test_mask",
 		},
+		choices: 'none',
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		on_finish: getNextStim
+		response_ends_trial: false
 	}
 	
 	var test_block = {
@@ -672,7 +603,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 			stoppingTimeTracker = []
 		}
 	}
-	testTrials.push(fixation_block)
+	testTrials.push(mask_block)
 	testTrials.push(test_block)
 }
 
@@ -738,18 +669,18 @@ var testNode = {
 
 
 /* create experiment definition array */
-stop_signal_with_predictive_task_switching_experiment = []
+stop_signal_with_shape_matching_experiment = []
 
-//stop_signal_with_predictive_task_switching_experiment.push(test_img_block)
+//stop_signal_with_shape_matching_experiment.push(test_img_block)
 
-stop_signal_with_predictive_task_switching_experiment.push(instruction_node)
+stop_signal_with_shape_matching_experiment.push(instruction_node)
 
-stop_signal_with_predictive_task_switching_experiment.push(practiceNode)
+stop_signal_with_shape_matching_experiment.push(practiceNode)
 
-stop_signal_with_predictive_task_switching_experiment.push(start_test_block)
+stop_signal_with_shape_matching_experiment.push(start_test_block)
 
-stop_signal_with_predictive_task_switching_experiment.push(testNode)
+stop_signal_with_shape_matching_experiment.push(testNode)
 
-stop_signal_with_predictive_task_switching_experiment.push(post_task_block)
+stop_signal_with_shape_matching_experiment.push(post_task_block)
 
-stop_signal_with_predictive_task_switching_experiment.push(end_block)
+stop_signal_with_shape_matching_experiment.push(end_block)

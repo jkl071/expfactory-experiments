@@ -560,7 +560,7 @@ var practiceNode = {
 		var total_trials = 0
 	
 		for (var i = 0; i < data.length; i++){
-			if (data[i].trial_id == "practice_trial"){
+			if ((data[i].trial_id == "practice_trial") && (data[i].stop_signal_condition == 'go')){
 				total_trials+=1
 				if (data[i].rt != -1){
 					sum_rt += data[i].rt
@@ -671,7 +671,7 @@ var testNode = {
 		var total_trials = 0
 	
 		for (var i = 0; i < data.length; i++){
-			if (data[i].trial_id == "test_trial"){
+			if ((data[i].trial_id == "test_trial") && (data[i].stop_signal_condition == 'go')){
 				total_trials+=1
 				if (data[i].rt != -1){
 					sum_rt += data[i].rt
