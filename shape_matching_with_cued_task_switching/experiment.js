@@ -325,13 +325,22 @@ var mask_boards = [['<div class = bigbox><div class = leftbox>'],['</div><div cl
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-					'<li>Respond if the green and white shapes matches or mismatches based on the cue</li>' +
-				  	'<li>If the cue is '+cued_dimensions[0]+', please judge whether the two shapes '+cued_dimensions[0]+'.</li>' +
-					'<li>If the cue is '+cued_dimensions[1]+', please judge whether the two shapes '+cued_dimensions[1]+'.</li>' +
-					'<li>Yes: ' + possible_responses[0][0] + '</li>' +
-					'<li>No: ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Respond if the green and white shapes matches or mismatches based on the cue</li>' +
+						'<li>If the cue is '+cued_dimensions[0]+', please judge whether the two shapes '+cued_dimensions[0]+'.</li>' +
+						'<li>'+cued_dimensions[0]+': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+cued_dimensions[1]+': ' + possible_responses[1][0] + '</li>' +
+						'<li>If the cue is '+cued_dimensions[1]+', please judge whether the two shapes '+cued_dimensions[1]+'.</li>' +
+						'<li>'+cued_dimensions[1]+': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+cued_dimensions[0]+': ' + possible_responses[1][0] + '</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If the cue is '+cued_dimensions[0]+', please judge whether the two shapes '+cued_dimensions[0]+'.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions[0]+': ' + possible_responses[0][0] + ' | ' + cued_dimensions[1] + ': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If the cue is '+cued_dimensions[1]+', please judge whether the two shapes '+cued_dimensions[1]+'.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions[1]+': ' + possible_responses[0][0] + ' | '+cued_dimensions[0]+': ' + possible_responses[1][0] +'</p>' +
+				  '</div>' 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -343,6 +352,53 @@ var test_img_block = {
 	choices: [32],
 	data: {
 		trial_id: "fixation",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the first part of trial will look like.  You will see a cue, which will instruct you to decide whether the green and white shapes either match or mismatch.</p>'+
+					'<p class = block-text style="font-size:24px;">From trial to trial, the cue will switch between match and mismatch.</p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to continue.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox><div class = cue-text><font size = 36>Mismatch</font></div></div>' +
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the later part of the trial will look like.  Depending on which cue you received, please judge whether the green and red shapes match or mismatch!</p>'+
+					'<p class = block-text style="font-size:24px;">If you see the cue, '+cued_dimensions[0]+', respond whether the green and white shapes '+cued_dimensions[0]+'es. If they '+cued_dimensions[0]+', press '+possible_responses[0][0]+'.  If they '+cued_dimensions[1]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">If you see the cue, '+cued_dimensions[1]+', respond whether the green and white shapes '+cued_dimensions[1]+'es. If they '+cued_dimensions[1]+', press '+possible_responses[0][0]+'.  If they '+cued_dimensions[0]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;"><strong>Ignore the red shape!</strong></p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = leftbox>'+ preFileType + '1_green' + fileTypePNG + '</div>' +
+				'<div class = distractorbox>'+ preFileType + '2_red' + fileTypePNG + '</div>' +
+				'<div class = rightbox>'+ preFileType + '1_white' + fileTypePNG + '</div>' +
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
 		},
 	timing_post_trial: 0,
 	timing_stim: -1,
@@ -367,7 +423,7 @@ var response_keys =
 	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt which shows you the answers.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -406,22 +462,25 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see a cue, either match or mismatch, followed by some shapes. '+
-		'You will see a white shape on the right side of the screen and a green shape on the left side.</p> '+
+			'<p class = block-text>In this experiment you will see a cue, either match or mismatch, followed by some shapes. '+
+			'You will see a white shape on the right side of the screen and a green shape on the left side.</p> '+
 		
-		'<p class = block-text> Depending on which cue you see, you will be asked if the green shape matches or mismatches the white shape.</p>'+
+			'<p class = block-text> Depending on which cue you see, you will be asked if the green shape matches or mismatches the white shape.</p>'+
+		'</div>',
 		
-		'<p class = block-text>If you see the cue '+cued_dimensions[0]+', please judge whether the two shapes <strong>'+cued_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
-		'  </strong>if yes, and the <strong>'+possible_responses[1][0]+'  </strong>if no.</p>'+
+		'<div class = centerbox>'+
+			'<p class = block-text>If you see the cue '+cued_dimensions[0]+', please judge whether the two shapes <strong>'+cued_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
+			'  </strong>if they '+cued_dimensions[0]+', and the <strong>'+possible_responses[1][0]+'  </strong>if they '+cued_dimensions[1]+'.</p>'+
+	
+			'<p class = block-text>if you see the cue '+cued_dimensions[1]+', please judge whether the two shapes <strong>'+cued_dimensions[1]+'es.</strong>'+
+			' Press the <strong>'+possible_responses[0][0]+' </strong> if they '+cued_dimensions[1]+', and the <strong>'+possible_responses[1][0]+
+			' </strong> if they '+cued_dimensions[0]+'.</p>'+
 		
-		'<p class = block-text>If you see the cue '+cued_dimensions[1]+', please judge whether the two shapes <strong>'+cued_dimensions[1]+'es.</strong>'+
-		' Press the <strong>'+possible_responses[0][0]+' </strong> if yes, and the <strong>'+possible_responses[1][0]+
-		' </strong> if no.</p>'+
+			'<p class = block-text>On some trials a red shape will also be presented on the left. '+
+			'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
 		
-		'<p class = block-text>On some trials a red shape will also be presented on the left. '+
-		'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
-		
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
+		'</div>'
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -474,16 +533,16 @@ var start_test_block = {
 			'<p class = block-text>Please judge if the green shape matches or mismatches the white shape, depending on the cue.</p>'+
 	
 			'<p class = block-text>If you see the cue '+cued_dimensions[0]+', please judge whether the two shapes <strong>'+cued_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  </strong>if yes, and the <strong>'+possible_responses[1][0]+'  </strong>if no.</p>'+
+			'  </strong>if they '+cued_dimensions[0]+', and the <strong>'+possible_responses[1][0]+'  </strong>if they '+cued_dimensions[1]+'.</p>'+
 	
 			'<p class = block-text>if you see the cue '+cued_dimensions[1]+', please judge whether the two shapes <strong>'+cued_dimensions[1]+'es.</strong>'+
-			' Press the <strong>'+possible_responses[0][0]+' </strong> if yes, and the <strong>'+possible_responses[1][0]+
-			' </strong> if no.</p>'+
+			' Press the <strong>'+possible_responses[0][0]+' </strong> if they '+cued_dimensions[1]+', and the <strong>'+possible_responses[1][0]+
+			' </strong> if they '+cued_dimensions[0]+'.</p>'+
 	
 			'<p class = block-text>On some trials a red shape will also be presented on the left. '+
 			'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the answer prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -521,7 +580,8 @@ for (i = 0; i < practice_len + 1; i++) {
 			trial_id: "practice_cue"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0
+		timing_post_trial: 0,
+		prompt: prompt_text
 	}
 	
 	var mask_block = {
@@ -534,7 +594,8 @@ for (i = 0; i < practice_len + 1; i++) {
 		choices: 'none',
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		response_ends_trial: false
+		response_ends_trial: false,
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -547,15 +608,16 @@ for (i = 0; i < practice_len + 1; i++) {
 			exp_id: "shape_matching_with_cued_task_switching",
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
 		timing_stim: 2000, //2000
 		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	practiceTrials.push(cue_block)
 	practiceTrials.push(mask_block)
@@ -607,7 +669,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -718,7 +780,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -744,6 +806,10 @@ var testNode = {
 shape_matching_with_cued_task_switching_experiment = []
 
 shape_matching_with_cued_task_switching_experiment.push(instruction_node)
+
+shape_matching_with_cued_task_switching_experiment.push(practice1)
+
+shape_matching_with_cued_task_switching_experiment.push(practice2)
 
 shape_matching_with_cued_task_switching_experiment.push(practiceNode)
 

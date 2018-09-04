@@ -182,7 +182,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 	return stims	
 }
 	
-var getNextStim = function(){
+var getFixation = function(){
 	stim = stims.shift()
 	predictive_condition = stim.predictive_condition
 	predictive_dimension = stim.predictive_dimension
@@ -194,10 +194,9 @@ var getNextStim = function(){
 	magnitude = stim.magnitude
 	parity = stim.parity
 	
-	/*console.log('# = '+number+', other_# = '+flanking_number+', flank_cond = '+flanker_condition+
-				', whichQuad = '+whichQuadrant+', pred_dim = '+predictive_dimension+
-				'pred_cond = '+predictive_condition+ ', correct_response = '+correct_response)
-	*/
+	return fixation_boards[whichQuadrant - 1]
+
+
 }
 
 var getResponse = function() {
@@ -299,11 +298,16 @@ var task_boards = [[['<div class = bigbox><div class = decision-top-left><div cl
 				   [['<div class = bigbox><div class = decision-top-right><div class = centerbox><div class = flanker-text>'],['<div></div><div></div>']],
 				   [['<div class = bigbox><div class = decision-bottom-right><div class = centerbox><div class = flanker-text>'],['<div></div><div></div>']],
 				   [['<div class = bigbox><div class = decision-bottom-left><div class = centerbox><div class = flanker-text>'],['<div></div><div></div>']]]
+				   
+var fixation_boards = [['<div class = bigbox><div class = decision-top-left><div class = centerbox><div class = fixation>+</div></div></div></div>'],
+					   ['<div class = bigbox><div class = decision-top-right><div class = centerbox><div class = fixation>+</div></div></div></div>'],
+					   ['<div class = bigbox><div class = decision-bottom-right><div class = centerbox><div class = fixation>+</div></div></div></div>'],
+					   ['<div class = bigbox><div class = decision-bottom-left><div class = centerbox><div class = fixation>+</div></div></div></div>']]
 
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
+var prompt_text_list = '<ul list-text>'+
 				  	'<li>Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</li>' +
 				  	'<li>'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
 					'<li>'+predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
@@ -312,6 +316,12 @@ var prompt_text = '<ul list-text>'+
 					'<li>'+predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
 
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + ' | ' + predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Bottom 2 quadrants: Judge number on '+predictive_dimensions_list[1].dim+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+predictive_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + ' | ' + predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</p>' +
+				  '</div>' 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -332,6 +342,30 @@ var test_img_block = {
 	response_ends_trial: true
 };
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what a trial will look like.  The row of numbers are in the bottom of the screen, so you must judge the <strong>CENTER</strong> number on '+predictive_dimensions_list[1].dim+'. If '+predictive_dimensions_list[1].values[0]+', press '+possible_responses[0][0]+'.  If '+predictive_dimensions_list[1].values[1]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">If the numbers were on the top of the screen, please judge the <strong>CENTER</strong> number on '+predictive_dimensions_list[0].dim+'. If '+predictive_dimensions_list[0].values[0]+', press '+possible_responses[0][0]+'.  If '+predictive_dimensions_list[0].values[1]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">During practice and test trials, the numbers will move clockwise from trial to trial.  <strong>Ignore the numbers not in the center!</strong></p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = decision-bottom-left>'+
+					'<div class = centerbox><div class = flanker-text>33633</div></div>' +
+				'</div>' +
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
 
 //Set up post task questionnaire
 var post_task_block = {
@@ -346,7 +380,7 @@ var post_task_block = {
 };
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt which shows you the answers.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -389,6 +423,9 @@ var instructions_block = {
 			'<p class = block-text>You will be asked to judge the <strong>center number </strong>on magnitude (higher or lower than 5) or parity (odd or even), depending on which quadrant '+
 			'the numbers are in.</p>'+
 		
+		'</div>',
+		
+		'<div class = centerbox>'+
 			'<p class = block-text>In the top two quadrants, please judge the number based on <strong>'+predictive_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
 			'  if '+predictive_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+predictive_dimensions_list[0].values[1]+'</strong>.</p>'+
 		
@@ -398,7 +435,7 @@ var instructions_block = {
 		
 			'<p class = block-text>Please judge only the center number, you should ignore the other numbers.</p>'+
 			
-			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -464,7 +501,7 @@ var start_test_block = {
 	
 			'<p class = block-text>Please judge only the center number, you should ignore the other numbers.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the answer prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -491,7 +528,7 @@ practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getFixation,
 		is_html: true,
 		choices: 'none',
 		data: {
@@ -499,7 +536,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		},
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		on_finish: getNextStim
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -512,15 +549,16 @@ for (i = 0; i < practice_len + 1; i++) {
 			exp_id: "flanker_with_predictive_task_switching",
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
 		timing_stim: 2000, //2000
 		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	practiceTrials.push(fixation_block)
 	practiceTrials.push(practice_block)
@@ -571,7 +609,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 			feedback_text +=
 					'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -601,15 +639,14 @@ testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getFixation,
 		is_html: true,
 		choices: 'none',
 		data: {
 			trial_id: "test_fixation"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0,
-		on_finish: getNextStim
+		timing_post_trial: 0
 	}
 	
 	var test_block = {
@@ -670,7 +707,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -698,6 +735,8 @@ flanker_with_predictive_task_switching_experiment = []
 //flanker_with_predictive_task_switching_experiment.push(test_img_block)
 
 flanker_with_predictive_task_switching_experiment.push(instruction_node)
+
+flanker_with_predictive_task_switching_experiment.push(practice1)
 
 flanker_with_predictive_task_switching_experiment.push(practiceNode)
 

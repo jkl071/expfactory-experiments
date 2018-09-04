@@ -184,18 +184,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 
 	return stims	
 }	
-var getNextStim = function(){
-	stim = stims.shift()
-	predictive_condition = stim.predictive_condition
-	predictive_dimension = stim.predictive_dimension
-	shape_matching_condition = stim.shape_matching_condition
-	probe = stim.probe
-	target = stim.target
-	distractor = stim.distractor
-	correct_response = stim.correct_response
-	whichQuadrant = stim.whichQuad
-	
-}
 
 var getResponse = function() {
 	return correct_response
@@ -222,6 +210,22 @@ var getMask = function(){
 	return mask_boards[whichQuadrant - 1][0]+ preFileType + 'mask' + fileTypePNG + 
 		   mask_boards[whichQuadrant - 1][1]+ preFileType + 'mask' + fileTypePNG + 
 		   mask_boards[whichQuadrant - 1][2]
+
+
+}
+
+var getFixation = function(){
+	stim = stims.shift()
+	predictive_condition = stim.predictive_condition
+	predictive_dimension = stim.predictive_dimension
+	shape_matching_condition = stim.shape_matching_condition
+	probe = stim.probe
+	target = stim.target
+	distractor = stim.distractor
+	correct_response = stim.correct_response
+	whichQuadrant = stim.whichQuad
+	
+	return fixation_boards[whichQuadrant - 1]
 
 
 }
@@ -305,25 +309,71 @@ var mask_boards = [[['<div class = bigbox><div class = decision-top-left><div cl
 				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right><div class = leftbox>'],['</div><div class = rightbox>'],['</div></div><div class = decision-bottom-left></div></div>']],
 				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left><div class = leftbox>'],['</div><div class = rightbox>'],['</div></div></div>']]]
 
+
+var fixation_boards = [['<div class = bigbox><div class = decision-top-left><div class = centerbox><div class = fixation>+</div></div></div></div>'],
+					   ['<div class = bigbox><div class = decision-top-right><div class = centerbox><div class = fixation>+</div></div></div></div>'],
+					   ['<div class = bigbox><div class = decision-bottom-right><div class = centerbox><div class = fixation>+</div></div></div></div>'],
+					   ['<div class = bigbox><div class = decision-bottom-left><div class = centerbox><div class = fixation>+</div></div></div></div>']]
+
+
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Top 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[0]+'es</li>' +
-					'<li>Bottom 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[2]+'es</li>' +
-					'<li>Yes: ' + possible_responses[0][0] + '</li>' +
-					'<li>No: ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Top 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[0]+'es</li>' +
+						'<li>'+predictive_dimensions[0] +': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+predictive_dimensions[2] +': ' + possible_responses[1][0] + '</li>' +
+						'<li>Bottom 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[2]+'es</li>' +
+						'<li>'+predictive_dimensions[2] +': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+predictive_dimensions[0] +': ' + possible_responses[1][0] + '</li>' +
+					  '</ul>'
+				  
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Top 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[0]+'es</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+predictive_dimensions[0] +': ' + possible_responses[0][0] + ' | '+predictive_dimensions[2] +': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Bottom 2 quadrants: Answer if the green and white shapes '+predictive_dimensions[2]+'es</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+predictive_dimensions[2] +': ' + possible_responses[0][0] + ' | '+predictive_dimensions[0] +': ' + possible_responses[1][0] + '</p>' +
+				  '</div>' 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
 
 var test_img_block = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = decision-top-left><div class = leftbox>'+preFileType+'1_green'+fileTypePNG+'</div><div class = distractorbox></div><div class = rightbox></div></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>',
+	stimulus: '<div class = bigbox>'+
+				'<div class = decision-top-left><div class = centerbox><div class = fixation>+</div></div></div>'+
+			  	'<div class = prompt_box style = "font-size:16px">'+ prompt_text +'</div>'+
+			  '</div>',
 	is_html: true,
 	choices: [32],
 	data: {
 		trial_id: "fixation",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what a trial will look like.  The shapes are in the bottom of the screen, so you must respond whether the green and white shapes '+predictive_dimensions[2]+'es. If they '+predictive_dimensions[2]+', press '+possible_responses[0][0]+'.  If they '+predictive_dimensions[0]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">If the shapes were on the top of the screen, respond whether the green and white shapes '+predictive_dimensions[0]+'. If they '+predictive_dimensions[0]+'es, press '+possible_responses[0][0]+'.  If they '+predictive_dimensions[2]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">During practice and test trials, the shapes will move clockwise from trial to trial.  <strong>Ignore the red shape!</strong></p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = decision-bottom-left>'+
+					'<div class = leftbox>'+ preFileType + '1_green' + fileTypePNG + '</div>' +
+					'<div class = distractorbox>'+ preFileType + '2_red' + fileTypePNG + '</div>' +
+					'<div class = rightbox>'+ preFileType + '1_white' + fileTypePNG + '</div>' +
+				'</div>' +
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
 		},
 	timing_post_trial: 0,
 	timing_stim: -1,
@@ -348,7 +398,7 @@ var response_keys =
 	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt which shows you the answers.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -385,23 +435,26 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see shapes moving clockwise on the screen in 4 quadrants. '+
-		'On every trial, one quadrant will have a  white shape on the right and a green shape on the left.</p> '+
+			'<p class = block-text>In this experiment, across trials you will see shapes moving clockwise on the screen in 4 quadrants. '+
+			'On every trial, one quadrant will have a  white shape on the right and a green shape on the left.</p> '+
 		
-		'<p class = block-text>You will be asked if the green shape matches or mismatches the white shape, depending on which quadrant '+
-		'the shapes are in.</p>'+
+			'<p class = block-text>You will be asked if the green shape matches or mismatches the white shape, depending on which quadrant '+
+			'the shapes are in.</p>'+
+		'</div>',
 		
-		'<p class = block-text>When in the top two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
-		'  </strong>if yes, and the <strong>'+possible_responses[1][0]+'  </strong>if no.</p>'+
+		'<div class = centerbox>'+
+			'<p class = block-text>When in the top two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
+			'  </strong>if they <strong>'+predictive_dimensions[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  </strong>if they <strong>'+predictive_dimensions[2]+'</strong>.</p>'+
+	
+			'<p class = block-text>When in the bottom two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[2]+'es.</strong>'+
+			' Press the <strong>'+possible_responses[0][0]+' </strong> if they <strong>'+predictive_dimensions[2]+'</strong>, and the <strong>'+possible_responses[1][0]+
+			' </strong> if they <strong>'+predictive_dimensions[0]+'</strong>.</p>'+
 		
-		'<p class = block-text>When in the bottom two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[2]+'es.</strong>'+
-		' Press the <strong>'+possible_responses[0][0]+' </strong> if yes, and the <strong>'+possible_responses[1][0]+
-		' </strong> if no.</p>'+
+			'<p class = block-text>On some trials a red shape will also be presented on the left. '+
+			'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
 		
-		'<p class = block-text>On some trials a red shape will also be presented on the left. '+
-		'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
-		
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
+		'</div>'
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -455,16 +508,16 @@ var start_test_block = {
 			'the shapes are in.</p>'+
 	
 			'<p class = block-text>When in the top two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[0]+'es</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  </strong>if yes, and the <strong>'+possible_responses[1][0]+'  </strong>if no.</p>'+
+			'  </strong>if they <strong>'+predictive_dimensions[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  </strong>if they <strong>'+predictive_dimensions[2]+'</strong>.</p>'+
 	
 			'<p class = block-text>When in the bottom two quadrants, please judge whether the two shapes <strong>'+predictive_dimensions[2]+'es.</strong>'+
-			' Press the <strong>'+possible_responses[0][0]+' </strong> if yes, and the <strong>'+possible_responses[1][0]+
-			' </strong> if no.</p>'+
+			' Press the <strong>'+possible_responses[0][0]+' </strong> if they <strong>'+predictive_dimensions[2]+'</strong>, and the <strong>'+possible_responses[1][0]+
+			' </strong> if they <strong>'+predictive_dimensions[0]+'</strong>.</p>'+
 	
 			'<p class = block-text>On some trials a red shape will also be presented on the left. '+
 			'You should ignore the red shape - your task is only to respond based on whether the white and green shapes matches or mismatches.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the answer prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -491,7 +544,7 @@ practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getFixation,
 		is_html: true,
 		choices: 'none',
 		data: {
@@ -499,7 +552,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		},
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		on_finish: getNextStim
+		prompt: prompt_text
 	}
 	
 	var mask_block = {
@@ -513,7 +566,8 @@ for (i = 0; i < practice_len + 1; i++) {
 		choices: 'none',
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		response_ends_trial: false
+		response_ends_trial: false,
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -525,15 +579,16 @@ for (i = 0; i < practice_len + 1; i++) {
 		data: {
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
 		timing_stim: 2000, //2000
 		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	practiceTrials.push(fixation_block)
 	practiceTrials.push(mask_block)
@@ -584,7 +639,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 					
 			if (missed_responses > missed_thresh){
 				feedback_text +=
@@ -615,15 +670,14 @@ testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getFixation,
 		is_html: true,
 		choices: 'none',
 		data: {
 			trial_id: "test_fixation"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0,
-		on_finish: getNextStim
+		timing_post_trial: 0
 	}
 	
 	var mask_block = {
@@ -699,7 +753,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -725,6 +779,8 @@ var testNode = {
 shape_matching_with_predictive_task_switching_experiment = []
 
 shape_matching_with_predictive_task_switching_experiment.push(instruction_node)
+
+shape_matching_with_predictive_task_switching_experiment.push(practice1)
 
 shape_matching_with_predictive_task_switching_experiment.push(practiceNode)
 
