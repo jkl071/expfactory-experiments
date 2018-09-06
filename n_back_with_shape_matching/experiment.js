@@ -308,9 +308,18 @@ var letters = 'bBdDgGtTvV'.split("")
 
 
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Match the current letter to the letter that appeared some number of trials ago</li>' +
+						'<li>If they match, press the '+possible_responses[0][0]+'</li>' +
+					    '<li>If they mismatch, press the '+possible_responses[1][0]+'</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Match the current letter to the letter that appeared 1 trial ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they match, press the '+possible_responses[0][0]+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they mismatch, press the '+possible_responses[1][0]+'</p>' +
+				  '</div>'
+
 
 var current_trial = 0
 var current_block = 0
@@ -541,7 +550,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -622,7 +631,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		if (missed_responses > missed_thresh){
 			feedback_text +=

@@ -1,3 +1,7 @@
+/*******************************************************/
+/***********    Network Default CSS Styles    **********/
+/*******************************************************/
+
 .display_stage {
     position: fixed;
     background: black;
@@ -14,85 +18,42 @@
   color: white;
 }
 
-
-/*******************************************************/
-/************  THIS IS FOR TRAINING SETS   *************/
-/*******************************************************/
-
-.topLeft {
-width: 20vw;
-height: 20vw;
-position:absolute;
-top:50%;
-left:50%; 
-margin-right:0%;
-transform: translate(-125%,-115%);
+.instructBox {
+ width: 80vw;
+ height: 10vw;
+ position:absolute;
+ top:10%;
+ left:50%; 
+ margin-right: 0%;
+ transform: translate(-50%,-50%);
+ background-color: none;
+ font-size: 24px;
 }
 
-.topRight {
-width: 20vw;
-height: 20vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(25%,-115%);
+.prompt_box {
+ width: 75%;
+ height: 20%;
+ position:absolute;
+ top:10%;
+ left:20%;
+ transform: translate(-50%,-45%);
+ margin-right:0%;
+ background-color: none;
+ text-align: center;
 }
-
-.topMiddle {
-width: 20vw;
-height: 20vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,-115%);
-}
-
-.bottomLeft {
-width: 20vw;
-height: 20vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-125%,15%);
-}
-
-.bottomRight {
-width: 20vw;
-height: 20vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(25%,15%);
-}
-
-
-.bottomMiddle {
-width: 20vw;
-height: 20vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,15%);
-}
-
 
 .fixation {
  text-align: center;
- font-size: auto;
+ font-size: 50px;
  position: relative;
  top: 50%; 
  transform: translateY(-50%);
  -webkit-transform: translateY(-50%);
 }
 
-.cue_text {
+.cue-text {
  text-align: center;
- font-size: auto;
+ font-size: 50px;
  position: relative;
  top: 50%; 
  transform: translateY(-50%);
@@ -111,17 +72,6 @@ background-color: black;
 text-align: center;
 }
 
-.forgetStim {
-  height: auto;
-  width: auto\9; /* ie8 */
-  position: absolute;  
-  top: 0;  
-  bottom: 0;  
-  left: 0;  
-  right: 0;  
-  margin: auto;  
-}
-
 .instructBox {
 	width: 80vw;
 	height: 10vw;
@@ -130,15 +80,6 @@ text-align: center;
 	left:50%; 
 	margin-right: 50%;
 	transform: translate(-50%,-50%);
-}
-
-.cue-text {
-	text-align: center;
-	font-size: 50px;
-	position: relative;
-    top: 50%; 
-    transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
 }
 
 .fb_box {
@@ -163,52 +104,96 @@ text-align: center;
  text-align: center;
 }
 
+/*******************************************************/
+/***********  Directed Forgetting CSS Styles  **********/
+/*******************************************************/
 
-/*these are predictive task switching css styles */
-.decision-top-left {
- width: 40vw;
- height: 40vh;
+.lettersBox {
+ width: 70vw;
+ height: 50%;
  position:absolute;
- top:25%;
- left:25%;
+ top:50%;
+ left:50%; 
+ margin-right: 0%;
  transform: translate(-50%,-50%);
- margin-right: -50%;
  background-color: none;
- text-align: center;
+ font-size: 24px;
 }
 
-.decision-bottom-left {
- width: 40vw;
- height: 40vh;
- position:absolute;
- top:75%;
- left:25%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: none;
- text-align: center;
+.topLeft {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%; 
+margin-right:0%;
+transform: translate(-200%,-150%);
+background-color: none;
 }
 
-.decision-top-right {
- height: 40vh;
- width: 40vw;
- position:absolute;
- top:25%;
- left:75%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: none;
- text-align: center;
+.topRight {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(100%,-150%);
+background-color: none;
 }
 
-.decision-bottom-right {
- height: 40vh;
- width: 40vw;
- position:absolute;
- top:75%;
- left:75%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: none;
- text-align: center;
+.topMiddle {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-50%,-150%);
+background-color: none;
+}
+
+.bottomLeft {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-200%,50%);
+background-color: none;
+}
+
+.bottomRight {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(100%,50%);
+background-color: none;
+}
+
+
+.bottomMiddle {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-50%,50%);
+background-color: none;
+}
+
+.forgetStim {
+  height: auto;
+  width: auto\9; /* ie8 */
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
 }

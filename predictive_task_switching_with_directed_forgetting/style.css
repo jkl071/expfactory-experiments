@@ -1,3 +1,7 @@
+/*******************************************************/
+/***********    Network Default CSS Styles    **********/
+/*******************************************************/
+
 .display_stage {
     position: fixed;
     background: black;
@@ -14,91 +18,42 @@
   color: white;
 }
 
-
-/*******************************************************/
-/************  THIS IS FOR TRAINING SETS   *************/
-/*******************************************************/
-
-.topLeft {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%; 
-margin-right:0%;
-transform: translate(-200%,-115%);
-background-color: none;
+.instructBox {
+ width: 80vw;
+ height: 10vw;
+ position:absolute;
+ top:10%;
+ left:50%; 
+ margin-right: 0%;
+ transform: translate(-50%,-50%);
+ background-color: none;
+ font-size: 24px;
 }
 
-.topRight {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(100%,-115%);
-background-color: none;
+.prompt_box {
+ width: 75%;
+ height: 20%;
+ position:absolute;
+ top:50%;
+ left:50%;
+ transform: translate(-50%,-45%);
+ margin-right:0%;
+ background-color: none;
+ text-align: center;
 }
-
-.topMiddle {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,-115%);
-background-color: none;
-}
-
-.bottomLeft {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-200%,15%);
-background-color: none;
-}
-
-.bottomRight {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(100%,15%);
-background-color: none;
-}
-
-
-.bottomMiddle {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,15%);
-background-color: none;
-}
-
 
 .fixation {
  text-align: center;
- font-size: auto;
+ font-size: 50px;
  position: relative;
  top: 50%; 
  transform: translateY(-50%);
  -webkit-transform: translateY(-50%);
 }
 
-.cue_text {
+.cue-text {
  text-align: center;
- font-size: auto;
+ font-size: 50px;
  position: relative;
  top: 50%; 
  transform: translateY(-50%);
@@ -115,17 +70,6 @@ left:0%;
 margin-right:0%;
 background-color: black;
 text-align: center;
-}
-
-.forgetStim {
-  height: auto;
-  width: auto\9; /* ie8 */
-  position: absolute;  
-  top: 0;  
-  bottom: 0;  
-  left: 0;  
-  right: 0;  
-  margin: auto;  
 }
 
 .instructBox {
@@ -169,8 +113,103 @@ text-align: center;
  text-align: center;
 }
 
+/*******************************************************/
+/***********  Directed Forgetting CSS Styles  **********/
+/*******************************************************/
 
-/*these are predictive task switching css styles */
+.lettersBox {
+ width: 70vw;
+ height: 50%;
+ position:absolute;
+ top:50%;
+ left:50%; 
+ margin-right: 0%;
+ transform: translate(-50%,-50%);
+ background-color: none;
+ font-size: 24px;
+}
+
+.topLeft {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%; 
+margin-right:0%;
+transform: translate(-200%,-150%);
+background-color: none;
+}
+
+.topRight {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(100%,-150%);
+background-color: none;
+}
+
+.topMiddle {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-50%,-150%);
+background-color: none;
+}
+
+.bottomLeft {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-200%,50%);
+background-color: none;
+}
+
+.bottomRight {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(100%,50%);
+background-color: none;
+}
+
+
+.bottomMiddle {
+width: 5vw;
+height: 5vw;
+position:absolute;
+top:50%;
+left:50%;
+margin-right:0%;
+transform: translate(-50%,50%);
+background-color: none;
+}
+
+.forgetStim {
+  height: auto;
+  width: auto\9; /* ie8 */
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
+}
+
+/*******************************************************/
+/************    Predictive CSS Styles     *************/
+/*******************************************************/
 .decision-top-left {
  width: 40vw;
  height: 40vh;

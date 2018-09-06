@@ -76,6 +76,72 @@ var randomDraw = function(lst) {
 	return lst[index]
 };
 
+var createControlTypes = function(numTrialsPerBlock){
+	var whichQuadStart = jsPsych.randomization.repeat([1,2,3,4],1).pop()
+	var predictive_cond_array = predictive_conditions[whichQuadStart%2]
+	
+	predictive_dimensions = predictive_dimensions_list_control_trials[0]
+	
+	var n_back_trial_type_list = []
+	var n_back_trial_types1 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	var n_back_trial_types2 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	var n_back_trial_types3 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	var n_back_trial_types4 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	n_back_trial_type_list.push(n_back_trial_types1)
+	n_back_trial_type_list.push(n_back_trial_types2)
+	n_back_trial_type_list.push(n_back_trial_types3)
+	n_back_trial_type_list.push(n_back_trial_types4)
+	
+	var stims = []
+	for (var i = 0; i < numTrialsPerBlock + 1; i++){
+		quadIndex = whichQuadStart%4
+		if (quadIndex == 0){
+			quadIndex = 4
+		}
+		
+		if (i == 0){
+			predictive_condition = 'N/A'
+			n_back_cond = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'],1).pop()
+			predictive_dimension = predictive_dimensions[quadIndex - 1][0]
+		} else if (i > 0){
+			predictive_condition = predictive_cond_array[i%2]	
+			predictive_dimension = predictive_dimensions[quadIndex - 1][0]
+			n_back_cond = n_back_trial_type_list[quadIndex - 1].pop()
+		}
+		
+		
+		if (n_back_cond == 'match'){
+			correct_response = possible_responses[0][1]
+			if (predictive_dimension == 'T or t'){
+				probe = randomDraw(['t','T'])
+			} else if (predictive_dimension == 'non-T or non-t'){
+				probe = randomDraw('bBdDgGvV'.split("").filter(function(y) {return $.inArray(y, ['t','T']) == -1}))
+			}
+		} else if (n_back_cond == 'mismatch'){
+			correct_response = possible_responses[1][1]
+			if (predictive_dimension == 'T or t'){
+				probe = randomDraw('bBdDgGvV'.split("").filter(function(y) {return $.inArray(y, ['t','T']) == -1}))
+			} else if (predictive_dimension == 'non-T or non-t'){
+				probe = randomDraw(['t','T'])
+			}			
+		}
+		
+		stim = {
+			whichQuad: quadIndex,
+			n_back_condition: n_back_cond,
+			predictive_dimension: predictive_dimension,
+			predictive_condition: predictive_condition,
+			probe: probe,
+			correct_response: correct_response
+		}
+		
+		stims.push(stim)
+		whichQuadStart += 1
+	}	
+	return stims		
+}
+
+
 var createTrialTypes = function(numTrialsPerBlock){
 	// 1 or 3 is stay for predictive
 	// 2 or 4 is switch for predictive
@@ -85,10 +151,10 @@ var createTrialTypes = function(numTrialsPerBlock){
 	var predictive_cond_array = predictive_conditions[whichQuadStart%2]
 	
 	var n_back_trial_type_list = []
-	var n_back_trial_types1 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	var n_back_trial_types2 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	var n_back_trial_types3 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
-	var n_back_trial_types4 = jsPsych.randomization.repeat(['match','mismatch'], numTrialsPerBlock/8)
+	var n_back_trial_types1 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	var n_back_trial_types2 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	var n_back_trial_types3 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
+	var n_back_trial_types4 = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'], numTrialsPerBlock/20)
 	n_back_trial_type_list.push(n_back_trial_types1)
 	n_back_trial_type_list.push(n_back_trial_types2)
 	n_back_trial_type_list.push(n_back_trial_types3)
@@ -117,7 +183,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 			predictive_dimension = 'N/A'
 		
 		} else if ( i == 1){
-			n_back_cond = jsPsych.randomization.repeat(['match','mismatch'],1).pop()
+			n_back_cond = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'],1).pop()
 			
 			if ((n_back_cond == "match") && (predictive_dimension == '1-back')){
 				probe = randomDraw([stims[i - delay].probe.toUpperCase(), stims[i - delay].probe.toLowerCase()])
@@ -179,6 +245,20 @@ var getStim = function(){
 	
 }
 
+var getControlStim = function(){	
+	stim = control_stims.shift()
+	whichQuadrant = stim.whichQuad
+	n_back_condition = stim.n_back_condition
+	predictive_dimension = stim.predictive_dimension
+	predictive_condition = stim.predictive_condition
+	probe = stim.probe
+	correct_response = stim.correct_response
+		
+	return task_boards[whichQuadrant - 1][0] + probe
+		   task_boards[whichQuadrant - 1][1]
+	
+}
+
 var getResponse =  function(){
 	return correct_response
 }
@@ -230,15 +310,15 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = 0
 
 
-var practice_len = 8 // 24
-var exp_len = 16 //320 must be divisible by 8
-var numTrialsPerBlock = 16 // must be divisible by 8
+var practice_len = 20 // 24
+var exp_len = 120 //320 must be divisible by 20
+var numTrialsPerBlock = 40 // must be divisible by 20
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 
-var practice_thresh = 4 // 3 blocks of 24 trials
+var practice_thresh = 3 // 3 blocks of 24 trials
 
 var pathSource = "/static/experiments/n_back_with_predictive_task_switching/images/"
 var fileTypePNG = ".png'></img>"
@@ -252,33 +332,45 @@ var predictive_conditions = [['stay','switch'],
 
 var predictive_dimensions_list = jsPsych.randomization.repeat([[['1-back',1], ['1-back',1], ['2-back',2], ['2-back',2]],
 							 								   [['2-back',2], ['2-back',2], ['1-back',1], ['1-back',1]]],1)
-							 
+	
+var predictive_dimensions_list_control_trials = jsPsych.randomization.repeat([[['T or t'], ['T or t'], ['non-T or non-t'], ['non-T or non-t']],
+							 								   	   			  [['non-T or non-t'], ['non-T or non-t'], ['T or t'], ['T or t']]],1)					 
 var letters = 'bBdDgGtTvV'.split("")
 							 
 
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
+var control_stims = createControlTypes(numTrialsPerBlock)
+var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Top 2 quadrants: '+predictive_dimensions[0]+'</li>' +
-				  	'<li>Top 2 quadrants: '+predictive_dimensions[2]+'</li>' +
-				  '</ul>'
-				  
+
+var prompt_text_list = '<ul list-text>'+
+						'<li>Top 2 quadrants: match the current letter to the letter that appeared '+predictive_dimensions[0][1]+' trial(s) ago</li>' +
+						'<li>Top 2 quadrants: match the current letter to the letter that occurred '+predictive_dimensions[2][1]+' trial(s) ago</li>' +
+						'<li>If they match, press the '+possible_responses[0][0]+'</li>' +
+					    '<li>If they mismatch, press the '+possible_responses[1][0]+'</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Top 2 quadrants: match the current letter to the letter that appeared '+predictive_dimensions[0][1]+' trial(s) ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Top 2 quadrants: match the current letter to the letter that occurred '+predictive_dimensions[2][1]+' trial(s) ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they match, press the '+possible_responses[0][0]+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they mismatch, press the '+possible_responses[1][0]+'</p>' +
+				  '</div>'
+				  				  
+
 var current_trial = 0
 var current_block = 0
-
 /* ************************************ */
 /*          Define Game Boards          */
 /* ************************************ */
 
-var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = n_back_letter><div class = fixation>'],['</div></div></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right><div class = n_back_letter><div class = fixation>'],['</div></div></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right><div class = n_back_letter><div class = fixation>'],['</div></div></div><div class = decision-bottom-left></div></div>']],
-				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left><div class = n_back_letter><div class = fixation>'],['</div></div></div></div>']]]
+var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = centerbox><div class = fixation>'],['</div></div></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
+				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right><div class = centerbox><div class = fixation>'],['</div></div></div><div class = decision-bottom-right></div><div class = decision-bottom-left></div></div>']],
+				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right><div class = centerbox><div class = fixation>'],['</div></div></div><div class = decision-bottom-left></div></div>']],
+				   [['<div class = bigbox><div class = decision-top-left></div><div class = decision-top-right></div><div class = decision-bottom-right></div><div class = decision-bottom-left><div class = centerbox><div class = fixation>'],['</div></div></div></div>']]]
 
 
-
-var stims = createTrialTypes(practice_len)
 
 /* ************************************ */
 /*        Set up jsPsych blocks         */
@@ -302,7 +394,6 @@ var end_block = {
 	type: 'poldrack-text',
 	data: {
 		trial_id: "end",
-    	exp_id: 'flanker_with_predictive_task_switching'
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
@@ -333,10 +424,20 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>When in the top two, do a '+predictive_dimensions[0]+'.</p> '+
-			'<p class = block-text>When in the bottom two, do a '+predictive_dimensions[2]+'.</p> '+
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</p> '+
-			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
+			'<p class = block-text>In this task, you will see a letter moving clockwise through the screen on every trial.</p>'+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1 or 2 trials ago depending on if the letter was on the top or bottom quadrants.</p> '+
+			'<p class = block-text>When in the top two quadrants, do a '+predictive_dimensions[0][0]+'. Please respond if the current letter was the same as the letter that occurred '+predictive_dimensions[0][1]+' trial(s) ago.</p> '+
+			'<p class = block-text>When in the bottom two quadrants, do a '+predictive_dimensions[2][0]+'.   Please respond if the current letter was the same as the letter that occurred '+predictive_dimensions[2][1]+' trial(s) ago.</p> '+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
+		'</div>',
+		'<div class = centerbox>'+
+			'<p class = block-text>For example, if you were asked to do (implicitly, through the quadrants) a 1-back, 1-back, 2-back, 2-back and the letters you received for each of those tasks were V, B, v, V, you would respond, no match, no match, match, and no match.</p> '+
+			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
+			'<p class = block-text>The second letter in that sequence, B, DOES NOT match the letter from trial 1 ago, V, so you would respond mismatch.</p>'+
+			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from trials 2 ago, V, so you would respond match.</p>'+
+			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from trials 2 ago, B, so you would respond mismatch.</p>'+
+			'<p class = block-text>We will start with practice after you finish the instructions, so please understand this before you move on.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -369,6 +470,25 @@ var instruction_node = {
 	}
 }
 
+var start_control_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "instruction"
+	},
+	timing_response: 180000,
+	text: '<div class = centerbox>'+
+			'<p class = block-text>For this block of trials, you do not have to match letters.  Instead, indicate whether the current letter is a T (or t) or any other letter other than T (or t) depending on which quadrant the letter is in.</p>'+
+			'<p class = block-text>When in the top two quadrants, respond if the current letter was a '+predictive_dimensions_list_control_trials[0][0]+'. Press the '+possible_responses[0][0]+' if the current letter was a '+predictive_dimensions_list_control_trials[0][0]+' and the '+possible_responses[1][0]+' if not.</p> '+
+			'<p class = block-text>When in the bottom two quadrants, respond if the current letter was a '+predictive_dimensions_list_control_trials[0][2]+'. Press the '+possible_responses[0][0]+' if the current letter was a '+predictive_dimensions_list_control_trials[0][2]+' and the '+possible_responses[1][0]+' if not.</p> '+	
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
+		 '</div>',
+	cont_key: [13],
+	timing_post_trial: 1000,
+	on_finish: function(){
+		feedback_text = "We will now start this block. Press enter to begin."
+	}
+};
+
 var start_test_block = {
 	type: 'poldrack-text',
 	data: {
@@ -377,11 +497,12 @@ var start_test_block = {
 	timing_response: 180000,
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
-			
-			'<p class = block-text>When in the top two, do a '+predictive_dimensions[0]+'.</p> '+
-			'<p class = block-text>When in the bottom two, do a '+predictive_dimensions[2]+'.</p> '+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1 or 2 trials ago depending on if the letter was on the top or bottom quadrants.</p> '+
+			'<p class = block-text>When in the top two quadrants, do a '+predictive_dimensions[0][0]+'. Please respond if the current letter was the same as the letter that occurred '+predictive_dimensions[0][1]+' trial(s) ago.</p> '+
+			'<p class = block-text>When in the bottom two quadrants, do a '+predictive_dimensions[2][0]+'.   Please respond if the current letter was the same as the letter that occurred '+predictive_dimensions[2][1]+' trial(s) ago.</p> '+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -404,7 +525,7 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -426,9 +547,79 @@ var feedback_block = {
 /*        Set up timeline blocks        */
 /* ************************************ */
 
+var control_before = Math.round(Math.random()) //0 control comes before test, 1, after
+
+var controlTrials = []
+controlTrials.push(feedback_block)
+for (i = 0; i < numTrialsPerBlock + 1; i++) {
+	
+	var control_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getControlStim,
+		is_html: true,
+		data: {
+			"trial_id": "control_trial",
+		},
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
+		timing_post_trial: 0,
+		response_ends_trial: false,
+		on_finish: appendData
+	}
+	//controlTrials.push(fixation_block)
+	controlTrials.push(control_block)
+}
+
+var controlCount = 0
+var controlNode = {
+	timeline: controlTrials,
+	loop_function: function(data) {
+		controlCount += 1
+		stims = createTrialTypes(numTrialsPerBlock)
+		current_trial = 0
+	
+		var sum_rt = 0
+		var sum_responses = 0
+		var correct = 0
+		var total_trials = 0
+	
+		for (var i = 0; i < data.length; i++){
+			if (data[i].trial_id == "control_trial"){
+				total_trials+=1
+				if (data[i].rt != -1){
+					sum_rt += data[i].rt
+					sum_responses += 1
+					if (data[i].key_press == data[i].correct_response){
+						correct += 1
+		
+					}
+				}
+		
+			}
+	
+		}
+	
+		var accuracy = correct / total_trials
+		var missed_responses = (total_trials - sum_responses) / total_trials
+		var ave_rt = sum_rt / sum_responses
+	
+		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
+		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</strong>"
+
+		if (controlCount == 1){
+			feedback_text +=
+					'</p><p class = block-text>Done with this block. Press Enter to continue.' 
+			stims = createTrialTypes(numTrialsPerBlock)
+			return false
+	
+		} 
+	}
+}
+
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len; i++) {
+for (i = 0; i < practice_len + 2; i++) {
 	
 	var practice_block = {
 		type: 'poldrack-categorize',
@@ -439,15 +630,16 @@ for (i = 0; i < practice_len; i++) {
 		data: {
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
-		timing_stim: 1000, //2000
-		timing_response: 1000,
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'+ prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'+ prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'+ prompt_text,
+		timing_stim: 2000, //2000
+		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	//practiceTrials.push(fixation_block)
 	practiceTrials.push(practice_block)
@@ -497,7 +689,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -522,7 +714,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-for (i = 0; i < numTrialsPerBlock; i++) {
+for (i = 0; i < numTrialsPerBlock + 2; i++) {
 	
 	var test_block = {
 		type: 'poldrack-single-stim',
@@ -532,8 +724,8 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 1000, //2000
-		timing_response: 1000, //2000
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -580,7 +772,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		if (missed_responses > missed_thresh){
 			feedback_text +=
@@ -590,6 +782,7 @@ var testNode = {
 		if (testCount == numTestBlocks){
 			feedback_text +=
 					'</p><p class = block-text>Done with this test. Press Enter to continue.'
+			stims = createTrialTypes(numTrialsPerBlock)
 			return false
 		} else {
 		
@@ -610,8 +803,18 @@ n_back_with_predictive_task_switching_experiment.push(instruction_node);
 
 n_back_with_predictive_task_switching_experiment.push(practiceNode);
 
+if (control_before == 0){
+	n_back_with_predictive_task_switching_experiment.push(start_control_block);
+	n_back_with_predictive_task_switching_experiment.push(controlNode);
+}
+
 n_back_with_predictive_task_switching_experiment.push(start_test_block);
 
 n_back_with_predictive_task_switching_experiment.push(testNode);
+
+if (control_before == 1){
+	n_back_with_predictive_task_switching_experiment.push(start_control_block);
+	n_back_with_predictive_task_switching_experiment.push(controlNode);
+}
 
 n_back_with_predictive_task_switching_experiment.push(end_block);

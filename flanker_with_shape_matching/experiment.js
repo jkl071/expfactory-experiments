@@ -183,7 +183,7 @@ var getMask = function(){
 
 	
 	return task_boards[0]+ preFileType + 'mask' + fileTypePNG +
-		   task_boards[1]+ preFileType + 'mask' + fileTypePNG +
+		   task_boards[1]+ 
 		   task_boards[2]+ preFileType + 'mask' + fileTypePNG +
 		   task_boards[3]+ preFileType + 'mask' + fileTypePNG +
 		   task_boards[4]+ preFileType + 'mask' + fileTypePNG +
@@ -260,10 +260,16 @@ var task_boards = [['<div class = bigbox><div class = leftbox>'],['</div><div cl
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Match: ' + possible_responses[0][0] + '</li>' +
-				  	'<li>Mismatch: ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Match: ' + possible_responses[0][0] + '</li>' +
+						'<li>Mismatch: ' + possible_responses[1][0] + '</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Please judge if the green and the CENTER white shapes match.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Match: ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Mismatch: ' + possible_responses[1][0] + '</p>' +
+				  '</div>' 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -290,6 +296,36 @@ var test_img_block = {
 	response_ends_trial: true
 };
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the trial will look like.  You will see a row of shapes; you will always see 5 white shapes, 1 green shape, and sometimes, 1 red shape. Please judge whether the green and <strong>CENTER</strong> white shape match or mismatch!</p>'+
+					'<p class = block-text style="font-size:24px;">If they match, press the ' + possible_responses[0][0] + '.</p>'+
+					'<p class = block-text style="font-size:24px;">If they mismatch, press the ' + possible_responses[1][0] + '.</p>'+
+					'<p class = block-text style="font-size:24px;"><strong>Ignore the white shapes not in the center, and the red shape if it appears!</strong></p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = leftbox>'+ preFileType + '3_green' + fileTypePNG + '</div>' +
+				'<div class = distractorbox>'+ preFileType + '2_red' + fileTypePNG + '</div>' +
+				'<div class = rightbox1>'+ preFileType + '1_white' + fileTypePNG + '</div>' +
+				'<div class = rightbox2>'+ preFileType + '1_white' + fileTypePNG + '</div>' +
+				'<div class = rightbox_center>'+ preFileType + '3_white' + fileTypePNG + '</div>' +
+				'<div class = rightbox3>'+ preFileType + '1_white' + fileTypePNG + '</div>' +
+				'<div class = rightbox4>'+ preFileType + '1_white' + fileTypePNG + '</div>' +
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
 //Set up post task questionnaire
 var post_task_block = {
    type: 'survey-text',
@@ -302,12 +338,8 @@ var post_task_block = {
    columns: [60,60]
 };
 
-/* define static blocks */
-var response_keys =
-	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
 
-
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -345,17 +377,22 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see a row of shapes on the right and left side of the screen.</p> '+
+			'<p class = block-text>In this experiment you will see a row of shapes. You will always see 5 white shapes to the right, 1 green shape to the left, and sometimes, 1 red shape overlapping with the green shape.</p> '+
 		
-		'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the <strong>CENTER</strong> white shape on the right.</p>'+
+			'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the <strong>CENTER</strong> white shape on the right.</p>'+
 		
-		'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
+		'</div>',
 		
-		'<p class = block-text>You will always see multiple white shapes, please match the green shape only to the <strong>CENTER</strong> white shape. Ignore the other white shapes.</p>'+
-		
-		'<p class = block-text>Sometimes, you will also see a red shape near the green shape.  Ignore this red shape as well.</p>'+
+		'<div class = centerbox>'+
 				
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+			'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
+		
+			'<p class = block-text>You will always see multiple white shapes, please match the green shape only to the <strong>CENTER</strong> white shape. Ignore the other white shapes.</p>'+
+		
+			'<p class = block-text>Sometimes, you will also see a red shape near the green shape.  Ignore this red shape as well.</p>'+
+				
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+		'</div>'
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -413,7 +450,7 @@ var start_test_block = {
 		
 			'<p class = block-text>Sometimes, you will also see a red shape near the green shape.  Ignore this red shape as well.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -448,7 +485,8 @@ for (i = 0; i < practice_len; i++) {
 		choices: 'none',
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		response_ends_trial: false
+		response_ends_trial: false,
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -461,15 +499,16 @@ for (i = 0; i < practice_len; i++) {
 			exp_id: "shape_matching_with_cued_task_switching",
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
 		timing_stim: 2000, //2000
 		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	practiceTrials.push(mask_block)
 	practiceTrials.push(practice_block)
@@ -520,7 +559,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -618,7 +657,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text_list 
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -646,6 +685,8 @@ flanker_with_shape_matching_experiment = []
 //flanker_with_shape_matching_experiment.push(test_img_block)
 
 flanker_with_shape_matching_experiment.push(instruction_node)
+
+flanker_with_shape_matching_experiment.push(practice1)
 
 flanker_with_shape_matching_experiment.push(practiceNode)
 

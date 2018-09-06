@@ -222,7 +222,7 @@ var getCue = function(){
 
 	console.log('cued condition = '+cued_condition+', flanker_condition: '+ flanker_condition+', cued_dimension: '+cued_dimension+', correct_response: '+correct_response+', number: '+number+', flankers: '+flanking_number)
 	
-	return '<div class = centerbox><div class = cue-text><font size = 36>'+cued_dimension+'</font></div></div>'	
+	return '<div class = centerbox><div class = cue-text>'+cued_dimension+'</div></div>'	
 
 }
 
@@ -310,14 +310,21 @@ var task_boards = [['<div class = bigbox><div class = centerbox><div class = fla
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
+var prompt_text_list = '<ul list-text>'+
 				  	'<li>Cue was '+cued_dimensions_list[0].dim+': Judge number on '+cued_dimensions_list[0].dim+'</li>' +
 				  	'<li>'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
 					'<li>'+cued_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
-					'<li>Cue was '+cued_dimensions_list[1].dim+': '+cued_dimensions_list[1].dim+'</li>' +
+					'<li>Cue was '+cued_dimensions_list[1].dim+': Judge number on '+cued_dimensions_list[1].dim+'</li>' +
 					'<li>'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
 					'<li>'+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
+				  
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If the cue is '+cued_dimensions_list[0].dim+', judge number on '+cued_dimensions_list[0].dim+'.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + ' | ' + cued_dimensions_list[0].values[1] + ': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If the cue is '+cued_dimensions_list[1].dim+', judge number on '+cued_dimensions_list[1].dim+'.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + ' | '+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] +'</p>' +
+				  '</div>' 
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -338,6 +345,52 @@ var test_img_block = {
 	response_ends_trial: true
 };
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the first part of trial will look like.  You will see a cue, which will instruct you to judge a number based on a dimension, either magnitude or parity.</p>'+
+					'<p class = block-text style="font-size:24px;">From trial to trial, the cue will switch between '+cued_dimensions_list[0].dim+' and '+cued_dimensions_list[1].dim+'.</p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to continue.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox><div class = cue-text><font size = 36>Magnitude</font></div></div>' +
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the later part of the trial will look like.  Depending on which cue you received, please judge the <strong>CENTER</strong> number on magnitude or parity!</p>'+
+					'<p class = block-text style="font-size:24px;">If you saw the cue, '+cued_dimensions_list[0].dim+', judge <strong>CENTER</strong> number on '+cued_dimensions_list[0].dim+'. If '+cued_dimensions_list[0].values[0]+', press '+possible_responses[0][0]+'.  If '+cued_dimensions_list[0].values[1]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">If you saw the cue, '+cued_dimensions_list[1].dim+', judge <strong>CENTER</strong> number on '+cued_dimensions_list[1].dim+'. If '+cued_dimensions_list[1].values[0]+', press '+possible_responses[0][0]+'.  If '+cued_dimensions_list[1].values[1]+', press '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;"><strong>Ignore the numbers not in the center!</strong></p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+ 
+				'</div>'+
+				
+				'<div class = centerbox><div class = flanker-text>33633</div></div>'+
+			'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
 //Set up post task questionnaire
 var post_task_block = {
    type: 'survey-text',
@@ -350,12 +403,7 @@ var post_task_block = {
    columns: [60,60]
 };
 
-/* define static blocks */
-var response_keys =
-	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
-
-
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -393,19 +441,28 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see a cue, either magnitude or parity, followed by a row of numbers.</p> '+
+			'<p class = block-text>In this experiment you will see a cue, either magnitude or parity, followed by a row of numbers.</p> '+
 		
-		'<p class = block-text>You will be asked to judge the <strong>center number </strong>on magnitude (higher or lower than 5) or parity (odd or even), depending on which cue you see.</p>'+
+			'<p class = block-text>You will be asked to judge the <strong>center number </strong>on magnitude (higher or lower than 5) or parity (odd or even), depending on which cue you saw.</p>'+
+			
+			'<p class = block-text>So for example, if the center number was 2 and the cue you saw was <strong>magnitude</strong>, the answer would be low because 2 is lower than 5.</p>'+
+			
+			'<p class = block-text>If the center number was 2 and the cue you saw was <strong>parity</strong>, the answer would be even because 2 is an even number.</p>'+
 		
-		'<p class = block-text>If you see the cue '+cued_dimensions_list[0].dim+', please judge the number based on <strong>'+cued_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  if '+cued_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+cued_dimensions_list[0].values[1]+'</strong>.</p>'+
+		'</div>',
 		
-		'<p class = block-text>If you see the cue '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
-		' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+ ' if ' +cued_dimensions_list[1].values[1]+'</strong>.</p>'+
+		'<div class = centerbox>'+
+			'<p class = block-text>If you saw the cue '+cued_dimensions_list[0].dim+', please judge the number based on <strong>'+cued_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
+				'  if '+cued_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+cued_dimensions_list[0].values[1]+'</strong>.</p>'+
 		
-		'<p class = block-text>Please judge only the center number, you should ignore the other numbers.</p>'+
+			'<p class = block-text>If you see the saw '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
+			' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+ ' if ' +cued_dimensions_list[1].values[1]+'</strong>.</p>'+
 		
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+			'<p class = block-text>Please judge only the center number, you should ignore the other numbers.</p>'+
+		
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+		
+		'</div>'
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -465,7 +522,7 @@ var start_test_block = {
 		
 			'<p class = block-text>Please judge only the center number, you should ignore the other numbers.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -490,6 +547,19 @@ var rest_block = {
 var practiceTrials = []
 practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len + 1; i++) {
+	var fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: '<div class = centerbox><div class = fixation>+</div></div></div></div>',
+		is_html: true,
+		choices: 'none',
+		data: {
+			trial_id: "practice_fixation"
+		},
+		timing_response: 500, //500
+		timing_post_trial: 0,
+		prompt: prompt_text
+	}
+	
 	var cue_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getCue,
@@ -499,7 +569,8 @@ for (i = 0; i < practice_len + 1; i++) {
 			trial_id: "practice_cue"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0
+		timing_post_trial: 0,
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -512,16 +583,18 @@ for (i = 0; i < practice_len + 1; i++) {
 			exp_id: "flanker_with_cued_task_switching",
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
 		timing_stim: 2000, //2000
 		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
+	practiceTrials.push(fixation_block)
 	practiceTrials.push(cue_block)
 	practiceTrials.push(practice_block)
 }
@@ -571,7 +644,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -599,6 +672,18 @@ var practiceNode = {
 var testTrials = []
 testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
+	var fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: '<div class = centerbox><div class = fixation>+</div></div></div></div>',
+		is_html: true,
+		choices: 'none',
+		data: {
+			trial_id: "test_fixation"
+		},
+		timing_response: 500, //500
+		timing_post_trial: 0
+	}
+	
 	var cue_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getCue,
@@ -626,6 +711,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 		response_ends_trial: false,
 		on_finish: appendData
 	}
+	testTrials.push(fixation_block)
 	testTrials.push(cue_block)
 	testTrials.push(test_block)
 }
@@ -669,7 +755,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -697,6 +783,10 @@ flanker_with_cued_task_switching_experiment = []
 //flanker_with_cued_task_switching_experiment.push(test_img_block)
 
 flanker_with_cued_task_switching_experiment.push(instruction_node)
+
+flanker_with_cued_task_switching_experiment.push(practice1)
+
+flanker_with_cued_task_switching_experiment.push(practice2)
 
 flanker_with_cued_task_switching_experiment.push(practiceNode)
 

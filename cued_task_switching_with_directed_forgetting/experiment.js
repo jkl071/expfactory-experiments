@@ -300,7 +300,6 @@ var appendData = function(){
 		letters: letters,
 		cue: cue,
 		correct_response: correct_response,
-		whichQuadrant: whichQuadrant,
 		current_trial: current_trial
 		
 	})
@@ -319,17 +318,8 @@ var appendData = function(){
 }
 
 
-var getNextStim = function(){
-	stim = stims.shift()
-	cued_condition = stim.cued_condition
-	cued_dimension = stim.cued_dimension
-	directed_condition = stim.directed_condition
-	probe = stim.probe
-	letters = stim.letters
-	cue = stim.cue
-	correct_response = stim.correct_response
-	whichQuadrant = stim.whichQuad	
-	return stim
+var getFixation = function(){
+	return '<div class = bigbox><div class = centerbox><div class = fixation><span style="color:red">+</span></font></div></div></div>'
 }
 
 var getTrainingStim = function(){
@@ -344,17 +334,26 @@ var getTrainingStim = function(){
 }
 
 var getDirectedCueStim = function(){
-	return '<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'+cue+'</font></div></div></div>'	
+	return '<div class = bigbox><div class = centerbox><div class = cue-text>'+cue+'</div></div></div>'	
 
 }
 
 var getSwitchingCueStim = function(){
-	return '<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'+cued_dimension+'</font></div></div></div>'	
+	stim = stims.shift()
+	cued_condition = stim.cued_condition
+	cued_dimension = stim.cued_dimension
+	directed_condition = stim.directed_condition
+	probe = stim.probe
+	letters = stim.letters
+	cue = stim.cue
+	correct_response = stim.correct_response
+	
+	return '<div class = bigbox><div class = centerbox><div class = cue-text>'+cued_dimension+'</div></div></div>'	
 
 }
 
 var getProbeStim = function(){
-	return '<div class = bigbox><div class = centerbox><div class = cue-text><font size="10">'+probe+'</font></div></div></div>'	
+	return '<div class = bigbox><div class = centerbox><div class = cue-text>'+probe+'</div></div></div>'	
 
 }
 
@@ -395,16 +394,24 @@ var stimArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'
 
 var stims = createTrialTypes(practice_len)
 
-var task_boards = [['<div class = bigbox><div class = topLeft><div class = fixation>'],['</div></div><div class = topMiddle><div class = fixation>'],['</div></div><div class = topRight><div class = fixation>'],['</div></div><div class = bottomLeft><div class = fixation>'],['</div></div><div class = bottomMiddle><div class = fixation>'],['</div></div><div class = bottomRight><div class = fixation>'],['</div></div></div>']]
+var task_boards = [['<div class = bigbox><div class = lettersBox><div class = topLeft style="font-size:50px;"><div class = fixation>'],['</div></div><div class = topMiddle style="font-size:50px;"><div class = fixation>'],['</div></div><div class = topRight style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomLeft style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomMiddle style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomRight style="font-size:50px;"><div class = fixation>'],['</div></div></div></div>']]
 				   
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Cue was '+cued_dimensions[0]+' : '+cued_dimensions[0]+' the cued location</li>' +
-					'<li>Cue was '+cued_dimensions[1]+' : '+cued_dimensions[1]+' the cued location</li>' +
-					'<li>Please respond if the probe (single letter) was in the memory set.</li>'+
-					'<li>Yes: ' + possible_responses[0][0] + '</li>' +
-					'<li>No: ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Cue was '+cued_dimensions[0]+' : '+cued_dimensions[0]+' the cued location</li>' +
+						'<li>Cue was '+cued_dimensions[1]+' : '+cued_dimensions[1]+' the cued location</li>' +
+						'<li>Please respond if the probe (single letter) was in the memory set.</li>'+
+						'<li>In memory set: ' + possible_responses[0][0] + '</li>' +
+						'<li>Not in memory set: ' + possible_responses[1][0] + '</li>' +
+					   '</ul>'
+					   
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Cue was '+cued_dimensions[0]+' : '+cued_dimensions[0]+' the cued location</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Cue was '+cued_dimensions[1]+' : '+cued_dimensions[1]+' the cued location</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Please respond if the probe (single letter) was in the memory set.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">In memory set: ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Not in memory set: ' + possible_responses[1][0] + '</p>' +
+				  '</div>' 	
 				  
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -431,8 +438,80 @@ var test_img_block = {
 	response_ends_trial: true,
 }
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the first part of the trial will look like.  You will see a cue, either remember or forget.</p>'+
+					'<p class = block-text style="font-size:24px;">This cue will instruct you what kind of task you will be doing for that trial.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue.</p>'+
+				'</div>'+
+				'<div class = centerbox><div class = fixation>forget</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">After, 6 letters will appear.  Memorize all 6 letters. The letters A, B, and C are on the top portion, while the letters D, E, and F are on the bottom portion.</p>'+
+					'<p class = block-text style="font-size:24px;">After these letters disappear, another cue will be presented, either TOP or BOT. This cue will instruct you which of the 6 letters to remember or forget, either top or bottom.</p>'+
+					'<p class = block-text style="font-size:24px;">The letters you must remember are called your memory set. </strong></p>'+
+					'<p class = block-text style="font-size:24px;">So if the first cue was forget, and then you get the TOP cue, please forget the top letters A, B, and C.  <strong>Your memory set is D, E, and F!</strong></p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue.</p>'+
+				'</div>'+
+				'<div class = lettersBox>'+
+					'<div class = topLeft style="font-size:50px;">A</div>' +
+					'<div class = topMiddle style="font-size:50px;">B</div>' +
+					'<div class = topRight style="font-size:50px;">C</div>' +
+					'<div class = bottomLeft style="font-size:50px;">D</div>' +
+					'<div class = bottomMiddle style="font-size:50px;">E</div>' +
+					'<div class = bottomRight style="font-size:50px;">F</div>'+
+				'</div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice3 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">After the cue, TOP or BOT disappears, you will be presented with a probe (single letter)  like this.  Please respond if the probe  was in the memory set.</p>'+
+					'<p class = block-text style="font-size:24px;">Press '+possible_responses[0][0]+' if the probe was in the memory set, and '+possible_responses[1][0]+' if not.</p>'+
+					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
+				'</div>'+
+		
+				'<div class = decision-bottom-left><div class = centerbox><div class = fixation>B</div></div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -491,22 +570,6 @@ var end_block = {
 	on_finish: assessPerformance
 };
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
-var feedback_block = {
-	type: 'poldrack-single-stim',
-	data: {
-		trial_id: "feedback_block"
-	},
-	choices: [13],
-	stimulus: getFeedback,
-	timing_post_trial: 0,
-	is_html: true,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true, 
-
-};
-
 var feedback_instruct_text =
 	'Welcome to the experiment. This task will take around 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_instruct_block = {
@@ -527,24 +590,28 @@ var instructions_block = {
 	},
 	pages: [		
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will be presented with 6 letters on each trial. You must memorize all 6 letters.</p> '+
-				
-		'<p class = block-text>You will be asked to remember or forget some letters, depending on if you see the remember or forget cue.</p>'+
+			'<p class = block-text>In this experiment you will be presented with a cue, either remember or forget. This cue instructs what kind of task you will be doing for that trial.</p> '+
 		
-		'<p class = block-text>You will also see another cue, either TOP or BOT, which instructs you which letters you should remember or forget.</p>'+
+			'<p class = block-text>After the remember or forget cue disappears, you will be presented with 6 letters. You must memorize all 6 letters.</p> '+
+						
+			'<p class = block-text>After the 6 letters disappear, you will also see another cue, either TOP or BOT. This instructs you which letters you should remember or forget, either the top or bottom letters.</p>'+
 		
-		'<p class = block-text>If you get a TOP cue, please remember or forget the top 3 letters.  If you get a BOT cue, '+
-		'please remember or forget the bottom 3 letters. <strong>The 3 remaining letters you are to remember are called your memory set.</strong></p>'+
+			'<p class = block-text>For example, if the first cue was forget and the second cue was TOP, please forget the top 3 letters. <strong>The other 3 letters, are called your memory set!</strong></p>'+
 		
-		'<p class = block-text>After, you will be presented with a probe.  Please indicate whether this probe was in your memory set.</p>'+
+			'<p class = block-text>If you see the cue, '+cued_dimensions[0]+', please  <strong>'+cued_dimensions[0]+'</strong> the cued set.</p>'+
 		
-		'<p class = block-text>If you see the cue, '+cued_dimensions[0]+', please  <strong>'+cued_dimensions[0]+'</strong> the cued set. Press the <strong>'+possible_responses[0][0]+
-		'  </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
+			'<p class = block-text>If you see the cue, '+cued_dimensions[1]+', please  <strong>'+cued_dimensions[1]+'</strong> the cued set.</p>'+
+		'</div>',
 		
-		'<p class = block-text>If you see the cue, '+cued_dimensions[1]+', please  <strong>'+cued_dimensions[2]+'</strong> the cued set. Press the <strong>'+possible_responses[0][0]+
-		' </strong> if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+' </strong> if not.</p>'+
+		'<div class = centerbox>'+
+			'<p class = block-text>After, you will be presented with a probe (single letter).  Please indicate whether this probe was in your memory set.</p>'+
 		
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+			'<p class = block-text>Press the <strong>'+possible_responses[0][0]+
+			'  </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
+	
+		
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+		'</div>'
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -579,22 +646,24 @@ var start_test_block = {
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox>'+
-			'<p class = block-text>You will be asked to remember or forget some letters, depending on if you see the remember or forget cue.</p>'+
+			'<p class = block-text>You will be presented with a cue, either remember or forget. This cue instructs what kind of task you will be doing for that trial.</p> '+
 		
-			'<p class = block-text>You will also see another cue, either TOP or BOT, which instructs you which letters you should remember or forget.</p>'+
+			'<p class = block-text>After the remember or forget cue disappears, you will be presented with 6 letters. You must memorize all 6 letters.</p> '+
+						
+			'<p class = block-text>After the 6 letters disappear, you will also see another cue, either TOP or BOT. This instructs you which letters you should remember or forget, either the top or bottom letters.</p>'+
 		
-			'<p class = block-text>If you get a TOP cue, please remember or forget the top 3 letters.  If you get a BOT cue, '+
-			'please remember or forget the bottom 3 letters. <strong>The 3 remaining letters you are to remember are called your memory set.</strong></p>'+
+			'<p class = block-text>For example, if the first cue was forget and the second cue was TOP, please forget the top 3 letters. <strong>The other 3 letters, are called your memory set!</strong></p>'+
 		
-			'<p class = block-text>After, you will be presented with a probe.  Please indicate whether this probe was in your memory set.</p>'+
+			'<p class = block-text>If you see the cue, '+cued_dimensions[0]+', please  <strong>'+cued_dimensions[0]+'</strong> the top or bottom letters.</p>'+
 		
-			'<p class = block-text>If you see the cue, '+cued_dimensions[0]+', please  <strong>'+cued_dimensions[0]+'</strong> the cued set. Press the <strong>'+possible_responses[0][0]+
+			'<p class = block-text>If you see the cue, '+cued_dimensions[1]+', please  <strong>'+cued_dimensions[2]+'</strong> the top or bottom.</p>'+
+		
+			'<p class = block-text>After, you will be presented with a probe (single letter).  Please indicate whether this probe was in your memory set.</p>'+
+		
+			'<p class = block-text>Press the <strong>'+possible_responses[0][0]+
 			'  </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
-		
-			'<p class = block-text>If you see the cue, '+cued_dimensions[2]+', please  <strong>'+cued_dimensions[2]+'</strong> the cued set. Press the <strong>'+possible_responses[0][0]+
-			' </strong> if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+' </strong> if not.</p>'+
 			
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -605,128 +674,113 @@ var start_test_block = {
 
 
 
-var start_fixation_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><div class = fixation><span style="color:red">+</span></div></div>',
-	is_html: true,
-	choices: 'none',
-	data: {
-		trial_id: "fixation"
-	},
-	timing_post_trial: 0,
-	timing_stim: 1000, //1000
-	timing_response: 1000,
-	on_finish: function(){
-		stim = getNextStim()
-	}
-}
-
-var fixation_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><div class = fixation><span style="color:red">+</span></div></div>',
-	is_html: true,
-	choices: 'none',
-	data: {
-		trial_id: "fixation"
-	},
-	timing_post_trial: 0,
-	timing_stim: 3000, //3000
-	timing_response: 3000
-}
-
-var ITI_fixation_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><div class = fixation><span style="color:red">+</span></div></div>',
-	is_html: true,
-	choices: [possible_responses[0][1],possible_responses[1][1]],
-	data: {
-		trial_id: "ITI_fixation"
-	},
-	timing_post_trial: 0,
-	timing_stim: 4000, //4000
-	timing_response: 4000
-}
-
-var training_block = {
-	type: 'poldrack-single-stim',
-	stimulus: getTrainingStim,
-	is_html: true,
-	data: {
-		trial_id: "stim"
-	},
-	choices: 'none',
-	timing_post_trial: 0,
-	timing_stim: 2500, //2500
-	timing_response: 2500
-};
-
-
-
-var cue_directed_block = {
-	type: 'poldrack-single-stim',
-	stimulus: getDirectedCueStim,
-	is_html: true,
-	data: {
-		trial_id: "cue",
-	},
-	choices: false,
-	timing_post_trial: 0,
-	timing_stim: 1000, //1000
-	timing_response: 1000
-};
-
-var cue_switching_block = {
-	type: 'poldrack-single-stim',
-	stimulus: getSwitchingCueStim,
-	is_html: true,
-	data: {
-		trial_id: "cue",
-	},
-	choices: false,
-	timing_post_trial: 0,
-	timing_stim: 1000, //1000
-	timing_response: 1000
-};
-
-var probe_block = {
-	type: 'poldrack-single-stim',
-	stimulus: getProbeStim,
-	is_html: true,
-	data: {
-		trial_id: "test_trial",
-	},
-	choices: [possible_responses[0][1],possible_responses[1][1]],
-	timing_post_trial: 0,
-	timing_stim: 2000, //2000
-	timing_response: 2000,
-	response_ends_trial: false,
-	on_finish: appendData
-};
-
-
-var practice_probe_block = {
-	type: 'poldrack-categorize',
-	stimulus: getProbeStim,
-	key_answer: getCorrectResponse,
-	choices: [possible_responses[0][1],possible_responses[1][1]],
-	data: {trial_id: "practice_trial"},
-	correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-	incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-	timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
-	timing_stim: 2000, //2000
-	timing_response: 2000,
-	timing_feedback_duration: 500,
-	is_html: true,
-	on_finish: appendData
-};
-
-
 var practiceTrials = []
 practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len + 1; i++) {
+	var start_fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getFixation,
+		is_html: true,
+		choices: 'none',
+		data: {
+			trial_id: "practice_start_fixation"
+		},
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000,
+		prompt: prompt_text
+	}
+
+	var fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getFixation,
+		is_html: true,
+		choices: 'none',
+		data: {
+			trial_id: "practice_fixation"
+		},
+		timing_post_trial: 0,
+		timing_stim: 3000, //3000
+		timing_response: 3000,
+		prompt: prompt_text
+	}
+
+	var ITI_fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getFixation,
+		is_html: true,
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		data: {
+			trial_id: "practice_ITI_fixation"
+		},
+		timing_post_trial: 0,
+		timing_stim: 4000, //4000
+		timing_response: 4000,
+		prompt: prompt_text
+	}
+
+	var training_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getTrainingStim,
+		is_html: true,
+		data: {
+			trial_id: "practice_six_letters"
+		},
+		choices: 'none',
+		timing_post_trial: 0,
+		timing_stim: 2500,
+		timing_response: 2500,
+		prompt: prompt_text
+	};
+	
+	var cue_directed_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getDirectedCueStim,
+		is_html: true,
+		data: {
+			trial_id: "practice_directed_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000,
+		prompt: prompt_text
+	};
+
+	var cue_switching_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getSwitchingCueStim,
+		is_html: true,
+		data: {
+			trial_id: "practice_switching_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000,
+		prompt: prompt_text
+	};
+
+	var practice_probe_block = {
+		type: 'poldrack-categorize',
+		stimulus: getProbeStim,
+		key_answer: getCorrectResponse,
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		data: {trial_id: "practice_trial"},
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
+		timing_stim: 2000, //2000
+		timing_response: 2000,
+		timing_feedback_duration: 500,
+		is_html: true,
+		on_finish: appendData,
+		prompt: prompt_text,
+		timing_post_trial: 0
+	};
+	practiceTrials.push(cue_switching_block)
 	practiceTrials.push(start_fixation_block)
 	practiceTrials.push(training_block)
-	practiceTrials.push(cue_switching_block)
 	practiceTrials.push(cue_directed_block)
 	practiceTrials.push(fixation_block)
 	practiceTrials.push(practice_probe_block)
@@ -777,7 +831,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 					
 			if (missed_responses > missed_thresh){
 				feedback_text +=
@@ -805,9 +859,102 @@ var practiceNode = {
 var testTrials = []
 testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
+	var start_fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getFixation,
+		is_html: true,
+		choices: 'none',
+		data: {
+			trial_id: "test_start_fixation"
+		},
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000
+	}
+
+	var fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getFixation,
+		is_html: true,
+		choices: 'none',
+		data: {
+			trial_id: "test_fixation"
+		},
+		timing_post_trial: 0,
+		timing_stim: 3000, //3000
+		timing_response: 3000
+	}
+
+	var ITI_fixation_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getFixation,
+		is_html: true,
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		data: {
+			trial_id: "test_ITI_fixation"
+		},
+		timing_post_trial: 0,
+		timing_stim: 4000, //4000
+		timing_response: 4000
+	}
+
+	var training_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getTrainingStim,
+		is_html: true,
+		data: {
+			trial_id: "test_six_letters"
+		},
+		choices: 'none',
+		timing_post_trial: 0,
+		timing_stim: 2500,
+		timing_response: 2500
+	};
+	
+	var cue_directed_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getDirectedCueStim,
+		is_html: true,
+		data: {
+			trial_id: "test_directed_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000
+	};
+
+	var cue_switching_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getSwitchingCueStim,
+		is_html: true,
+		data: {
+			trial_id: "test_switching_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000
+	};
+	
+	var probe_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getProbeStim,
+		is_html: true,
+		data: {
+			trial_id: "test_trial",
+		},
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_post_trial: 0,
+		timing_stim: 2000,
+		timing_response: 2000,
+		response_ends_trial: false,
+		on_finish: appendData
+	};
+	
+	testTrials.push(cue_switching_block)
 	testTrials.push(start_fixation_block)
 	testTrials.push(training_block)
-	testTrials.push(cue_switching_block)
 	testTrials.push(cue_directed_block)
 	testTrials.push(fixation_block)
 	testTrials.push(probe_block)
@@ -853,7 +1000,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -878,6 +1025,12 @@ var testNode = {
 var cued_task_switching_with_directed_forgetting_experiment = [];
 
 cued_task_switching_with_directed_forgetting_experiment.push(instruction_node);
+
+cued_task_switching_with_directed_forgetting_experiment.push(practice1);
+
+cued_task_switching_with_directed_forgetting_experiment.push(practice2);
+
+cued_task_switching_with_directed_forgetting_experiment.push(practice3);
 
 cued_task_switching_with_directed_forgetting_experiment.push(practiceNode);
 

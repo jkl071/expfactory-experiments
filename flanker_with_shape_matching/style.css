@@ -23,6 +23,33 @@
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
 }
+
+
+.instructBox {
+ width: 80vw;
+ height: 10vw;
+ position:absolute;
+ top:10%;
+ left:50%; 
+ margin-right: 0%;
+ transform: translate(-50%,-50%);
+ background-color: none;
+ font-size: 24px;
+}
+
+.prompt_box {
+ width: 75%;
+ height: 20%;
+ position:absolute;
+ top:10%;
+ left:15%;
+ transform: translate(-50%,-45%);
+ margin-right:0%;
+ background-color: none;
+ text-align: center;
+}
+
+
 .picture_box {
  width: 60%;
  height: 60%;
@@ -83,7 +110,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-312.5%,-50%);
+  transform: translate(-282.5%,-50%);
   z-index: 2;
   background-color: none;
 }
@@ -95,7 +122,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-317.5%,-57%);
+  transform: translate(-287.5%,-57%);
   background-color: none;
 }
 
@@ -106,7 +133,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(12.5%,-50%);
+  transform: translate(32.5%,-50%);
   background-color: none;
 }
 
@@ -117,7 +144,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-187.5%,-50%);
+  transform: translate(-117.5%,-50%);
   background-color: none;
 }
 
@@ -128,7 +155,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-87.5%,-50%);
+  transform: translate(-42.5%,-50%);
   background-color: none;
 }
 
@@ -139,7 +166,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(112.5%,-50%);
+  transform: translate(107.5%,-50%);
   background-color: none;
 }
 
@@ -150,7 +177,7 @@ img {
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(212.5%,-50%);
+  transform: translate(182.5%,-50%);
   background-color: none;
 }
 
