@@ -280,7 +280,7 @@ var credit_var = 0
 // Set up variables for stimuli
 var practice_len = 24 // must be divisible by 8
 var exp_len = 320 //320 must be divisible by 64
-var numTrialsPerBlock = 8; // divisible by 8
+var numTrialsPerBlock = 80; // divisible by 8
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80

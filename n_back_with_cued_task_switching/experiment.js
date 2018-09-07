@@ -313,6 +313,18 @@ var getCueStim = function(){
 		   task_boards[1]
 }
 
+var getCueControlStim = function(){
+	stim = control_stims.shift()
+	n_back_condition = stim.n_back_condition
+	cued_dimension = stim.cued_dimension
+	cued_condition = stim.cued_condition
+	probe = stim.probe
+	correct_response = stim.correct_response
+
+	return task_boards[0] + cued_dimension
+		   task_boards[1]
+}
+
 var getResponse =  function(){
 	return correct_response
 }
@@ -372,7 +384,7 @@ var numTestBlocks = exp_len / numTrialsPerBlock
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 
-var practice_thresh = 1 // 3 blocks of 24 trials
+var practice_thresh = 3 // 3 blocks of 24 trials
 
 var pathSource = "/static/experiments/n_back_with_cued_task_switching/images/"
 var fileTypePNG = ".png'></img>"
@@ -474,6 +486,7 @@ var instructions_block = {
 			'<p class = block-text>If you saw a 1-back cue, please respond if the current letter was the same as the letter that occurred 1 trial(s) ago.</p> '+
 			'<p class = block-text>If you saw a 2-back cue, please respond if the current letter was the same as the letter that occurred 2 trial(s) ago.</p> '+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 		'</div>',
 		'<div class = centerbox>'+
 			'<p class = block-text>For example, if the cues you saw were  1-back, 2-back, 2-back, and 1-back, and the letters you received following each of those cues were V, B, v, and V, you would respond, no match, no match, match, and match.</p> '+
@@ -527,6 +540,7 @@ var start_test_block = {
 			'<p class = block-text>If you saw a 1-back cue, please respond if the current letter was the same as the letter that occurred 1 trial(s) ago.</p> '+
 			'<p class = block-text>If you saw a 2-back cue, please respond if the current letter was the same as the letter that occurred 2 trial(s) ago.</p> '+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 				
 			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
@@ -534,6 +548,25 @@ var start_test_block = {
 	timing_post_trial: 1000,
 	on_finish: function(){
 		feedback_text = "We will now start the test portion. Press enter to begin."
+	}
+};
+
+var start_control_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "instruction"
+	},
+	timing_response: 180000,
+	text: '<div class = centerbox>'+
+			'<p class = block-text>For this block of trials, you do not have to match letters.  Instead, indicate whether the current letter is a T (or t) or any other letter other than T (or t) depending on which cue you saw.</p>'+
+			'<p class = block-text>If you saw the cue, '+control_dimensions[0]+', respond if the current letter was a '+control_dimensions[0]+'. Press the '+possible_responses[0][0]+' if the current letter was a '+control_dimensions[0]+' and the '+possible_responses[1][0]+' if not.</p> '+
+			'<p class = block-text>If you saw the cue, '+control_dimensions[1]+', respond if the current letter was a '+control_dimensions[1]+'. Press the '+possible_responses[0][0]+' if the current letter was a '+control_dimensions[1]+' and the '+possible_responses[1][0]+' if not.</p> '+	
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
+		 '</div>',
+	cont_key: [13],
+	timing_post_trial: 1000,
+	on_finish: function(){
+		feedback_text = "We will now start this block. Press enter to begin."
 	}
 };
 
@@ -555,8 +588,7 @@ var feedback_text = 'We will start practice. During practice, you will receive a
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "n_back_with_cued_task_switching",
-		trial_id: "practice-no-stop-feedback"
+		trial_id: "feedback_block"
 	},
 	choices: [13],
 	stimulus: getFeedback,
@@ -572,6 +604,57 @@ var feedback_block = {
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
+var control_before = Math.round(Math.random()) //0 control comes before test, 1, after
+
+var controlTrials = []
+controlTrials.push(feedback_block)
+for (i = 0; i < numTrialsPerBlock + 1; i++) {
+	var cue_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getCueControlStim,
+		is_html: true,
+		data: {
+			trial_id: "control_cue",
+		},
+		choices: false,
+		timing_post_trial: 0,
+		timing_stim: 1000, //1000
+		timing_response: 1000
+	};
+	
+	var control_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getStim,
+		is_html: true,
+		data: {
+			"trial_id": "control_trial",
+		},
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
+		timing_post_trial: 0,
+		response_ends_trial: false,
+		on_finish: appendData
+	}
+	controlTrials.push(cue_block)
+	controlTrials.push(control_block)
+}
+
+var controlCount = 0
+var controlNode = {
+	timeline: controlTrials,
+	loop_function: function(data) {
+		controlCount += 1
+		stims = createTrialTypes(numTrialsPerBlock)
+		current_trial = 0
+	
+		if (controlCount == 1){
+			feedback_text +=
+					'</p><p class = block-text>Done with this test. Press Enter to continue.'
+			return false
+		}
+	}
+}
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
@@ -602,8 +685,8 @@ for (i = 0; i < practice_len + 2; i++) {
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
 		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
 		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
-		timing_stim: 1000, //2000
-		timing_response: 1000,
+		timing_stim: 2000, //2000
+		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
@@ -694,8 +777,8 @@ for (i = 0; i < numTrialsPerBlock + 2; i++) {
 		},
 		choices: false,
 		timing_post_trial: 0,
-		timing_stim: 1000, //1000
-		timing_response: 1000
+		timing_stim: 2000, //1000
+		timing_response: 2000
 	};
 	
 	var test_block = {
@@ -785,8 +868,18 @@ n_back_with_cued_task_switching_experiment.push(instruction_node);
 
 n_back_with_cued_task_switching_experiment.push(practiceNode);
 
+if (control_before == 0){
+	n_back_with_cued_task_switching_experiment.push(start_control_block);
+	n_back_with_cued_task_switching_experiment.push(controlNode);
+}
+
 n_back_with_cued_task_switching_experiment.push(start_test_block);
 
 n_back_with_cued_task_switching_experiment.push(testNode);
+
+if (control_before == 1){
+	n_back_with_cued_task_switching_experiment.push(start_control_block);
+	n_back_with_cued_task_switching_experiment.push(controlNode);
+}
 
 n_back_with_cued_task_switching_experiment.push(end_block);

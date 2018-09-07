@@ -501,6 +501,7 @@ var start_test_block = {
 			'<p class = block-text>When in the top two quadrants, do a '+predictive_dimensions[0][0]+'. Please respond if the current letter was the same as the letter that occurred '+predictive_dimensions[0][1]+' trial(s) ago.</p> '+
 			'<p class = block-text>When in the bottom two quadrants, do a '+predictive_dimensions[2][0]+'.   Please respond if the current letter was the same as the letter that occurred '+predictive_dimensions[2][1]+' trial(s) ago.</p> '+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 	
 			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
