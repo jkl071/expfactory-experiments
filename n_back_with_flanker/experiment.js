@@ -75,76 +75,19 @@ var randomDraw = function(lst) {
 	return lst[index]
 };
 
-var createTrialTypes = function(numTrialsPerBlock, delay){
-	
-	flanker_condition = flanker_conditions[Math.floor(Math.random() * 2)]
-	n_back_condition = 'N/A'
-	probe = randomDraw(letters)
-	correct_response = possible_responses[1][1]
-	if (flanker_condition == 'congruent'){
-		flanking_letter = probe
-	} else if (flanker_condition == 'incongruent'){
-		flanking_letter = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [probe.toLowerCase(), probe.toUpperCase()]) == -1}))
-	}
-	 
-			
-	first_stim = {
-		n_back_condition: n_back_condition,
-		flanker_condition: flanker_condition,
-		probe: probe,
-		correct_response: correct_response,
-		delay: delay,
-		flanking_letter: flanking_letter
-		
-	
-	}	
-	first_stims = []
-	first_stims.push(first_stim)
-	for (var i = 0; i < delay - 1; i++){
-		flanker_condition = flanker_conditions[Math.floor(Math.random() * 2)]
-		n_back_condition = n_back_conditions[Math.floor(Math.random() * 2)]
-	
-	
-		if (i < delay - 1) {
-			probe = randomDraw(letters)
-			correct_response = possible_responses[1][1]
-			n_back_condition = 'N/A'
-		} else if (n_back_condition == "match"){
-			probe = randomDraw([first_stims[i].probe.toUpperCase(), first_stims[i].probe.toLowerCase()])
-			correct_response = possible_responses[0][1]
-		} else if (n_back_condition == "mismatch"){
-			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i].probe.toLowerCase(), first_stims[i].probe.toUpperCase()]) == -1}))
-			correct_response = possible_responses[1][1]
-	
-		} 
-	
-		
-	
-		if (flanker_condition == 'congruent'){
-			flanking_letter = probe
-		} else if (flanker_condition == 'incongruent'){
-			flanking_letter = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [probe.toLowerCase(), probe.toUpperCase()]) == -1}))
-		}
-	
-		stim = {
-			n_back_condition: n_back_condition,
-			flanker_condition: flanker_condition,
-			probe: probe,
-			correct_response: correct_response,
-			delay: delay,
-			flanking_letter: flanking_letter
-		}
-		first_stims.push(stim)
-	}
-	
-	stims = []
-	
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/4; numIterations++){
+var createControlTypes = function(numTrialsPerBlock){
+	var stims = []
+	var numTrials = numTrialsPerBlock - (numTrialsPerBlock/16)
+	for(var numIterations = 0; numIterations < numTrials/15; numIterations++){ 
 		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
-			for (var numShapeConds = 0; numShapeConds < flanker_conditions.length; numShapeConds++){
+			for (var numFlankerConds = 0; numFlankerConds < flanker_conditions.length; numFlankerConds++){
 			
-				flanker_condition = flanker_conditions[numShapeConds]
+				flanker_condition = flanker_conditions[numFlankerConds]
 				n_back_condition = n_back_conditions[numNBackConds]
+				
+				if ((n_back_condition == 'match') && (flanker_condition == 'incongruent_target')){
+					flanker_condition = 'incongruent_non_target'
+				}
 				
 				stim = {
 					flanker_condition: flanker_condition,
@@ -157,6 +100,121 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 		}
 	}
 	
+	stim = {
+		flanker_condition: 'congruent',
+		n_back_condition: 'match'
+		}
+	
+	stims.push(stim)
+	stims = jsPsych.randomization.repeat(stims,1)
+	
+	stim_len = stims.length
+	
+	new_stims = []
+	for (var i = 0; i < stim_len; i++){
+		stim = stims.pop()
+		n_back_condition = stim.n_back_condition
+		flanker_condition= stim.flanker_condition
+		
+		probe = randomDraw('bBdDgGvV'.split("").filter(function(y) {return $.inArray(y, ['t','T']) == -1}))
+		correct_response = possible_responses[1][1]
+		if (n_back_condition == 'match'){
+			probe = randomDraw(['t','T'])
+			correct_response = possible_responses[0][1]
+		}		
+		
+		if(flanker_condition == 'congruent'){
+			flankers = probe
+		} else if(flanker_condition == 'incongruent_target'){
+			flankers = randomDraw(['t','T'])
+		} else if(flanker_condition == 'incongruent_non_target'){
+			flankers = randomDraw('bBdDgGvV'.split("").filter(function(y) {return $.inArray(y, ['t','T']) == -1}))
+		}
+		
+		
+			
+		stim = {
+			n_back_condition: n_back_condition,
+			flanker_condition: flanker_condition,
+			probe: probe,
+			correct_response: correct_response,
+			flankers: flankers
+		}
+		
+		new_stims.push(stim)	
+		}
+	
+	return new_stims
+	
+}
+
+var createTrialTypes = function(numTrialsPerBlock, delay){
+	first_stims = []
+	for (var i = 0; i < 3; i++){
+		if (i < delay){
+			n_back_condition = 'N/A'
+		} else {
+			n_back_condition = n_back_conditions[Math.floor(Math.random() * 2)]
+		}
+		flanker_condition = jsPsych.randomization.repeat(['congruent','incongruent'],1).pop()
+		probe = randomDraw(letters)
+		correct_response = possible_responses[1][1]
+		if (n_back_condition == 'match'){
+			correct_response = possible_responses[0][1]
+			probe = randomDraw([first_stims[i - delay].probe.toUpperCase(), first_stims[i - delay].probe.toLowerCase()])
+		} else if (n_back_condition == "mismatch"){
+			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i - delay].probe.toLowerCase(), first_stims[i - delay].probe.toUpperCase()]) == -1}))
+			correct_response = possible_responses[1][1]
+	
+		}
+		
+		if (flanker_condition == 'congruent'){
+			flankers = probe
+		} else if (flanker_condition == 'incongruent'){
+			flankers = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [probe.toLowerCase(), probe.toUpperCase()]) == -1}))
+		}
+		
+		first_stim = {
+			n_back_condition: n_back_condition,
+			flanker_condition: flanker_condition,
+			probe: probe,
+			correct_response: correct_response,
+			delay: delay,
+			flankers: flankers
+		}	
+		first_stims.push(first_stim)	
+	}
+	
+	stims = []
+	numTrials = numTrialsPerBlock - (numTrialsPerBlock/16)
+	
+	for(var numIterations = 0; numIterations < numTrials/15; numIterations++){
+		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
+			for (var numFlankerConds = 0; numFlankerConds < flanker_conditions.length; numFlankerConds++){
+			
+				flanker_condition = flanker_conditions[numFlankerConds]
+				n_back_condition = n_back_conditions[numNBackConds]
+				
+				if ((n_back_condition == 'match') && (flanker_condition == 'incongruent_target')){
+					flanker_condition = 'incongruent_non_target'
+				}
+				
+				stim = {
+					flanker_condition: flanker_condition,
+					n_back_condition: n_back_condition
+					}
+			
+				stims.push(stim)
+			}
+			
+		}
+		stim = {
+			flanker_condition: 'congruent',
+			n_back_condition: 'match'
+			}
+		stims.push(stim)
+	}
+	
 	stims = jsPsych.randomization.repeat(stims,1)
 	stims = first_stims.concat(stims)
 	
@@ -164,15 +222,15 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 	
 	new_stims = []
 	for (var i = 0; i < stim_len; i++){
-		if (i < delay){
+		if (i < 3){
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			flanker_condition = stim.flanker_condition
 			probe = stim.probe
 			correct_response = stim.correct_response
 			delay = stim.delay
-			flanking_letter = stim.flanking_letter
-		} else if (i > delay - 1){
+			flankers = stim.flankers
+		} else {
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			flanker_condition = stim.flanker_condition
@@ -187,10 +245,13 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			}
 			
 			if (flanker_condition == 'congruent'){
-				flanking_letter = probe
-			} else if (flanker_condition == 'incongruent'){
-				flanking_letter = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [probe.toLowerCase(), probe.toUpperCase()]) == -1}))
+				flankers = probe
+			} else if (flanker_condition == 'incongruent_non_target'){
+				flankers = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [probe.toLowerCase(), probe.toUpperCase()]) == -1}))
+			} else if (flanker_condition == 'incongruent_target'){
+				flankers = new_stims[i - delay].probe
 			}
+			
 			
 		}
 		
@@ -200,13 +261,14 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			probe: probe,
 			correct_response: correct_response,
 			delay: delay,
-			flanking_letter: flanking_letter
+			flankers: flankers
 		}
 		
 		new_stims.push(stim)
 	}
 	return new_stims
 }
+
 
 
 var getStim = function(){	
@@ -216,18 +278,33 @@ var getStim = function(){
 	probe = stim.probe
 	correct_response = stim.correct_response
 	delay = stim.delay
-	flanking_letter = stim.flanking_letter
+	flankers = stim.flankers
 		
 	return task_boards[0]+ 
-			flanking_letter+
-			flanking_letter+
+			flankers+
+			flankers+
 			probe+
-			flanking_letter+
-			flanking_letter+
+			flankers+
+			flankers+
 		   task_boards[1]
-	
 }
 
+var getControlStim = function(){	
+	stim = stims.shift()
+	n_back_condition = stim.n_back_condition
+	flanker_condition = stim.flanker_condition
+	probe = stim.probe
+	correct_response = stim.correct_response
+	flankers = stim.flankers
+		
+	return task_boards[0]+ 
+			flankers+
+			flankers+
+			probe+
+			flankers+
+			flankers+
+		   task_boards[1]
+}
 
 
 var getResponse =  function(){
@@ -280,11 +357,11 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = 0
 
 
-var practice_len = 8 // 24 must be divisible by 4
-var exp_len = 32 //324 must be divisible by 4
-var numTrialsPerBlock = 16 // 54 must be divisible by 4 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
+var practice_len = 16 // 24 must be divisible by 16
+var exp_len = 96 //324 must be divisible by 16
+var numTrialsPerBlock = 32 // 54 must be divisible by 16 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
 var numTestBlocks = exp_len / numTrialsPerBlock
-var practice_thresh = 1 // 3 blocks of 24 trials
+var practice_thresh = 3 // 3 blocks of 16 trials
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
@@ -299,8 +376,8 @@ var preFileType = "<img class = center src='/static/experiments/n_back_with_flan
 
 
 
-var n_back_conditions = ['match','mismatch']
-var flanker_conditions = jsPsych.randomization.repeat(['congruent','incongruent'],1)
+var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
+var flanker_conditions = jsPsych.randomization.repeat(['congruent','incongruent_target', 'incongruent_non_target'],1)
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 							 
 var letters = 'bBdDgGtTvV'.split("")
@@ -308,9 +385,17 @@ var letters = 'bBdDgGtTvV'.split("")
 
 
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Match the current CENTER letter to the CENTER letter that appeared some number of trials ago</li>' +
+						'<li>If they match, press the '+possible_responses[0][0]+'</li>' +
+					    '<li>If they mismatch, press the '+possible_responses[1][0]+'</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Match the current CENTER letter to the CENTER letter that appeared 1 trial ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they match, press the '+possible_responses[0][0]+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they mismatch, press the '+possible_responses[1][0]+'</p>' +
+				  '</div>'
 
 var current_trial = 0
 var current_block = 0
@@ -320,7 +405,7 @@ var current_block = 0
 
 var task_boards = [['<div class = bigbox><div class = centerbox><div class = flanker-text>'],['<div></div><div>']]	
 
-
+var control_stims = createControlTypes(numTrialsPerBlock)
 var stims = createTrialTypes(practice_len, delay)
 
 /* ************************************ */
@@ -340,6 +425,29 @@ var test_img_block = {
 	timing_response: -1,
 	response_ends_trial: true
 	};
+
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what a trial will look like.  You will see a row of letters.</p>'+
+					'<p class = block-text style="font-size:24px;">Please remember only the center letter, B, and ignore the letters not in the center, P!</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue.</p>'+
+				'</div>'+
+				'<div class =centerbox>'+
+					'<div class = flanker-text>PPBPP</div>' +
+				'</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
 
 var end_block = {
 	type: 'poldrack-text',
@@ -376,8 +484,20 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches the letter '+delay+' ago, and '+possible_responses[1][0]+' for no.</p> '+
-			'<p class = block-text>Your delay is '+delay+'.</p> '+
+			'<p class = block-text>In this task, you will see a row of letters on every trial.</p>'+
+			'<p class = block-text>You will be asked to match the current CENTER letter, to the CENTER letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if the center letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
+			'<p class = block-text>Ignore the letters not in the center, focus only on the center letter.</p>'+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
+		'</div>',
+		'<div class = centerbox>'+
+			'<p class = block-text>For example, if your delay for the block was 2, and the CENTER letters you received for the first 4 trials were V, B, v, and V, you would respond, no match, no match, match, and no match.</p> '+
+			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
+			'<p class = block-text>The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago to match with, so press the '+possible_responses[1][0]+' on those trials.</p>'+
+			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from 2 trials, V, so you would respond match.</p>'+
+			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from 2 trials ago, B, so you would respond no match.</p>'+
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +		
 		'</div>'
 	],
 	allow_keys: false,
@@ -417,20 +537,40 @@ var start_test_block = {
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox>'+
-			'<p class = block-text>We will now start the test portion</p>'+
-			
-			'<p class = block-text>Your delay is '+delay+'.</p>'+
-			
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches the letter '+delay+' ago, and '+possible_responses[1][0]+' for no.</p> '+
+			'<p class = block-text>We will now begin the test portion.</p>'+
+			'<p class = block-text>You will be asked to match the current CENTER letter, to the CENTER letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if they match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
+			'<p class = block-text>Ignore the letters not in the center, focus only on the CENTER letter.</p>'+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 				
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
 	on_finish: function(){
-		feedback_text = "We will now start the test portion. Press enter to begin."
+		feedback_text = "Your delay for this block is "+delay+". Please match the current center letter to the letter that appeared "+delay+" trial(s) ago. Press enter to begin."
 	}
 };
+
+var start_control_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "instruction"
+	},
+	timing_response: 180000,
+	text: '<div class = centerbox>'+
+			'<p class = block-text>For this block of trials, you do not have to match letters.  Instead, indicate whether the current CENTER letter is a T (or t).</p>'+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current CENTER letter was a T (or t) and the '+possible_responses[1][0]+' if not.</p> '+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
+		 '</div>',
+	cont_key: [13],
+	timing_post_trial: 1000,
+	on_finish: function(){
+		feedback_text = "We will now start this block. Press enter to begin."
+	}
+};
+
 
 var fixation_block = {
 	type: 'poldrack-single-stim',
@@ -446,7 +586,7 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -467,10 +607,47 @@ var feedback_block = {
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
+var control_before = Math.round(Math.random()) //0 control comes before test, 1, after
+
+var controlTrials = []
+controlTrials.push(feedback_block)
+for (i = 0; i < numTrialsPerBlock; i++) {
+	var control_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getControlStim,
+		is_html: true,
+		data: {
+			"trial_id": "control_trial",
+		},
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_stim: 1000, //2000
+		timing_response: 1000, //2000
+		timing_post_trial: 0,
+		response_ends_trial: false,
+		on_finish: appendData
+	}
+	controlTrials.push(control_block)
+}
+
+var controlCount = 0
+var controlNode = {
+	timeline: controlTrials,
+	loop_function: function(data) {
+		controlCount += 1
+		stims = createTrialTypes(numTrialsPerBlock, delay)
+		current_trial = 0
+	
+		if (controlCount == 1){
+			feedback_text +=
+					'</p><p class = block-text>Done with this test. Press Enter to continue.'
+			return false
+		}
+	}
+}
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len + 1; i++) {
+for (i = 0; i < practice_len + 3; i++) {
 	
 	var practice_block = {
 		type: 'poldrack-categorize',
@@ -481,15 +658,16 @@ for (i = 0; i < practice_len + 1; i++) {
 		data: {
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
-		timing_stim: 1000, //2000
-		timing_response: 1000,
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
+		timing_stim: 2000, //2000
+		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	//practiceTrials.push(fixation_block)
 	practiceTrials.push(practice_block)
@@ -540,7 +718,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -566,7 +744,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-for (i = 0; i < numTrialsPerBlock + 1; i++) {
+for (i = 0; i < numTrialsPerBlock + 3; i++) {
 	
 	var test_block = {
 		type: 'poldrack-single-stim',
@@ -576,8 +754,8 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 1000, //2000
-		timing_response: 1000, //2000
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -621,7 +799,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		if (missed_responses > missed_thresh){
 			feedback_text +=
@@ -648,12 +826,25 @@ var testNode = {
 
 var n_back_with_flanker_experiment = []
 
+
 n_back_with_flanker_experiment.push(instruction_node);
 
+n_back_with_flanker_experiment.push(practice1);
+
 n_back_with_flanker_experiment.push(practiceNode);
+
+if (control_before == 0){
+	n_back_with_flanker_experiment.push(start_control_block);
+	n_back_with_flanker_experiment.push(controlNode);
+}
 
 n_back_with_flanker_experiment.push(start_test_block);
 
 n_back_with_flanker_experiment.push(testNode);
+
+if (control_before == 1){
+	n_back_with_flanker_experiment.push(start_control_block);
+	n_back_with_flanker_experiment.push(controlNode);
+}
 
 n_back_with_flanker_experiment.push(end_block);

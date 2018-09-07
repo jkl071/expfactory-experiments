@@ -68,18 +68,6 @@
  -webkit-transform: translateY(-50%);
 }
 
-
-.distractor_text {
-  width: 10%;
-  height: 10%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background-color: none;
-  text-align: center;
-  transform: translate(-70%, -70%);
-}
-
 .bigbox {
 width:100%;
 margin: auto; 
@@ -139,5 +127,6 @@ img.center {
   background-color: none;
   text-align: center;
   transform: translate(-70%, -70%);
+  font-size: 50px;
 }
 

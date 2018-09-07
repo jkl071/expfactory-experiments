@@ -494,7 +494,7 @@ var instructions_block = {
 			'<p class = block-text>The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago to match with, so press the '+possible_responses[1][0]+' on those trials.</p>'+
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from trials 2 ago, V, so you would respond match.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES match the letter from trial 1 ago, v, so you would respond match.</p>'+
-			'<p class = block-text>We will start with practice after you finish the instructions, so please understand this before you move on.</p>'+
+			'<p class = block-text>We will start with practice after you finish the instructions. Please ensure that you understand the instructions before you move on.</p>'+
 		'</div>'
 	],
 	allow_keys: false,

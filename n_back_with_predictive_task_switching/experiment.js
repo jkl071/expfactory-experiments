@@ -437,7 +437,7 @@ var instructions_block = {
 			'<p class = block-text>The second letter in that sequence, B, DOES NOT match the letter from trial 1 ago, V, so you would respond mismatch.</p>'+
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from trials 2 ago, V, so you would respond match.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from trials 2 ago, B, so you would respond mismatch.</p>'+
-			'<p class = block-text>We will start with practice after you finish the instructions, so please understand this before you move on.</p>'+
+			'<p class = block-text>We will start with practice after you finish the instructions. Please ensure that you understand the instructions before you move on.</p>'+
 		'</div>'
 	],
 	allow_keys: false,

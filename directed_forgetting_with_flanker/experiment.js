@@ -503,8 +503,6 @@ var instructions_block = {
 			' </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
 		
 			'<p class = block-text>Please ignore the letters that are not in the center.</p>'+
-
-			'<p class = block-text>Make sure you understand these instructions before you move on.</p>'+
 		
 			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
 		'</div>'
