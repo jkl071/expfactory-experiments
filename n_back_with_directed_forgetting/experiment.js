@@ -78,11 +78,22 @@ var randomDraw = function(lst) {
 var createTrialTypes = function(numTrialsPerBlock, delay){	
 	
 	first_stims = []
-	for (var i = 0; i < delay; i++){
+	for (var i = 0; i < 3; i++){
 		directed_forgetting_condition = 'remember'
-		n_back_condition = 'N/A'
+		if (i < delay){
+			n_back_condition = 'N/A'
+		} else {
+			n_back_condition = n_back_conditions[Math.floor(Math.random() * 2)]
+		}
 		probe = randomDraw(letters)
 		correct_response = possible_responses[1][1]
+		if (n_back_condition == 'match'){
+			correct_response = possible_responses[0][1]
+			probe = randomDraw([first_stims[i - delay].probe.toUpperCase(), first_stims[i - delay].probe.toLowerCase()])
+		} else if (n_back_condition == "mismatch"){
+			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i - delay].probe.toLowerCase(), first_stims[i - delay].probe.toUpperCase()]) == -1}))
+			correct_response = possible_responses[1][1]
+		}
 	
 		first_stim = {
 			n_back_condition: n_back_condition,
@@ -97,7 +108,7 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 	
 	stims = []
 	
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/4; numIterations++){
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/10; numIterations++){
 		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
 			for (var numShapeConds = 0; numShapeConds < directed_forgetting_conditions.length; numShapeConds++){
 			
@@ -123,7 +134,7 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 	new_stims = []
 	remember_letters = []
 	for (var i = 0; i < stim_len; i++){
-		if (i < delay){
+		if (i < 3){
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			directed_forgetting_condition = stim.directed_forgetting_condition
@@ -133,7 +144,7 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			remember_letters.push(probe)
 			
 	
-		} else if (i > delay - 1){
+		} else {
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			directed_forgetting_condition = stim.directed_forgetting_condition
@@ -241,11 +252,11 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = 0
 
 
-var practice_len = 8 // 24 must be divisible by 4
-var exp_len = 32 //324 must be divisible by 4
-var numTrialsPerBlock = 16 // 54 must be divisible by 4 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
+var practice_len = 20 // 24 must be divisible by 4
+var exp_len = 60 //324 must be divisible by 4
+var numTrialsPerBlock = 20 // 54 must be divisible by 4 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
 var numTestBlocks = exp_len / numTrialsPerBlock
-var practice_thresh = 1 // 3 blocks of 24 trials
+var practice_thresh = 3 // 3 blocks of 24 trials
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
@@ -260,7 +271,7 @@ var preFileType = "<img class = center src='/static/experiments/n_back_with_dire
 
 
 
-var n_back_conditions = ['match','mismatch']
+var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
 var directed_forgetting_conditions = jsPsych.randomization.repeat(['forget','remember'],1)
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 							 
@@ -269,11 +280,17 @@ var letters = 'bBdDgGtTvV'.split("")
 
 
 
-var prompt_text = '<ul list-text>'+
-				  	'<li>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</li>' +
-				  	'<li>Please remember or forget the current letter, depending on the cue.</li>' +
-				  '</ul>'
-
+var prompt_text_list = '<ul list-text>'+
+						'<li>Press the '+possible_responses[0][0]+' if the current letter matches the letter, '+delay+' trial ago in your memory set.</li>' +
+						'<li>Press the '+possible_responses[1][0]+'. if they mismatch.</li>' +
+					  '</ul>'
+					  
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Press the '+possible_responses[0][0]+' if the current letter matches the remember letter, '+delay+' trials ago.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Press the '+possible_responses[1][0]+'. if they mismatch.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Your delay is 1.</p>' +
+				  '</div>'
+				  
 var current_trial = 0
 var current_block = 0
 /* ************************************ */
@@ -303,6 +320,56 @@ var test_img_block = {
 	timing_response: -1,
 	response_ends_trial: true
 	};
+	
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the first part of the trial will look like.  You will see a cue, either remember or forget.</p>'+
+					'<p class = block-text style="font-size:24px;">If you saw the cue remember, please add the subsequent letter to your memory set.</p>'+
+					'<p class = block-text style="font-size:24px;">If you saw the cue forget, <strong>do not add</strong> the subsequent letter to your memory set.</p>'+
+					'<p class = block-text style="font-size:24px;">You will be given a delay before you start every block, either 1, 2, or 3. This delay is the number of letters you should keep in your memory set.  So if you have a delay of 2, you should remember the last 2 letters that came after a "remember" cue and continuously update as you see more remember cues.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue.</p>'+
+				'</div>'+
+				'<div class =centerbox>'+
+					'<div class = flanker-text>remember</div>' +
+				'</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the second part of the trial will look like.  You will see a single letter.</p>'+
+					'<p class = block-text style="font-size:24px;">Please respond if the current letter, matches the letter that appeared 2 (delay) trials ago in your memory set!</p>'+
+					'<p class = block-text style="font-size:24px;">Press '+possible_responses[0][0]+' if they match, and '+possible_responses[1][0]+' if they mismatch.</p>'+
+					'<p class = block-text style="font-size:24px;">Remember, your memory set is updated as trials with the "remember" cue come on.  If your set is already 2(delay) long, after the next "remember" cue, please expunge the earlier letter in your memory set and add the new letter to your memory set. Otherwise, at the beginning of each block, where your memory set is less than 2 (delay), add letters until your memory set is 2 (delay) long.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue.</p>'+
+				'</div>'+
+				'<div class =centerbox>'+
+					'<div class = flanker-text>B</div>' +
+				'</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
 
 var end_block = {
 	type: 'poldrack-text',
@@ -339,9 +406,22 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches the letter '+delay+' ago, and '+possible_responses[1][0]+' for no.</p> '+
-			'<p class = block-text>Your delay is '+delay+'.</p> '+
-			'<p class = block-text>You will also see a cue before each trial, either remember or forget. Please remember or forget the current letter but still respond if it matches the letter '+delay+' ago.</p> '+
+			'<p class = block-text style="font-size:20px">In this task, you will see a cue, either remember or forget, followed by a letter on every trial.</p>'+
+			'<p class = block-text style="font-size:20px">If you saw a remember cue, please add the subsequent letter to your memory set (set of letters to remember).</p>'+
+			'<p class = block-text style="font-size:20px">If you saw a forget cue, you should not add the subsequent letter to your memory set.</p>'+
+			'<p class = block-text style="font-size:20px">You will be given a delay for every block of trials, either 1, 2, or 3. This delay tells you how many letters to remember in your memory set. So for example, if your delay was 2, you should remember the last 2 letters that appeared after a remember cue.</p>'+
+			'<p class = block-text style="font-size:20px">Once your memory set is 1, 2, or 3 long, depending on delay, expunge the earlier letters to add new letters. <strong>Do this only for the letters that come after a "remember" cue!</strong></p>'+
+			'<p class = block-text style="font-size:20px">Upon the presentation of the letter on every trial, please respond whether the current letter, matches the letter that occurred 2  (delay) trials ago <strong>in your memory set.</strong></p>'+
+			'<p class = block-text style="font-size:20px">Press the '+possible_responses[0][0]+' if the letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
+			'<p class = block-text style="font-size:20px">Capitalization does not matter, so "T" matches with "t".</p> '+
+		'</div>',
+		'<div class = centerbox>'+
+			'<p class = block-text style="font-size:20px">For example, if your delay for the block was 2, and the cues that you received were remember, remember, forget, and remember, and the letters you received following each of those cues were V, B, v, and V, you would respond, no match, no match, match, and match.</p> '+
+			'<p class = block-text style="font-size:20px">The first letter in that sequence, V, DOES NOT have a trial in your memory set to match with, so press the '+possible_responses[1][0]+' on those trials.  However, the cue that came before this letter was remember, so add this letter to your memory set, which now has length of 1, and contains the letter ["V"].</p> '+
+			'<p class = block-text style="font-size:20px">The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago in your memory set to match with, so press the '+possible_responses[1][0]+' on those trials. However, you should add this letter to your memory set since it came after a "remember" cue.  Your memory set now has length of 2, and contains ["V", "B"].</p>'+
+			'<p class = block-text style="font-size:20px">The third letter in that sequence, v, DOES match the letter from 2 trials in your memory set ["V","B"], V, so you would respond match.  However, this letter came after the forget cue, so you should NOT add this to your memory set.  Your memory set is still ["V" , "B"].</p>'+
+			'<p class = block-text style="font-size:20px">The fourth letter in that sequence, V, DOES match the letter from 2 trials ago in your memory set, V, so you would respond match.  You should add this letter to your memory set, and expunge the earlier letter since you need only keep 2 (delay) letters in your memory set.  Your memory set is now ["B", V"]</p>'+
+			'<p class = block-text style="font-size:20px">We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +		
 		'</div>'
 	],
 	allow_keys: false,
@@ -383,18 +463,21 @@ var start_test_block = {
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
 			
-			'<p class = block-text>Your delay is '+delay+'.</p>'+
-			
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches the letter '+delay+' ago, and '+possible_responses[1][0]+' for no.</p> '+
-			
-			'<p class = block-text>You will also see a cue before each trial, either remember or forget. Please remember or forget the current letter but still respond if it matches the letter '+delay+' ago.</p> '+
+			'<p class = block-text style="font-size:20px">In this task, you will see a cue, either remember or forget, followed by a letter on every trial.</p>'+
+			'<p class = block-text style="font-size:20px">If you saw a remember cue, please add the subsequent letter to your memory set (set of letters to remember).</p>'+
+			'<p class = block-text style="font-size:20px">If you saw a forget cue, you should not add the subsequent letter to your memory set.</p>'+
+			'<p class = block-text style="font-size:20px">You will be given a delay for every block of trials, either 1, 2, or 3. This delay tells you how many letters to remember in your memory set. So for example, if your delay was 2, you should remember the last 2 letters that appeared after a remember cue.</p>'+
+			'<p class = block-text style="font-size:20px">Once your memory set is 1, 2, or 3 long, depending on delay, expunge the earlier letters to add new letters. <strong>Do this only for the letters that come after a "remember" cue!</strong></p>'+
+			'<p class = block-text style="font-size:20px">Upon the presentation of the letter on every trial, please respond whether the current letter, matches the letter that occurred 2  (delay) trials ago <strong>in your memory set.</strong></p>'+
+			'<p class = block-text style="font-size:20px">Press the '+possible_responses[0][0]+' if the letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
+			'<p class = block-text style="font-size:20px">Capitalization does not matter, so "T" matches with "t". <strong>You will be given your delay for the block on the following page.</strong></p> '+
 				
 			'<p class = block-text>Press Enter to continue.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
 	on_finish: function(){
-		feedback_text = "We will now start the test portion. Press enter to begin."
+		feedback_text = "Your delay for this block is "+delay+". Please match the current letter to the letter that appeared "+delay+" trial(s) ago <strong>in your memory set</strong>. Press enter to begin."
 	}
 };
 
@@ -412,7 +495,7 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
+var feedback_text = 'We will start practice. Your delay for this practice round is 1. <br><br>During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -447,7 +530,8 @@ for (i = 0; i < practice_len + 1; i++) {
 		choices: false,
 		timing_post_trial: 0,
 		timing_stim: 1000, //1000
-		timing_response: 1000
+		timing_response: 1000,
+		prompt: prompt_text
 	};
 	
 	var practice_block = {
@@ -459,15 +543,16 @@ for (i = 0; i < practice_len + 1; i++) {
 		data: {
 			trial_id: "practice_trial"
 			},
-		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>',
-		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>',
-		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>',
-		timing_stim: 1000, //2000
-		timing_response: 1000,
+		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
+		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
+		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
+		timing_stim: 3000, //2000
+		timing_response: 3000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	//practiceTrials.push(fixation_block)
 	practiceTrials.push(cue_block)
@@ -513,13 +598,13 @@ var practiceNode = {
 		if (accuracy > accuracy_thresh){
 			feedback_text +=
 					'</p><p class = block-text>Done with this practice. Press Enter to continue.' 
-			stims = createTrialTypes(numTrialsPerBlock, delay)
 			delay = delays.pop()
+			stims = createTrialTypes(numTrialsPerBlock, delay)
 			return false
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -528,8 +613,8 @@ var practiceNode = {
 			if (practiceCount == practice_thresh){
 				feedback_text +=
 					'</p><p class = block-text>Done with this practice.' 
-					stims = createTrialTypes(numTrialsPerBlock, delay)
 					delay = delays.pop()
+					stims = createTrialTypes(numTrialsPerBlock, delay)
 					return false
 			}
 			
@@ -567,8 +652,8 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 1000, //2000
-		timing_response: 1000, //2000
+		timing_stim: 3000, //2000
+		timing_response: 3000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -582,7 +667,6 @@ var testNode = {
 	timeline: testTrials,
 	loop_function: function(data) {
 	testCount += 1
-	stims = createTrialTypes(numTrialsPerBlock, delay)
 	current_trial = 0
 	
 	var sum_rt = 0
@@ -613,7 +697,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		if (missed_responses > missed_thresh){
 			feedback_text +=
@@ -626,6 +710,7 @@ var testNode = {
 			return false
 		} else {
 			delay = delays.pop()
+			stims = createTrialTypes(numTrialsPerBlock, delay)
 			feedback_text += "</p><p class = block-text><strong>For the next round of trials, your delay is "+delay+"</strong>.  Press Enter to continue."
 			return true
 		}
@@ -641,6 +726,10 @@ var testNode = {
 var n_back_with_directed_forgetting_experiment = []
 
 n_back_with_directed_forgetting_experiment.push(instruction_node);
+
+n_back_with_directed_forgetting_experiment.push(practice1);
+
+n_back_with_directed_forgetting_experiment.push(practice2);
 
 n_back_with_directed_forgetting_experiment.push(practiceNode);
 

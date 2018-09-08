@@ -165,7 +165,6 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 		} else if (n_back_condition == "mismatch"){
 			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i - delay].probe.toLowerCase(), first_stims[i - delay].probe.toUpperCase()]) == -1}))
 			correct_response = possible_responses[1][1]
-	
 		}
 		
 		if (flanker_condition == 'congruent'){
@@ -586,7 +585,7 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. Your delay for this practice round is 1. <br><br>During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -712,8 +711,8 @@ var practiceNode = {
 		if (accuracy > accuracy_thresh){
 			feedback_text +=
 					'</p><p class = block-text>Done with this practice. Press Enter to continue.' 
-			stims = createTrialTypes(numTrialsPerBlock, delay)
 			delay = delays.pop()
+			stims = createTrialTypes(numTrialsPerBlock, delay)
 			return false
 	
 		} else if (accuracy < accuracy_thresh){
@@ -727,8 +726,8 @@ var practiceNode = {
 			if (practiceCount == practice_thresh){
 				feedback_text +=
 					'</p><p class = block-text>Done with this practice.' 
-					stims = createTrialTypes(numTrialsPerBlock, delay)
 					delay = delays.pop()
+					stims = createTrialTypes(numTrialsPerBlock, delay)
 					return false
 			}
 			
@@ -768,7 +767,6 @@ var testNode = {
 	timeline: testTrials,
 	loop_function: function(data) {
 	testCount += 1
-	stims = createTrialTypes(numTrialsPerBlock, delay)
 	current_trial = 0
 	
 	var sum_rt = 0
@@ -812,6 +810,7 @@ var testNode = {
 			return false
 		} else {
 			delay = delays.pop()
+			stims = createTrialTypes(numTrialsPerBlock, delay)
 			feedback_text += "</p><p class = block-text><strong>For the next round of trials, your delay is "+delay+"</strong>.  Press Enter to continue."
 			return true
 		}
