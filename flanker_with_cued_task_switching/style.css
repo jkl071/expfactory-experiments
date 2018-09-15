@@ -1,3 +1,7 @@
+/*******************************************************/
+/***********    Network Default CSS Styles    **********/
+/*******************************************************/
+
 .display_stage {
     position: fixed;
     background: black;
@@ -67,10 +71,9 @@
  text-align: center;
 }
 
-
 .fixation {
  text-align: center;
- font-size: auto;
+ font-size: 50px;
  position: relative;
  top: 50%; 
  transform: translateY(-50%);

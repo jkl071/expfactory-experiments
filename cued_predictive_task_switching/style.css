@@ -1,3 +1,7 @@
+/*******************************************************/
+/***********    Network Default CSS Styles    **********/
+/*******************************************************/
+
 .display_stage {
     position: fixed;
     background: black;
@@ -14,7 +18,7 @@
   color: white;
 }
 
-.cue-text {
+.flanker-text {
 	text-align: center;
 	font-size: 50px;
 	position: relative;
@@ -23,66 +27,15 @@
     -webkit-transform: translateY(-50%);
 }
 
-.decision-top-left {
- width: 25vw;
- height: 25vh;
- position:absolute;
- top:25%;
- left:25%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: black;
- text-align: center;
+.fb_box {
+  width:35vw;
+  height: 20vh;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-175%);
 }
-
-.decision-bottom-left {
- width: 25vw;
- height: 25vh;
- position:absolute;
- top:75%;
- left:25%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: black;
- text-align: center;
-}
-
-/*values are 30% for both left right width and height*/
-
-
-.decision-top-right {
- height: 25vh;
- width: 25vw;
- position:absolute;
- top:25%;
- left:75%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: black;
- text-align: center;
-}
-
-.decision-bottom-right {
- height: 25vh;
- width: 25vw;
- position:absolute;
- top:75%;
- left:75%;
- transform: translate(-50%,-50%);
- margin-right: -50%;
- background-color: black;
- text-align: center;
-}
-
-img.center {
-  position: absolute;  
-  top: 0;  
-  bottom: 0;  
-  left: 0;  
-  right: 0;  
-  margin: auto;  
-}
-
 
 .picture_box {
  width: 60%;
@@ -96,14 +49,35 @@ img.center {
  text-align: center;
 }
 
-.fb_box {
-  width:35vw;
-  height: 20vh;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-50%,-175%);
+
+.fixation {
+ text-align: center;
+ font-size: 50px;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
+
+.cue-text {
+ text-align: center;
+ font-size: 50px;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
+
+
+.distractor_text {
+  width: 10%;
+  height: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: none;
+  text-align: center;
+  transform: translate(-70%, -70%);
 }
 
 .bigbox {
@@ -118,26 +92,112 @@ background-color: black;
 text-align: center;
 }
 
+.instructBox {
+ width: 80vw;
+ height: 10vw;
+ position:absolute;
+ top:10%;
+ left:50%; 
+ margin-right: 0%;
+ transform: translate(-50%,-50%);
+ background-color: none;
+ font-size: 24px;
+}
 
-/* As above but centeblack instead of justified. Good for instructions with few lines */
-.center-block-text {
- width:100%;
- height 100vw;
+.prompt_box {
+ width: 75%;
+ height: 20%;
+ position:absolute;
+ top:50%;
+ left:50%;
+ transform: translate(-50%,-45%);
+ margin-right:0%;
+ background-color: none;
  text-align: center;
- margin: 0 auto;
- margin-bottom: 1em;
- font-size: 26px;
- line-height: 120%;
+}
+
+/*******************************************************/
+/************    Predictive CSS Styles     *************/
+/*******************************************************/
+.decision-top-left {
+ width: 40vw;
+ height: 40vh;
+ position:absolute;
+ top:25%;
+ left:25%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: none;
+ text-align: center;
+}
+
+.decision-bottom-left {
+ width: 40vw;
+ height: 40vh;
+ position:absolute;
+ top:75%;
+ left:25%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: none;
+ text-align: center;
+}
+
+.decision-top-right {
+ height: 40vh;
+ width: 40vw;
+ position:absolute;
+ top:25%;
+ left:75%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: none;
+ text-align: center;
+}
+
+.decision-bottom-right {
+ height: 40vh;
+ width: 40vw;
+ position:absolute;
+ top:75%;
+ left:75%;
+ transform: translate(-50%,-50%);
+ margin-right: -50%;
+ background-color: none;
+ text-align: center;
+}
+
+/*******************************************************/
+/************       Cued CSS Styles        *************/
+/*******************************************************/
+
+.left-text {
+ width: 10%;
+  height: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: none;
+  text-align: center;
+  transform: translate(-125%, -50%);
+  font-size: 50px;
+  padding-top: 4%;
+}
+
+
+.right-text {
+ width: 10%;
+  height: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: none;
+  text-align: center;
+  transform: translate(25%, -50%);
+  font-size: 50px;
+  padding-top: 4%;
 }
 
 
 
-/* fixation should be used like this in: '<div class = centerbox><div class = fixation>+</div></div>'*/
-.fixation {
- text-align: center;
- font-size: 100px;
- position: relative;
- top: 50%; 
- transform: translateY(-50%);
- -webkit-transform: translateY(-50%);
-}
+

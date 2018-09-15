@@ -68,7 +68,7 @@ var randomDraw = function(lst) {
 var createTrialTypes = function(numTrialsPerBlock){
 	var whichQuadStart = jsPsych.randomization.repeat([1,2,3,4],1).pop()
 	var predictive_cond_array = predictive_conditions[whichQuadStart%2]
-	predictive_dimensions = predictive_dimensions_list[Math.floor(Math.random() * 2)]
+	predictive_dimensions = predictive_dimensions_list[0]
 	
 	var shape_matching_trial_type_list = []
 	var shape_matching_trial_types1 = jsPsych.randomization.repeat(['DDD','SDD','DSD','DDS','SSS','SNN','DNN'], numTrialsPerBlock/28)
@@ -224,6 +224,7 @@ var getFixation = function(){
 	distractor = stim.distractor
 	correct_response = stim.correct_response
 	whichQuadrant = stim.whichQuad
+	console.log(correct_response)
 	
 	return fixation_boards[whichQuadrant - 1]
 
@@ -269,8 +270,8 @@ var practice_thresh = 3 // 3 blocks of 28 trials
 
 var predictive_conditions = [['switch','stay'],
 							 ['stay','switch']]
-var predictive_dimensions_list = [['match', 'match', 'mismatch','mismatch'],
-							 ['mismatch','mismatch', 'match', 'match' ]]
+var predictive_dimensions_list = jsPsych.randomization.repeat([['match', 'match', 'mismatch','mismatch'],
+							 ['mismatch','mismatch', 'match', 'match' ]],1)
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
 
@@ -537,7 +538,7 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len + 1; i++) {
+for (i = 0; i < 10; i++) { //practice_len + 1
 	var fixation_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getFixation,
