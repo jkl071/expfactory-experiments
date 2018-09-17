@@ -392,6 +392,7 @@ var curr_stim = 'na' //object that holds the current stim, set by setStims()
 var current_trial = 0
 var CTI = 300 //cue-target-interval, only has 1 value
 var exp_stage = 'NoSS_practice' // defines the exp_stage, switched by start_test_block
+var upper_stop_success_bound = 0.70
 
 var prompt_text_list = '<ul list-text>'+
 						'<li>If judging number based on parity</li>' +
@@ -637,7 +638,7 @@ var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
 		exp_id: "cued_predictive_task_switching",
-		trial_id: "practice-no-stop-feedback"
+		trial_id: "practice-stop-feedback"
 	},
 	choices: [13],
 	stimulus: getFeedback,
@@ -879,8 +880,7 @@ for (i = 0; i < practice_length; i++) {
   var categorize_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "cued_predictive_task_switching",
-		trial_id: "practice-no-stop-feedback"
+		trial_id: "practice-stop-feedback"
 	},
 	choices: 'none',
 	stimulus: getCategorizeFeedback,

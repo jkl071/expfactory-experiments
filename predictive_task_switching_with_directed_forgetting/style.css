@@ -72,15 +72,6 @@ background-color: black;
 text-align: center;
 }
 
-.instructBox {
-	width: 80vw;
-	height: 10vw;
-	position:absolute;
-	top:10%;
-	left:50%; 
-	margin-right: 50%;
-	transform: translate(-50%,-50%);
-}
 
 .cue-text {
 	text-align: center;
