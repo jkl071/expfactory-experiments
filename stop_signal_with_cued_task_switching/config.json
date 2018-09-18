@@ -1,6 +1,6 @@
 [
     {
-        "name": "Cued Task Switching with Stop Signal",
+        "name": "Stop Signal with Cued Task Switching",
         "template":"jspsych",
         "run": [
                  "static/js/math.min.js",
@@ -20,7 +20,7 @@
                  "static/css/default_style.css",
                  "style.css"
                ],
-        "exp_id": "cued_task_switching_with_stop_signal",
+        "exp_id": "stop_signal_with_cued_task_switching",
         "cognitive_atlas_task_id": "trm_566745bbf272a",
         "contributors": [
                          "Ian Eisenberg",

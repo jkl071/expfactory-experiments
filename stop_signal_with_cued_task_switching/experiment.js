@@ -7,7 +7,7 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'cued_task_switching_with_stop_signal'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_with_cued_task_switching'})
 }
 
 function evalAttentionChecks() {
@@ -329,7 +329,7 @@ var stop_thresh = 0.2
 var numconditions = 2
 var numblocks = 6
 var test_block_data = []
-var pathSource = '/static/experiments/cued_task_switching_with_stop_signal/images/'
+var pathSource = '/static/experiments/stop_signal_with_cued_task_switching/images/'
 var fileType = '.png'
 
 
@@ -625,7 +625,7 @@ var end_block = {
   type: 'poldrack-text',
   data: {
     trial_id: "end",
-    exp_id: 'cued_task_switching_with_stop_signal'
+    exp_id: 'stop_signal_with_cued_task_switching'
   },
   text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
   cont_key: [13],
@@ -1113,24 +1113,24 @@ var test_SSblock = []
 
 
 /* create experiment definition array */ 
-var cued_task_switching_with_stop_signal_experiment = [];
-cued_task_switching_with_stop_signal_experiment.push(instruction_node);
-cued_task_switching_with_stop_signal_experiment.push(practice1);
-cued_task_switching_with_stop_signal_experiment.push(practice2);
-cued_task_switching_with_stop_signal_experiment.push(practice3);
-cued_task_switching_with_stop_signal_experiment.push(practice4);
+var stop_signal_with_cued_task_switching_experiment = [];
+stop_signal_with_cued_task_switching_experiment.push(instruction_node);
+stop_signal_with_cued_task_switching_experiment.push(practice1);
+stop_signal_with_cued_task_switching_experiment.push(practice2);
+stop_signal_with_cued_task_switching_experiment.push(practice3);
+stop_signal_with_cued_task_switching_experiment.push(practice4);
 
-cued_task_switching_with_stop_signal_experiment.push(practice_node)
+stop_signal_with_cued_task_switching_experiment.push(practice_node)
 
-cued_task_switching_with_stop_signal_experiment.push(start_test_block)
+stop_signal_with_cued_task_switching_experiment.push(start_test_block)
 
 for (var b =0; b < numblocks; b++) {
-cued_task_switching_with_stop_signal_experiment.push(test_node)
+stop_signal_with_cued_task_switching_experiment.push(test_node)
 }
-cued_task_switching_with_stop_signal_experiment.push(test_feedback_block)
+stop_signal_with_cued_task_switching_experiment.push(test_feedback_block)
 
 
-cued_task_switching_with_stop_signal_experiment.push(attention_node)
-cued_task_switching_with_stop_signal_experiment.push(post_task_block)
-cued_task_switching_with_stop_signal_experiment.push(end_block)
+stop_signal_with_cued_task_switching_experiment.push(attention_node)
+stop_signal_with_cued_task_switching_experiment.push(post_task_block)
+stop_signal_with_cued_task_switching_experiment.push(end_block)
 
