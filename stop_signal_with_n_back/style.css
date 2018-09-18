@@ -68,18 +68,6 @@
  -webkit-transform: translateY(-50%);
 }
 
-
-.distractor_text {
-  width: 10%;
-  height: 10%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background-color: none;
-  text-align: center;
-  transform: translate(-70%, -70%);
-}
-
 .bigbox {
 width:100%;
 margin: auto; 
@@ -129,89 +117,6 @@ img.center {
 }
 
 /*******************************************************/
-/***********  Directed Forgetting CSS Styles  **********/
-/*******************************************************/
-
-.lettersBox {
- width: 70vw;
- height: 50%;
- position:absolute;
- top:50%;
- left:50%; 
- margin-right: 0%;
- transform: translate(-50%,-50%);
- background-color: none;
- font-size: 24px;
-}
-
-.topLeft {
-width: 5vw;
-height: 5vw;
-position:absolute;
-top:50%;
-left:50%; 
-margin-right:0%;
-transform: translate(-200%,-150%);
-background-color: none;
-}
-
-.topRight {
-width: 5vw;
-height: 5vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(100%,-150%);
-background-color: none;
-}
-
-.topMiddle {
-width: 5vw;
-height: 5vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,-150%);
-background-color: none;
-}
-
-.bottomLeft {
-width: 5vw;
-height: 5vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-200%,50%);
-background-color: none;
-}
-
-.bottomRight {
-width: 5vw;
-height: 5vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(100%,50%);
-background-color: none;
-}
-
-
-.bottomMiddle {
-width: 5vw;
-height: 5vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,50%);
-background-color: none;
-}
-
-/*******************************************************/
 /***********      Stop Signal CSS Styles      **********/
 /*******************************************************/
 
@@ -224,5 +129,3 @@ background-color: none;
   margin-right:-50%;
   transform: translate(-50%,-50%);
 }
-
-
