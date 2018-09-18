@@ -658,7 +658,6 @@ for (i = 0; i < practice_len; i++) {
 		prompt: prompt_text,
 		on_finish: function() {
 			jsPsych.data.addDataToLastTrial({'exp_stage': exp_stage})
-			console.log('here1');
 		},
 	}
 	
@@ -685,7 +684,6 @@ for (i = 0; i < practice_len; i++) {
 				trial_num: currData.trial_num,
 				correct_response: currData.correct_response
 			})
-			console.log('here2');
 			
 		}
 	}
@@ -700,10 +698,7 @@ for (i = 0; i < practice_len; i++) {
 		is_html: true,
 		timing_stim: 500,
 		timing_response: 500,
-		response_ends_trial: false, 
-		on_finish: function(){
-			console.log('here3');
-		}
+		response_ends_trial: false
 
 	  };
 	  
@@ -721,7 +716,6 @@ for (i = 0; i < practice_len; i++) {
 		prompt: prompt_text,
 		on_finish: function() {
 			jsPsych.data.addDataToLastTrial({'exp_stage': exp_stage})
-			console.log('here4');
 		},
 	}
 	practice_trials.push(fixation_block)
