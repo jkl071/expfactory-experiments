@@ -764,7 +764,7 @@ for (i = 0; i < practice_len + 1; i++) {
 	var practice_probe_block = {
 		type: 'poldrack-categorize',
 		stimulus: getProbeStim,
-		key_answer: getCorrectResponse,
+		key_answer: getResponse,
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		data: {trial_id: "practice_trial"},
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,

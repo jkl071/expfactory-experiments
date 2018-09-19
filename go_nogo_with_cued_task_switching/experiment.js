@@ -61,19 +61,19 @@ var getFeedback = function() {
 var getCategorizeIncorrectText = function(){
 	if (go_nogo_condition == 'go'){
 	
-		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
 	} else {
 	
-		return '<div class = fb_box><div class = center-text><font size = 20>Number is red.</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Number is ' + go_no_go_styles[1] + '.</font></div></div>' + prompt_text
 	}
 
 }
 
 var getTimeoutText = function(){
 	if (go_nogo_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text
 	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
 	}
 }
 
@@ -178,11 +178,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 		//console.log('condition = '+cued_condition+', go_nogo_condition: '+ go_nogo_condition+', cued_dimension: '+cued_dimension)
 		
 		number = numbers[Math.floor((Math.random() * 8))]
-		if (go_nogo_condition == 'go'){
-			number_color = 'green'
-		} else {
-			number_color = 'red'
-		}
+		
 	
 		response_arr = getCorrectResponse(number, cued_dimension, go_nogo_condition)
 		
@@ -195,7 +191,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 			parity: response_arr[2],
 			correct_response: response_arr[0],
 			number: number,
-			number_color: number_color
 			}
 		
 		new_stims.push(stim)
@@ -212,11 +207,17 @@ var getResponse = function() {
 
 var getStim = function(){
 	
-	return task_boards[0] + 
-				number_color +
-		   task_boards[1] +
-				number +
-		   task_boards[2]
+	if (go_nogo_condition == "go"){
+		number_style = go_no_go_styles[0]
+		
+					
+			   
+	} else if (go_nogo_condition == "stop"){
+		number_style = go_no_go_styles[1]
+	
+	}	
+	
+	return task_boards[0] + preFileType +  number_style  + '_' + number + fileTypePNG + task_boards[1]
 }
 	
 		
@@ -226,7 +227,6 @@ var getCue = function(){
 	cued_dimension = stim.cued_dimension
 	go_nogo_condition = stim.go_nogo_condition
 	number = stim.number
-	number_color = stim.number_color
 	correct_response = stim.correct_response
 	magnitude = stim.magnitude
 	parity = stim.parity
@@ -254,7 +254,7 @@ var appendData = function(){
 		cued_dimension: cued_dimension,
 		go_nogo_condition: go_nogo_condition,
 		number: number,
-		number_color: number_color,
+		number_style: number_style,
 		correct_response: correct_response,
 		current_block: current_block,
 		current_trial: current_trial,
@@ -272,11 +272,7 @@ var appendData = function(){
 		jsPsych.data.addDataToLastTrial({
 			correct_trial: 0,
 		})
-	
-	}
-	
-	
-	
+	}	
 }
 
 /* ************************************ */
@@ -302,6 +298,8 @@ var practice_thresh = 2 // 3 blocks of 28 trials
 var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
 var cued_dimensions = jsPsych.randomization.repeat(['magnitude','parity'],1)
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+
 
 
 var current_trial = 0
@@ -316,20 +314,34 @@ var cued_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magnitude'
 
 
 var task_boards = ['<div class = bigbox><div class = centerbox><div class = cue-text><font size = "10" color = "','">','</font><div></div><div></div>']				
+var task_boards = ['<div class = bigbox><div class = centerbox><div class = gng_number>','</div></div></div>']				
 
 				   
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-					'<li>Do not respond if the number is red!  Only respond if the number is green.</li>' +
-				  	'<li>Cue was '+cued_dimensions_list[0].dim+': Judge number on '+cued_dimensions_list[0].dim+'</li>' +
-				  	'<li>'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+cued_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
-					'<li>Cue was '+cued_dimensions_list[1].dim+': '+cued_dimensions_list[1].dim+'</li>' +
-					'<li>'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Do not respond if the number is ' + go_no_go_styles[1] + '!</li>' +
+						'<li>Only respond if the number is ' + go_no_go_styles[0] + '</li>' +
+						'<li>Cue was '+cued_dimensions_list[0].dim+': Judge number on '+cued_dimensions_list[0].dim+'</li>' +
+						'<li>'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+cued_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
+						'<li>Cue was '+cued_dimensions_list[1].dim+': '+cued_dimensions_list[1].dim+'</li>' +
+						'<li>'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Do not respond if the number is ' + go_no_go_styles[1] + '!</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Only respond if the number is ' + go_no_go_styles[0] + '.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Cue was '+cued_dimensions_list[0].dim+': Judge number on '+cued_dimensions_list[0].dim+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+cued_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Cue was '+cued_dimensions_list[1].dim+': '+cued_dimensions_list[1].dim+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</p>' +
+				  '</div>' 	
+
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -350,6 +362,73 @@ var test_img_block = {
 	response_ends_trial: true
 };
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the first part of the trial will look like.  You will see a cue, either <strong> Parity </strong> or <strong> Magnitude </strong>.</p>'+
+					'<p class = block-text style="font-size:24px;">This cue will instruct you how to respond to the upcoming number.  If you saw the cue, <strong> Parity</strong>, please judge whether the upcoming number is odd or even.  Press the ' + possible_responses[0][0] +' if '+cued_dimensions_list[0].values[0]+', and the '+possible_responses[1][0]+' if '+cued_dimensions_list[0].values[1]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">If you saw the cue <strong> Magnitude</strong>, please judge whether the upcoming number is higher or lower than 5 Press the ' + possible_responses[0][0] +' if '+cued_dimensions_list[1].values[0]+', and the '+possible_responses[1][0]+' if '+cued_dimensions_list[1].values[1]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				'<div class = centerbox><div class = cue-text>Parity</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the later part of the trial will look like. Depending on the cue you saw, please judge this number on that dimension.</p>'+
+					'<p class = block-text style="font-size:24px;">Since the cue you saw was parity, please judge whether this number is odd or even.</p>'+
+					'<p class = block-text style="font-size:24px;">If the cue was magnitude, you would have judged this number whether it was higher or lower than 5, instead of odd vs even. </p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox><div class = gng_number>' + preFileType +   go_no_go_styles[0]  + '_1' + fileTypePNG + '</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice3 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">If instead, the '+go_no_go_styles[1]+' version of the number came out, then do not respond on that trial!</p>'+
+					'<p class = block-text style="font-size:24px;">Remember, respond only if the number is '+go_no_go_styles[0]+', not if the number is '+go_no_go_styles[0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox><div class = gng_number>' + preFileType +   go_no_go_styles[1]  + '_1'  + fileTypePNG + '</div></div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
 //Set up post task questionnaire
 var post_task_block = {
    type: 'survey-text',
@@ -367,7 +446,7 @@ var response_keys =
 	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -405,19 +484,21 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see a cue, either magnitude or parity, followed by a single colored number.</p> '+
+			'<p class = block-text>In this experiment you will see a cue, either magnitude or parity, followed by a single colored number.</p> '+
 		
-		'<p class = block-text>You will be asked to judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which cue you see.</p>'+
+			'<p class = block-text>You will be asked to judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which cue you see.</p>'+
 		
-		'<p class = block-text>If you see the cue '+cued_dimensions_list[0].dim+', please judge the number based on <strong>'+cued_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
-			'  if '+cued_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+cued_dimensions_list[0].values[1]+'</strong>.</p>'+
+			'<p class = block-text>If you see the cue '+cued_dimensions_list[0].dim+', please judge the number based on <strong>'+cued_dimensions_list[0].dim+'</strong>. Press the <strong>'+possible_responses[0][0]+
+				'  if '+cued_dimensions_list[0].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+'  if '+cued_dimensions_list[0].values[1]+'</strong>.</p>'+
 		
-		'<p class = block-text>If you see the cue '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
-		' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+ ' if ' +cued_dimensions_list[1].values[1]+'</strong>.</p>'+
+			'<p class = block-text>If you see the cue '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
+			' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+ ' if ' +cued_dimensions_list[1].values[1]+'</strong>.</p>'+
 		
-		'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
+			'<p class = block-text>Additionally, please only respond if the number is ' + go_no_go_styles[0] + '. Do not respond if the number is ' + go_no_go_styles[1] + '.</p>'+
 		
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+		
+		'</div>',
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -475,9 +556,9 @@ var start_test_block = {
 			'<p class = block-text>If you see the cue '+cued_dimensions_list[1].dim+', please judge the number based on <strong>'+cued_dimensions_list[1].dim+'.</strong>'+
 			' Press the <strong>'+possible_responses[0][0]+' if '+cued_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
 		
-			'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
+			'<p class = block-text>Additionally, please only respond if the number is ' + go_no_go_styles[0] + '. Do not respond if the number is ' + go_no_go_styles[1] + '.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -510,7 +591,8 @@ for (i = 0; i < practice_len + 1; i++) {
 			trial_id: "practice_cue"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0
+		timing_post_trial: 0,
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -531,7 +613,8 @@ for (i = 0; i < practice_len + 1; i++) {
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	practiceTrials.push(cue_block)
 	practiceTrials.push(practice_block)
@@ -582,7 +665,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -680,7 +763,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -708,6 +791,12 @@ go_nogo_with_cued_task_switching_experiment = []
 //go_nogo_with_cued_task_switching_experiment.push(test_img_block)
 
 go_nogo_with_cued_task_switching_experiment.push(instruction_node)
+
+go_nogo_with_cued_task_switching_experiment.push(practice1)
+
+go_nogo_with_cued_task_switching_experiment.push(practice2)
+
+go_nogo_with_cued_task_switching_experiment.push(practice3)
 
 go_nogo_with_cued_task_switching_experiment.push(practiceNode)
 
