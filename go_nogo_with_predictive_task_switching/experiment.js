@@ -60,19 +60,19 @@ var getFeedback = function() {
 var getCategorizeIncorrectText = function(){
 	if (go_nogo_condition == 'go'){
 	
-		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
 	} else {
 	
-		return '<div class = fb_box><div class = center-text><font size = 20>Number is red.</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Number is red.</font></div></div>' + prompt_text
 	}
 
 }
 
 var getTimeoutText = function(){
 	if (go_nogo_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text
 	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
 	}
 }
 
@@ -144,11 +144,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 	number = numbers[Math.floor((Math.random() * 8))]
 	go_nogo_condition = jsPsych.randomization.repeat(['go','go','go','go','stop'],1).pop()
 	
-	if (go_nogo_condition == 'go'){
-		number_color = 'green'
-	} else {
-		number_color = 'red'	
-	}
 	
 	response_arr = getCorrectResponse(number,predictive_dimension, go_nogo_condition)
 	
@@ -160,7 +155,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 		predictive_dimension: predictive_dimension,
 		go_nogo_condition: go_nogo_condition,
 		number: number,
-		number_color: number_color,
 		magnitude: response_arr[1],
 		parity: response_arr[2],
 		correct_response: response_arr[0]
@@ -177,11 +171,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 		predictive_dimension = predictive_dimensions[quadIndex - 1]
 		number = numbers[Math.floor((Math.random() * 8))]
 		
-		if (go_nogo_condition == 'go'){
-			number_color = 'green'
-		} else {
-			number_color = 'red'	
-		}
 	
 		response_arr = getCorrectResponse(number,predictive_dimension, go_nogo_condition)
 		
@@ -191,7 +180,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 			predictive_dimension: predictive_dimension,
 			go_nogo_condition: go_nogo_condition,
 			number: number,
-			number_color: number_color,
 			magnitude: response_arr[1],
 			parity: response_arr[2],
 			correct_response: response_arr[0]
@@ -211,7 +199,6 @@ var getNextStim = function(){
 	predictive_dimension = stim.predictive_dimension
 	go_nogo_condition = stim.go_nogo_condition
 	number = stim.number
-	number_color = stim.number_color
 	correct_response = stim.correct_response
 	whichQuadrant = stim.whichQuadrant
 	magnitude = stim.magnitude
@@ -229,14 +216,32 @@ var getResponse = function() {
 
 
 var getStim = function(){
+	if (go_nogo_condition == "go"){
+		number_style = go_no_go_styles[0]
+		console.log('1')
+		
+	} else if (go_nogo_condition == "stop"){
+		number_style = go_no_go_styles[1]
+		console.log('2')
+	}	
 	
-	return task_boards[whichQuadrant - 1][0] + 
-				number_color +
-		   task_boards[whichQuadrant - 1][1] +
-				number +
-		   task_boards[whichQuadrant - 1][2]
-		   		   
+	return task_boards[whichQuadrant - 1][0] + preFileType +  number_style  + '_' + number + fileTypePNG + task_boards[whichQuadrant - 1][1]  		   
 	
+}
+
+var getFixation = function(){
+	stim = stims.shift()
+	predictive_condition = stim.predictive_condition
+	predictive_dimension = stim.predictive_dimension
+	go_nogo_condition = stim.go_nogo_condition
+	number = stim.number
+	correct_response = stim.correct_response
+	whichQuadrant = stim.whichQuadrant
+	magnitude = stim.magnitude
+	parity = stim.parity
+	
+	return task_boards[whichQuadrant - 1][0] + '<div class = fixation>+</div>' + task_boards[whichQuadrant - 1][1]
+
 }
 
 
@@ -257,7 +262,7 @@ var appendData = function(){
 		predictive_dimension: predictive_dimension,
 		go_nogo_condition: go_nogo_condition,
 		number: number,
-		number_color: number_color,
+		number_style: number_style,
 		correct_response: correct_response,
 		whichQuadrant: whichQuadrant,
 		magnitude: magnitude,
@@ -308,6 +313,8 @@ var predictive_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magn
 							 	  
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
+var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+
 
 
 
@@ -316,23 +323,35 @@ var preFileType = "<img class = center src='/static/experiments/go_nogo_with_pre
 
 var current_trial = 0
 
-var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']],
-				   [['<div class = bigbox><div class = decision-top-right><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']],
-				   [['<div class = bigbox><div class = decision-bottom-right><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']],
-				   [['<div class = bigbox><div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div></div>']]]
+var task_boards = [[['<div class = bigbox><div class = decision-top-left><div class = centerbox>'],['</div></div></div>']],
+				   [['<div class = bigbox><div class = decision-top-right><div class = centerbox>'],['</div></div></div>']],
+				   [['<div class = bigbox><div class = decision-bottom-right><div class = centerbox>'],['</div></div></div>']],
+				   [['<div class = bigbox><div class = decision-bottom-left><div class = centerbox>'],['</div></div></div>']]]
 
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-					'<li>Do not respond if the number is red!  Only respond if the number is green.</li>' +
-				  	'<li>Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</li>' +
-				  	'<li>'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
-					'<li>Bottom 2 quadrants: Judge number on '+predictive_dimensions_list[1].dim+'</li>' +
-					'<li>'+predictive_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
-					'<li>'+predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Do not respond if the number is ' + go_no_go_styles[1] + '!</li>' +
+						'<li>Only respond if the number is ' + go_no_go_styles[0] + '.</li>'+
+						'<li>Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</li>' +
+						'<li>'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</li>' +
+						'<li>Bottom 2 quadrants: Judge number on '+predictive_dimensions_list[1].dim+'</li>' +
+						'<li>'+predictive_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</li>' +
+						'<li>'+predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</li>' +
+					  '</ul>'
+					  
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Do not respond if the number is ' + go_no_go_styles[1] + '!</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Only respond if the number is ' + go_no_go_styles[0] + '.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Top 2 quadrants: Judge number on '+predictive_dimensions_list[0].dim+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+predictive_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+predictive_dimensions_list[0].values[1]+': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Bottom 2 quadrants: Judge number on '+predictive_dimensions_list[1].dim+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+predictive_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+predictive_dimensions_list[1].values[1]+': ' + possible_responses[1][0] + '</p>' +
+				  '</div>' 	
 
 /* ************************************ */
 /* Set up jsPsych blocks */
@@ -354,6 +373,58 @@ var test_img_block = {
 	response_ends_trial: true
 };
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the first part of the trial will look like.  The number is at a bottom quadrant, so please judge the number on '+predictive_dimensions_list[1].dim+'</p>'+
+					'<p class = block-text style="font-size:24px;">If the number is '+predictive_dimensions_list[1].values[0]+', press ' + possible_responses[0][0] + '.  If the number is '+predictive_dimensions_list[1].values[1]+', press ' + possible_responses[1][0] + '</p>'+
+					'<p class = block-text style="font-size:24px;">On every trial, the number will move in a clockwise fashion.</p>'+
+					'<p class = block-text style="font-size:24px;">If instead, the number was on a top quadrant, please judge the number on '+predictive_dimensions_list[0].dim+'. If the number is '+predictive_dimensions_list[0].values[0]+', press ' + possible_responses[1][0] + '.  If the number is '+predictive_dimensions_list[0].values[1]+', press ' + possible_responses[1][0] + '</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				'<div class = decision-bottom-left>'+
+					'<div class = centerbox><div class = gng_number>' + preFileType +   go_no_go_styles[0]  + '_1' + fileTypePNG + '</div></div>'+
+				'</div>'+
+				
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">If instead, the '+go_no_go_styles[1]+' version of the number came out, then do not respond on that trial!</p>'+
+					'<p class = block-text style="font-size:24px;">Remember, respond only if the number is '+go_no_go_styles[0]+', not if the number is '+go_no_go_styles[0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = decision-bottom-left>'+
+					'<div class = centerbox><div class = gng_number>' + preFileType +   go_no_go_styles[1]  + '_1' + fileTypePNG + '</div></div>'+
+				'</div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
 
 //Set up post task questionnaire
 var post_task_block = {
@@ -368,7 +439,7 @@ var post_task_block = {
 };
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -418,7 +489,7 @@ var instructions_block = {
 			' Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
 			' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
 		
-			'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
+			'<p class = block-text>Additionally, please only respond if the number is ' + go_no_go_styles[0] + '. Do not respond if the number is ' + go_no_go_styles[1] + '.</p>'+
 			
 			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
 		'</div>'
@@ -484,7 +555,7 @@ var start_test_block = {
 			' Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>'+possible_responses[1][0]+
 			' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
 	
-			'<p class = block-text>Additionally, please only respond if the number is green. Do not respond if the number is red.</p>'+
+			'<p class = block-text>Additionally, please only respond if the number is ' + go_no_go_styles[0] + '. Do not respond if the number is ' + go_no_go_styles[1] + '.</p>'+
 	
 			'<p class = block-text>Press Enter to continue.</p>'+
 		 '</div>',
@@ -513,7 +584,7 @@ practiceTrials.push(feedback_block)
 for (i = 0; i < practice_len + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getFixation,
 		is_html: true,
 		choices: 'none',
 		data: {
@@ -521,7 +592,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		},
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		on_finish: getNextStim
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -542,7 +613,8 @@ for (i = 0; i < practice_len + 1; i++) {
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	practiceTrials.push(fixation_block)
 	practiceTrials.push(practice_block)
@@ -593,7 +665,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 			if (missed_responses > missed_thresh){
 			feedback_text +=
 					'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -623,15 +695,14 @@ testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
-		stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+		stimulus: getFixation,
 		is_html: true,
 		choices: 'none',
 		data: {
 			trial_id: "test_fixation"
 		},
 		timing_response: 500, //500
-		timing_post_trial: 0,
-		on_finish: getNextStim
+		timing_post_trial: 0
 	}
 	
 	var test_block = {
@@ -692,7 +763,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -720,6 +791,10 @@ go_nogo_with_predictive_task_switching_experiment = []
 //go_nogo_with_predictive_task_switching_experiment.push(test_img_block)
 
 go_nogo_with_predictive_task_switching_experiment.push(instruction_node)
+
+go_nogo_with_predictive_task_switching_experiment.push(practice1)
+go_nogo_with_predictive_task_switching_experiment.push(practice2)
+
 
 go_nogo_with_predictive_task_switching_experiment.push(practiceNode)
 
