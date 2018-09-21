@@ -348,6 +348,8 @@ var directed_cond_array = ['pos', 'pos', 'neg', 'con']
 var directed_cue_array = ['TOP','BOT']
 var go_nogo_conditions = ['go','go','go','go','stop']
 var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+var fileTypePNG = ".png"
+var preFileType = "<img class = center src='"
 
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 var fileTypePNG = ".png'></img>"
@@ -474,7 +476,7 @@ var practice3 = {
 				'</div>'+
 		
 				'<div class = centerbox>'+
-					'<div class = gng_number>'+ preFileType + +go_no_go_styles[0]+ + '_B' + fileTypePNG + '</div>'+
+					'<div class = gng_number>'+ preFileType + go_no_go_styles[0]+ '_B' + fileTypePNG + '</div>'+
 				'</div>'+
 			  '</div>',
 	is_html: true,
@@ -498,7 +500,7 @@ var practice4 = {
 				'</div>'+
 		
 				'<div class = centerbox>'+
-					'<div class = gng_number>'+ preFileType + +go_no_go_styles[1]+ + '_B' + fileTypePNG + '</div>'+
+					'<div class = gng_number>'+ preFileType + go_no_go_styles[1] + '_B' + fileTypePNG + '</div>'+
 				'</div>'+
 			  '</div>',
 	is_html: true,
