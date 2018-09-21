@@ -280,7 +280,7 @@ var getStim = function(){
 }
 
 var getControlStim = function(){	
-	stim = stims.shift()
+	stim = control_stims.shift()
 	n_back_condition = stim.n_back_condition
 	stop_signal_condition = stim.stop_signal_condition
 	probe = stim.probe
@@ -457,7 +457,7 @@ var practice2 = {
 	stimulus: '<div class = bigbox>'+
 				'<div class = instructBox>'+
 					'<p class = block-text style="font-size:24px;">On some trials, a star will appear around the letter.  The star will appear with, or shortly after the letter appears.</p>'+
-					'<p class = block-text style="font-size:24px;">If you see a star, please make <strong> no response </strong> on that trial.</p>'+
+					'<p class = block-text style="font-size:24px;">If you see a star, please make <strong> no response </strong> on that trial. You must still remember the letter!</p>'+
 					'<p class = block-text style="font-size:24px;">Do not slow down your responses to the letter in order to wait for the star.  Continue to respond as quickly and accurately as possible to the letter.</p>'+
 					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
 				'</div>'+
@@ -514,7 +514,7 @@ var instructions_block = {
 			'<p class = block-text>In this task, you will see a letter on every trial.</p>'+
 			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the center letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
-			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block. You will be given the delay at the start of every block of trials.</p>'+
 			'<p class = block-text>Ignore the letters not in the center, focus only on the center letter.</p>'+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 		'</div>',
@@ -524,7 +524,15 @@ var instructions_block = {
 			'<p class = block-text>The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago to match with, so press the '+possible_responses[1][0]+' on those trials.</p>'+
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from 2 trials, V, so you would respond match.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from 2 trials ago, B, so you would respond no match.</p>'+
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +		
+		'</div>',
+		'<div class = centerbox>' + 
+			'<p class = block-text>On some trials, a star will appear around the letter.  The star will appear with, or shortly after the letter appears.</p>'+
+			
+			'<p class = block-text>If you see a star appear, please try your best to make no response on that trial. You must still commit the letter to memory, however.</p>'+
+		
+			'<p class = block-text>Please do not slow down your responses in order to wait for the star.  Continue to respond as quickly and accurately as possible.</p>'+
+								
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -565,10 +573,10 @@ var start_test_block = {
 	timing_response: 180000,
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now begin the test portion.</p>'+
-			'<p class = block-text>You will be asked to match the current CENTER letter, to the CENTER letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if they match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
 			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
-			'<p class = block-text>Ignore the letters not in the center, focus only on the CENTER letter.</p>'+
+			'<p class = block-text>Do not respond if you see a star!  You must still commit the letter to memory</p>'+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 				
 			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
@@ -830,7 +838,7 @@ var testNode = {
 		var total_trials = 0
 
 		for (var i = 0; i < data.length; i++){
-			if (data[i].trial_id == "test_trial"){
+			if ((data[i].trial_id == "test_trial") && (data[i].stop_signal_condition == "go")){
 				total_trials+=1
 				if (data[i].rt != -1){
 					sum_rt += data[i].rt

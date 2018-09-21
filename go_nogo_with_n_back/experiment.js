@@ -67,27 +67,27 @@ var getInstructFeedback = function() {
 var getCategorizeIncorrectText = function(){
 	if (go_nogo_condition == 'go'){
 	
-		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'+ prompt_text
 	} else {
 	
-		return '<div class = fb_box><div class = center-text><font size = 20>Letter is red</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Letter is '+go_no_go_styles[1]+'</font></div></div>'+ prompt_text
 	}
 
 }
 
 var getTimeoutText = function(){
 	if (go_nogo_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'+ prompt_text
 	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'+ prompt_text
 	}
 }
 
 var getCorrectText = function(){
 	if (go_nogo_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'+ prompt_text
 	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Letter is red</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Letter is '+go_no_go_styles[1]+'</font></div></div>'+ prompt_text
 	}
 }
 
@@ -102,70 +102,108 @@ var randomDraw = function(lst) {
 	return lst[index]
 };
 
-var createTrialTypes = function(numTrialsPerBlock, delay){
-	
-	go_nogo_condition = go_nogo_conditions[Math.floor(Math.random() * 5)]
-	n_back_condition = 'N/A'
-	probe = randomDraw(letters)
-	correct_response = possible_responses[1][1]
-	if (go_nogo_condition == 'go'){
-		probe_color = 'green'
-	} else {
-		probe_color = 'red'
-	}
-	 
+var createControlTypes = function(numTrialsPerBlock){
+	var stims = []
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/25; numIterations++){ 
+		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
+			for (var numgo_nogoConds = 0; numgo_nogoConds < go_nogo_conditions.length; numgo_nogoConds++){
 			
-	first_stim = {
-		n_back_condition: n_back_condition,
-		go_nogo_condition: go_nogo_condition,
-		probe: probe,
-		probe_color: probe_color,
-		correct_response: correct_response,
-		delay: delay
+				go_nogo_condition = go_nogo_conditions[numgo_nogoConds]
+				n_back_condition = n_back_conditions[numNBackConds]
+				
+				stim = {
+					go_nogo_condition: go_nogo_condition,
+					n_back_condition: n_back_condition
+					}
+			
+				stims.push(stim)
+			}
+			
+		}
+	}
+
+	stims = jsPsych.randomization.repeat(stims,1)
 	
-	}	
+	stim_len = stims.length
 	
-	first_stims = []
-	first_stims.push(first_stim)
-	for (var i = 0; i < delay - 1; i++){
-		go_nogo_condition = go_nogo_conditions[Math.floor(Math.random() * 5)]
-		n_back_condition = n_back_conditions[Math.floor(Math.random() * 2)]
-	
-	
-		if (i < delay - 1) {
-			probe = randomDraw(letters)
-			correct_response = possible_responses[1][1]
-			n_back_condition = 'N/A'
-		} else if (n_back_condition == "match"){
-			probe = randomDraw([first_stims[i].probe.toUpperCase(), first_stims[i].probe.toLowerCase()])
-			correct_response = possible_responses[0][1]
-		} else if (n_back_condition == "mismatch"){
-			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i].probe.toLowerCase(), first_stims[i].probe.toUpperCase()]) == -1}))
-			correct_response = possible_responses[1][1]
-	
-		} 
+	new_stims = []
+	for (var i = 0; i < stim_len; i++){
+		stim = stims.pop()
+		n_back_condition = stim.n_back_condition
+		go_nogo_condition= stim.go_nogo_condition
 		
-		if (go_nogo_condition == 'go'){
-			probe_color = 'green'
-		} else {
-			probe_color = 'red'
+		probe = randomDraw('bBdDgGvV'.split("").filter(function(y) {return $.inArray(y, ['t','T']) == -1}))
+		correct_response = possible_responses[1][1]
+		if (n_back_condition == 'match'){
+			probe = randomDraw(['t','T'])
+			correct_response = possible_responses[0][1]
+		}		
+		
+		if(go_nogo_condition == 'go'){
+			probe_color = go_no_go_styles[0]
+		} else if(go_nogo_condition == 'stop'){
+			probe_color = go_no_go_styles[1]
 			correct_response = -1
 		}
-	
+		
+			
 		stim = {
 			n_back_condition: n_back_condition,
 			go_nogo_condition: go_nogo_condition,
 			probe: probe,
+			correct_response: correct_response,
 			probe_color: probe_color,
+			delay: 0
+		}
+		
+		new_stims.push(stim)	
+		}
+	
+	return new_stims
+	
+}
+
+var createTrialTypes = function(numTrialsPerBlock, delay){
+	
+	first_stims = []
+	for (var i = 0; i < 3; i++){
+		if (i < delay){
+			n_back_condition = 'N/A'
+		} else {
+			n_back_condition = n_back_conditions[Math.floor(Math.random() * 2)]
+		}
+		go_nogo_condition = jsPsych.randomization.repeat(['go','go','go','go','stop'],1).pop()
+		probe = randomDraw(letters)
+		correct_response = possible_responses[1][1]
+		if (n_back_condition == 'match'){
+			correct_response = possible_responses[0][1]
+			probe = randomDraw([first_stims[i - delay].probe.toUpperCase(), first_stims[i - delay].probe.toLowerCase()])
+		} else if (n_back_condition == "mismatch"){
+			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i - delay].probe.toLowerCase(), first_stims[i - delay].probe.toUpperCase()]) == -1}))
+			correct_response = possible_responses[1][1]
+		}
+		
+		if (go_nogo_condition == 'go'){
+			probe_color = go_no_go_styles[0]
+		} else {
+			probe_color = go_no_go_styles[1]
+			correct_response = -1 
+		}
+		
+		first_stim = {
+			n_back_condition: n_back_condition,
+			go_nogo_condition: go_nogo_condition,
+			probe: probe,
 			correct_response: correct_response,
 			delay: delay,
-		}
-		first_stims.push(stim)
+			probe_color: probe_color
+		}	
+		first_stims.push(first_stim)	
 	}
 	
 	stims = []
 	
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/10; numIterations++){
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/25; numIterations++){
 		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
 			for (var numShapeConds = 0; numShapeConds < go_nogo_conditions.length; numShapeConds++){
 			
@@ -190,7 +228,7 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 	
 	new_stims = []
 	for (var i = 0; i < stim_len; i++){
-		if (i < delay){
+		if (i < 3){
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			go_nogo_condition = stim.go_nogo_condition
@@ -198,7 +236,7 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			probe_color = stim.probe_color
 			correct_response = stim.correct_response
 			delay = stim.delay
-		} else if (i > delay - 1){
+		} else {
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			go_nogo_condition = stim.go_nogo_condition
@@ -213,9 +251,9 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			}
 			
 			if (go_nogo_condition == 'go'){
-				probe_color = 'green'
+				probe_color = go_no_go_styles[0]
 			} else {
-				probe_color = 'red'
+				probe_color = go_no_go_styles[1]
 				correct_response = -1 
 			}
 			
@@ -235,6 +273,17 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 	return new_stims
 }
 
+var getControlStim = function(){	
+	stim = control_stims.shift()
+	n_back_condition = stim.n_back_condition
+	go_nogo_condition = stim.go_nogo_condition
+	probe = stim.probe
+	probe_color = stim.probe_color
+	correct_response = stim.correct_response
+	delay = stim.delay
+		
+	return task_boards[0]+ preFileType + probe_color + '_' + probe + fileTypePNG + task_boards[1]
+}
 
 var getStim = function(){	
 	stim = stims.shift()
@@ -245,11 +294,7 @@ var getStim = function(){
 	correct_response = stim.correct_response
 	delay = stim.delay
 		
-	return task_boards[0]+ 
-			probe_color+
-		   task_boards[1]+
-		    probe+
-		   task_boards[2]
+	return task_boards[0]+ preFileType + probe_color + '_' + probe + fileTypePNG + task_boards[1]
 	
 }
 
@@ -305,11 +350,11 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = 0
 
 
-var practice_len = 10 // 20 must be divisible by 10
-var exp_len = 30 //320 must be divisible by 4
-var numTrialsPerBlock = 10 // 54 must be divisible by 10 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
+var practice_len = 25 // 25 must be divisible by 25
+var exp_len = 75 //300 must be divisible by 25
+var numTrialsPerBlock = 25 // 50 must be divisible by 10 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
 var numTestBlocks = exp_len / numTrialsPerBlock
-var practice_thresh = 2 // 3 blocks of 24 trials
+var practice_thresh = 3 // 3 blocks of 25 trials
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
@@ -324,19 +369,29 @@ var preFileType = "<img class = center src='/static/experiments/go_nogo_with_n_b
 
 
 
-var n_back_conditions = ['match','mismatch']
+var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
 var go_nogo_conditions = jsPsych.randomization.repeat(['go','go','go','go','stop'],1)
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
 							 
 var letters = 'bBdDgGtTvV'.split("")
 							 
 
 
 
-var prompt_text = '<ul list-text>'+
-					'<li>Do not respond if probe is red, only respond if green!</li>' +
-				  	'<li>Press '+possible_responses[0][0]+' if the letter matches n-back letter, and '+possible_responses[1][0]+' for no.</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Respond if the current letter matches delayed letter.</li>' +
+						'<li>If they match, press the '+possible_responses[0][0]+'</li>' +
+						'<li>If they mismatch, press the '+possible_responses[1][0]+'</li>' +
+						'<li>Do not respond if probe is '+go_no_go_styles[1]+', only respond if '+go_no_go_styles[0]+'!</li>' +
+					  '</ul>'
+
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Match the current letter to the letter that appeared 1 trial ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they match, press the '+possible_responses[0][0]+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they mismatch, press the '+possible_responses[1][0]+'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Do not respond if probe is '+go_no_go_styles[1]+', only respond if '+go_no_go_styles[0]+'!</p>' +
+				  '</div>'
 
 var current_trial = 0
 var current_block = 0
@@ -345,9 +400,11 @@ var current_block = 0
 /* ************************************ */
 
 var task_boards = [['<div class = bigbox><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div>']]				
+var task_boards = ['<div class = bigbox><div class = centerbox><div class = gng_number>','</div></div></div>']				
 
 
 var stims = createTrialTypes(practice_len, delay)
+var control_stims = createControlTypes(numTrialsPerBlock)
 
 /* ************************************ */
 /*        Set up jsPsych blocks         */
@@ -367,6 +424,56 @@ var test_img_block = {
 	response_ends_trial: true
 	};
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the trial will look like. You will see a letter. Please remember this letter, and respond if it matches the delayed letter.</p>'+
+					'<p class = block-text style="font-size:24px;">Press the '+possible_responses[0][0]+' if the current and delayed letters match, and the '+possible_responses[1][0]+' if not.</p>'+
+					'<p class = block-text style="font-size:24px;">At the beginning of each block of trials, depending on delay, you will not have anything to match the current letter to.  For these trials, press the '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox>'+
+					'<div class = gng_number>' + preFileType +   go_no_go_styles[0]  + '_V'  + fileTypePNG + '</div>'+
+				'</div>'+
+				
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">If instead, the '+go_no_go_styles[1]+' version of the letter came out, then do not respond on that trial!</p>'+
+					'<p class = block-text style="font-size:24px;">Remember, respond only if the number is '+go_no_go_styles[0]+', not if the number is '+go_no_go_styles[1]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">You must still commit this letter to memory, even if you are not responding on this trial.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox>'+
+					'<div class = gng_number>' + preFileType +   go_no_go_styles[1]  + '_V'  + fileTypePNG + '</div>'+
+				'</div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
 var end_block = {
 	type: 'poldrack-text',
 	data: {
@@ -403,13 +510,30 @@ var instructions_block = {
 	pages: [
 		'<div class = centerbox>'+
 			
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches the letter '+delay+' ago, and '+possible_responses[1][0]+' for no.</p> '+
+			'<div class = centerbox>'+
+			'<p class = block-text>In this task, you will see a letter on every trial.</p>'+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current and delayed letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block. You will be given the delay at the start of every block of trials.</p>'+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
+		'</div>',
 			
-			'<p class = block-text>Your delay is '+delay+'.</p> '+
-			
-			'<p class = block-text>Only respond if the letter was green, not if red!</p>'+
+		"<div class = centerbox>"+
+			"<p class = block-text>On most trials, the letters will be "+go_no_go_styles[0]+".  Sometimes, the letters will be "+go_no_go_styles[1]+".</p>"+
+			"<p class = block-text>If the letters are "+go_no_go_styles[1]+", please make no response on that trial.</p>"+
+			"<p class = block-text>We will show you what a letter will look like if it is "+go_no_go_styles[0]+" or "+go_no_go_styles[1]+".</p>"+
+			"<p class = block-text>For the example on the next page, we will refer to it as a "+go_no_go_styles[0]+"_letter or "+go_no_go_styles[1]+"_letter</p>"+
+		"</div>",
 		
-		'</div>'
+		'<div class = centerbox>'+
+			'<p class = block-text>For example, if your delay for the block was 2, and the letters you received for the first 4 trials were '+go_no_go_styles[0]+'_V, '+go_no_go_styles[0]+'_B, '+go_no_go_styles[1]+'_v, and '+go_no_go_styles[0]+'_V, you would respond, no match, no match, no response, and no match.</p> '+
+			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
+			'<p class = block-text>The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago to match with, so press the '+possible_responses[1][0]+' on those trials.</p>'+
+			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from 2 trials, V, so if the '+go_no_go_styles[0]+' version of the letter came out, you would press '+possible_responses[0][0]+'.  But since the '+go_no_go_styles[1]+' version of the letter came out, please refrain from making a response! You must still commit this letter to memory, however.</p>'+
+			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from 2 trials ago, B, so you would respond no match.</p>'+
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +		
+		'</div>',
+		
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -448,15 +572,14 @@ var start_test_block = {
 	},
 	timing_response: 180000,
 	text: '<div class = centerbox>'+
-			'<p class = block-text>We will now start the test portion</p>'+
-			
-			'<p class = block-text>Your delay is '+delay+'.</p>'+
-			
-			'<p class = block-text>Press '+possible_responses[0][0]+' if the letter matches the letter '+delay+' ago, and '+possible_responses[1][0]+' for no.</p> '+
-			
-			'<p class = block-text>Only respond if the letter was green, not if red!</p>'+
+			'<p class = block-text>We will now begin the test portion.</p>'+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if they match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
+			'<p class = block-text><strong>Please make no response if the '+go_no_go_styles[1]+' version of the letter came out.  You must still commit that letter to memory!</strong></p>'+
+			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 				
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -479,7 +602,7 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will now start with a practice session. In this practice concentrate on responding quickly and accurately to each stimuli.'
+var feedback_text = 'We will start practice. Your delay for this practice round is 1. <br><br>During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -496,14 +619,69 @@ var feedback_block = {
 
 };
 
+var start_control_block = {
+	type: 'poldrack-text',
+	data: {
+		trial_id: "instruction"
+	},
+	timing_response: 180000,
+	text: '<div class = centerbox>'+
+			'<p class = block-text>For this block of trials, you do not have to match letters.  Instead, indicate whether the current letter is a T (or t).</p>'+
+			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter was a T (or t) and the '+possible_responses[1][0]+' if not.</p> '+
+			'<p class = block-text>If the '+go_no_go_styles[1]+' version of the letter came out, please make no response on that trial.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
+		 '</div>',
+	cont_key: [13],
+	timing_post_trial: 1000,
+	on_finish: function(){
+		feedback_text = "We will now start this block. Press enter to begin."
+	}
+};
 
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
+var control_before = Math.round(Math.random()) //0 control comes before test, 1, after
+
+var controlTrials = []
+controlTrials.push(feedback_block)
+for (i = 0; i < numTrialsPerBlock; i++) {
+	var control_block = {
+		type: 'poldrack-single-stim',
+		stimulus: getControlStim,
+		is_html: true,
+		data: {
+			"trial_id": "control_trial",
+		},
+		choices: [possible_responses[0][1],possible_responses[1][1]],
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
+		timing_post_trial: 0,
+		response_ends_trial: false,
+		on_finish: appendData
+	}
+	controlTrials.push(control_block)
+}
+
+var controlCount = 0
+var controlNode = {
+	timeline: controlTrials,
+	loop_function: function(data) {
+		controlCount += 1
+		stims = createTrialTypes(numTrialsPerBlock, delay)
+		current_trial = 0
+	
+		if (controlCount == 1){
+			feedback_text +=
+					'</p><p class = block-text>Done with this test. Press Enter to continue.'
+			return false
+		}
+	}
+}
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
-for (i = 0; i < practice_len + 1; i++) {
+for (i = 0; i < practice_len + 3; i++) {
 	
 	var practice_block = {
 		type: 'poldrack-categorize',
@@ -517,12 +695,13 @@ for (i = 0; i < practice_len + 1; i++) {
 		correct_text: getCorrectText,
 		incorrect_text: getCategorizeIncorrectText,
 		timeout_message: getTimeoutText,
-		timing_stim: 1500, //2000
-		timing_response: 1500,
+		timing_stim: 2000, //2000
+		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text
 	}
 	//practiceTrials.push(fixation_block)
 	practiceTrials.push(practice_block)
@@ -573,7 +752,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -599,7 +778,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-for (i = 0; i < numTrialsPerBlock + 1; i++) {
+for (i = 0; i < numTrialsPerBlock + 3; i++) {
 	
 	var test_block = {
 		type: 'poldrack-single-stim',
@@ -609,8 +788,8 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 1500, //2000
-		timing_response: 1500, //2000
+		timing_stim: 2000, //2000
+		timing_response: 2000, //2000
 		timing_post_trial: 500,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -654,7 +833,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 		}
 		if (missed_responses > missed_thresh){
 			feedback_text +=
@@ -683,10 +862,24 @@ var go_nogo_with_n_back_experiment = []
 
 go_nogo_with_n_back_experiment.push(instruction_node);
 
+go_nogo_with_n_back_experiment.push(practice1);
+
+go_nogo_with_n_back_experiment.push(practice2);
+
 go_nogo_with_n_back_experiment.push(practiceNode);
+
+if (control_before == 0){
+	go_nogo_with_n_back_experiment.push(start_control_block);
+	go_nogo_with_n_back_experiment.push(controlNode);
+}
 
 go_nogo_with_n_back_experiment.push(start_test_block);
 
 go_nogo_with_n_back_experiment.push(testNode);
+
+if (control_before == 1){
+	go_nogo_with_n_back_experiment.push(start_control_block);
+	go_nogo_with_n_back_experiment.push(controlNode);
+}
 
 go_nogo_with_n_back_experiment.push(end_block);

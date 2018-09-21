@@ -4,7 +4,7 @@
 
 .display_stage {
     position: fixed;
-    background: black;
+    background: gray;
     left: 5vw;
     top: 2vh;
     height: 94vh;
@@ -97,7 +97,7 @@ text-align: center;
  height: 20%;
  position:absolute;
  top:10%;
- left:20%;
+ left:12.5%;
  transform: translate(-50%,-45%);
  margin-right:0%;
  background-color: none;
@@ -114,19 +114,4 @@ img.center {
   right: 0;  
   margin: auto;  
   max-height: 65%;
-}
-
-/*******************************************************/
-/***********   Go-Nogo & N-back CSS Styles    **********/
-/*******************************************************/
-
-.gng_number {
-width: 10vw;
-height: 10vw;
-position:absolute;
-top:50%;
-left:50%;
-margin-right:0%;
-transform: translate(-50%,-50%);
-background-color: none;
 }

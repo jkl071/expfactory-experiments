@@ -493,7 +493,7 @@ var instructions_block = {
 			'<p class = block-text>In this task, you will see a white letter with an overlapping red letter on every trial.</p>'+
 			'<p class = block-text>You will be asked to match the current WHITE letter, to the WHITE letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the white letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
-			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block. You will be given the delay at the start of every block of trials.</p>'+
 			'<p class = block-text>Ignore the red letter, focus only on the white letter.</p>'+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 		'</div>',

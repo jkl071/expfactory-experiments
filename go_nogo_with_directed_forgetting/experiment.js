@@ -365,6 +365,8 @@ var stimArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'
 var stims = createTrialTypes(practice_len)
 
 var task_boards = [['<div class = bigbox><div class = lettersBox><div class = topLeft style="font-size:50px;"><div class = fixation>'],['</div></div><div class = topMiddle style="font-size:50px;"><div class = fixation>'],['</div></div><div class = topRight style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomLeft style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomMiddle style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomRight style="font-size:50px;"><div class = fixation>'],['</div></div></div></div>']]
+//var task_boards = [['<div class = bigbox><div class = lettersBox><div class = topLeft>'],['</div><div class = topMiddle>'],['</div><div class = topRight>'],['</div><div class = bottomLeft>'],['</div><div class = bottomMiddle>'],['</div><div class = bottomRight>'],['</div></div></div>']]
+
 var go_nogo_boards = [['<div class = bigbox><div class = centerbox><div class = cue-text><font size = "10" color = "'],['">'],['</font><div></div><div>']]				
 var go_nogo_boards = [['<div class = bigbox><div class = centerbox><div class = gng_number>'],['</div></div></div>']]					   
 

@@ -138,7 +138,8 @@ var createControlTypes = function(numTrialsPerBlock){
 			flanker_condition: flanker_condition,
 			probe: probe,
 			correct_response: correct_response,
-			flankers: flankers
+			flankers: flankers,
+			delay: 0
 		}
 		
 		new_stims.push(stim)	
@@ -289,12 +290,13 @@ var getStim = function(){
 }
 
 var getControlStim = function(){	
-	stim = stims.shift()
+	stim = control_stims.shift()
 	n_back_condition = stim.n_back_condition
 	flanker_condition = stim.flanker_condition
 	probe = stim.probe
 	correct_response = stim.correct_response
 	flankers = stim.flankers
+	delay = stim.delay
 		
 	return task_boards[0]+ 
 			flankers+
@@ -486,10 +488,10 @@ var instructions_block = {
 			'<p class = block-text>In this task, you will see a row of letters on every trial.</p>'+
 			'<p class = block-text>You will be asked to match the current CENTER letter, to the CENTER letter that appeared either 1, 2, 3 trials ago depending on the delay given to you for that block.</p>'+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the center letters match, and the '+possible_responses[1][0]+' if they mismatch.</p>'+
-			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block.</p>'+
-			'<p class = block-text>Ignore the letters not in the center, focus only on the center letter.</p>'+
+			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block. You will be given the delay at the start of every block of trials.</p>'+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 		'</div>',
+		
 		'<div class = centerbox>'+
 			'<p class = block-text>For example, if your delay for the block was 2, and the CENTER letters you received for the first 4 trials were V, B, v, and V, you would respond, no match, no match, match, and no match.</p> '+
 			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
@@ -633,8 +635,8 @@ var controlNode = {
 	timeline: controlTrials,
 	loop_function: function(data) {
 		controlCount += 1
-		stims = createTrialTypes(numTrialsPerBlock, delay)
 		current_trial = 0
+		stims = createTrialTypes(numTrialsPerBlock, delay)
 	
 		if (controlCount == 1){
 			feedback_text +=
@@ -677,8 +679,8 @@ var practiceNode = {
 	timeline: practiceTrials,
 	loop_function: function(data) {
 		practiceCount += 1
-		stims = createTrialTypes(practice_len, delay)
 		current_trial = 0
+		stims = createTrialTypes(numTrialsPerBlock, delay)
 	
 		var sum_rt = 0
 		var sum_responses = 0
