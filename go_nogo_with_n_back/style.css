@@ -4,7 +4,7 @@
 
 .display_stage {
     position: fixed;
-    background: black;
+    background: gray;
     left: 5vw;
     top: 2vh;
     height: 94vh;

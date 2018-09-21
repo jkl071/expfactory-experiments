@@ -132,7 +132,8 @@ var createControlTypes = function(numTrialsPerBlock){
 		n_back_condition = stim.n_back_condition
 		go_nogo_condition= stim.go_nogo_condition
 		
-		probe = randomDraw('bBdDgGvV'.split("").filter(function(y) {return $.inArray(y, ['t','T']) == -1}))
+		probe = randomDraw('BDGV'.split("").filter(function(y) {return $.inArray(y, ['T']) == -1}))
+		letter_case = randomDraw(['uppercase','lowercase'])
 		correct_response = possible_responses[1][1]
 		if (n_back_condition == 'match'){
 			probe = randomDraw(['t','T'])
@@ -153,7 +154,8 @@ var createControlTypes = function(numTrialsPerBlock){
 			probe: probe,
 			correct_response: correct_response,
 			probe_color: probe_color,
-			delay: 0
+			delay: 0,
+			letter_case: letter_case
 		}
 		
 		new_stims.push(stim)	
@@ -175,11 +177,12 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 		go_nogo_condition = jsPsych.randomization.repeat(['go','go','go','go','stop'],1).pop()
 		probe = randomDraw(letters)
 		correct_response = possible_responses[1][1]
+		letter_case = randomDraw(['uppercase','lowercase'])
 		if (n_back_condition == 'match'){
 			correct_response = possible_responses[0][1]
-			probe = randomDraw([first_stims[i - delay].probe.toUpperCase(), first_stims[i - delay].probe.toLowerCase()])
+			probe = first_stims[i - delay].probe
 		} else if (n_back_condition == "mismatch"){
-			probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i - delay].probe.toLowerCase(), first_stims[i - delay].probe.toUpperCase()]) == -1}))
+			probe = randomDraw('BDGTV'.split("").filter(function(y) {return $.inArray(y, [first_stims[i - delay].probe]) == -1}))
 			correct_response = possible_responses[1][1]
 		}
 		
@@ -196,7 +199,8 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			probe: probe,
 			correct_response: correct_response,
 			delay: delay,
-			probe_color: probe_color
+			probe_color: probe_color,
+			letter_case: letter_case
 		}	
 		first_stims.push(first_stim)	
 	}
@@ -236,16 +240,18 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			probe_color = stim.probe_color
 			correct_response = stim.correct_response
 			delay = stim.delay
+			letter_case = stim.letter_case
 		} else {
 			stim = stims.shift()
 			n_back_condition = stim.n_back_condition
 			go_nogo_condition = stim.go_nogo_condition
 		
+			letter_case = randomDraw(['uppercase','lowercase'])
 			if (n_back_condition == "match"){
-				probe = randomDraw([new_stims[i - delay].probe.toUpperCase(), new_stims[i - delay].probe.toLowerCase()])
+				probe = new_stims[i - delay].probe
 				correct_response = possible_responses[0][1]
 			} else if (n_back_condition == "mismatch"){
-				probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [new_stims[i - delay].probe.toLowerCase(), new_stims[i - delay].probe.toUpperCase()]) == -1}))
+				probe = randomDraw('BDGTV'.split("").filter(function(y) {return $.inArray(y, [new_stims[i - delay].probe]) == -1}))
 				correct_response = possible_responses[1][1]
 		
 			}
@@ -266,6 +272,7 @@ var createTrialTypes = function(numTrialsPerBlock, delay){
 			probe_color: probe_color,
 			correct_response: correct_response,
 			delay: delay,
+			letter_case: letter_case
 		}
 		
 		new_stims.push(stim)
@@ -281,8 +288,9 @@ var getControlStim = function(){
 	probe_color = stim.probe_color
 	correct_response = stim.correct_response
 	delay = stim.delay
+	letter_case = stim.letter_case
 		
-	return task_boards[0]+ preFileType + probe_color + '_' + probe + fileTypePNG + task_boards[1]
+	return task_boards[0]+ preFileType + probe_color + '_' + letter_case + '_' + probe + fileTypePNG + task_boards[1]
 }
 
 var getStim = function(){	
@@ -293,8 +301,9 @@ var getStim = function(){
 	probe_color = stim.probe_color
 	correct_response = stim.correct_response
 	delay = stim.delay
+	letter_case = stim.letter_case
 		
-	return task_boards[0]+ preFileType + probe_color + '_' + probe + fileTypePNG + task_boards[1]
+	return task_boards[0]+ preFileType + probe_color + '_' + letter_case + '_' + probe + fileTypePNG + task_boards[1]
 	
 }
 
@@ -374,7 +383,7 @@ var go_nogo_conditions = jsPsych.randomization.repeat(['go','go','go','go','stop
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
 							 
-var letters = 'bBdDgGtTvV'.split("")
+var letters = 'BDGTV'.split("")
 							 
 
 
@@ -435,7 +444,7 @@ var practice1 = {
 				'</div>'+
 				
 				'<div class = centerbox>'+
-					'<div class = gng_number>' + preFileType +   go_no_go_styles[0]  + '_V'  + fileTypePNG + '</div>'+
+					'<div class = gng_number>' + preFileType +   go_no_go_styles[0]  + '_uppercase_V'  + fileTypePNG + '</div>'+
 				'</div>'+
 				
 			  '</div>',
@@ -461,7 +470,7 @@ var practice2 = {
 				'</div>'+
 				
 				'<div class = centerbox>'+
-					'<div class = gng_number>' + preFileType +   go_no_go_styles[1]  + '_V'  + fileTypePNG + '</div>'+
+					'<div class = gng_number>' + preFileType +   go_no_go_styles[1]  + '_uppercase_V'  + fileTypePNG + '</div>'+
 				'</div>'+
 			  '</div>',
 	is_html: true,

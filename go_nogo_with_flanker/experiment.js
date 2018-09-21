@@ -104,19 +104,19 @@ var createTrialTypes = function(numTrialsPerBlock){
 				
 				if (flanker_condition == 'H_congruent'){
 					stim = 'H'
-					flanker = 'H'
+					flankers = 'H'
 					correct_response = possible_responses[1][1]
 				} else if (flanker_condition == 'H_incongruent'){
 					stim = 'H'
-					flanker = 'F'
+					flankers = 'F'
 					correct_response = possible_responses[1][1]
 				} else if (flanker_condition == 'F_congruent'){
 					stim = 'F'
-					flanker = 'F'
+					flankers = 'F'
 					correct_response = possible_responses[0][1]
 				} else if (flanker_condition == 'F_incongruent'){
 					stim = 'F'
-					flanker = 'H'
+					flankers = 'H'
 					correct_response = possible_responses[0][1]
 				}
 				
@@ -127,7 +127,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 					correct_response: correct_response,
 					go_no_go_style: go_no_go_style,
 					stim: stim,
-					flanker: flanker
+					flankers: flankers
 					
 					}
 			
@@ -151,14 +151,14 @@ var getStim = function(){
 	go_nogo_condition = stim.go_nogo_condition
 	go_no_go_style = stim.go_no_go_style
 	stim = stim.stim
-	flanker = stim.flanker
+	flankers = stim.flankers
 	correct_response = stim.correct_response	
 	
-	return  task_boards[0] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
-		 	task_boards[1] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
+	return  task_boards[0] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
+		 	task_boards[1] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
 		 	task_boards[2] + preFileType + go_no_go_style + '_'+ stim + fileTypePNG +
-		 	task_boards[3] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
-		 	task_boards[4] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
+		 	task_boards[3] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
+		 	task_boards[4] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
 		 	task_boards[5] 
 }
 
@@ -181,7 +181,7 @@ var appendData = function(){
 		correct_response: correct_response,
 		go_no_go_style: go_no_go_style,
 		stim: stim,
-		flanker: flanker,
+		flankers: flankers,
 		current_block: current_block,
 		current_trial: current_trial
 	})
