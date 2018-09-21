@@ -1,6 +1,10 @@
+/*******************************************************/
+/***********    Network Default CSS Styles    **********/
+/*******************************************************/
+
 .display_stage {
     position: fixed;
-    background: black;
+    background: gray;
     left: 5vw;
     top: 2vh;
     height: 94vh;
@@ -14,16 +18,23 @@
   color: white;
 }
 
+.flanker-text {
+	text-align: center;
+	font-size: 50px;
+	position: relative;
+    top: 50%; 
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
 
-.centerimg {
-  width: 14vw;
-  height: 14vw;
+.fb_box {
+  width:35vw;
+  height: 20vh;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-50%,-50%);
-  background-color: none;
+  transform: translate(-50%,-175%);
 }
 
 .picture_box {
@@ -33,58 +44,24 @@
  top:50%;
  left:50%;
  transform: translate(-50%,-50%);
- background-color: black;
+ margin-right:0%;
+ background-color: none;
  text-align: center;
-}
-
-.leftbox1 {
-  width: 14vw;
-  height: 14vw;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-300%,-50%);
-  background-color: none;
-}
-
-.leftbox2 {
-  width: 14vw;
-  height: 14vw;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-175%,-50%);
-  background-color: none;
-}
-
-.rightbox1 {
-  width: 14vw;
-  height: 14vw;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(75%,-50%);
-  background-color: none;
-}
-
-.rightbox2 {
-  width: 14vw;
-  height: 14vw;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(200%,-50%);
-  background-color: none;
 }
 
 
 .fixation {
  text-align: center;
- font-size: auto;
+ font-size: 50px;
+ position: relative;
+ top: 50%; 
+ transform: translateY(-50%);
+ -webkit-transform: translateY(-50%);
+}
+
+.cue-text {
+ text-align: center;
+ font-size: 50px;
  position: relative;
  top: 50%; 
  transform: translateY(-50%);
@@ -99,16 +76,101 @@ position:absolute;
 top:0%;
 left:0%;
 margin-right:0%;
-background-color: black;
+background-color: none;
 text-align: center;
 }
 
-.fb_box {
-  width:35vw;
-  height: 20vh;
+.instructBox {
+ width: 80vw;
+ height: 10vw;
+ position:absolute;
+ top:10%;
+ left:50%; 
+ margin-right: 0%;
+ transform: translate(-50%,-50%);
+ background-color: none;
+ font-size: 24px;
+}
+
+.prompt_box {
+ width: 75%;
+ height: 20%;
+ position:absolute;
+ top:10%;
+ left:20%;
+ transform: translate(-50%,-45%);
+ margin-right:0%;
+ background-color: none;
+ text-align: center;
+}
+
+img.center {
+  height: auto;
+  width: auto\9; /* ie8 */
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
+  max-height: 65%;
+}
+
+/*******************************************************/
+/***********  Go-Nogo  & Flanker CSS Styles   **********/
+/*******************************************************/
+
+.leftbox1 {
+  width: 10vw;
+  height: 10vw;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-50%,-175%);
+  transform: translate(-300%,-50%);
+  background-color: none;
+}
+
+.leftbox2 {
+  width: 10vw;
+  height: 10vw;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-175%,-50%);
+  background-color: none;
+}
+
+.rightbox1 {
+  width: 10vw;
+  height: 10vw;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(75%,-50%);
+  background-color: none;
+}
+
+.rightbox2 {
+  width: 10vw;
+  height: 10vw;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(200%,-50%);
+  background-color: none;
+}
+
+.centerimg {
+  width: 10vw;
+  height: 10vw;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-50%);
+  background-color: none;
 }

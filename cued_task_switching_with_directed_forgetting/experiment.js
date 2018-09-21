@@ -594,7 +594,7 @@ var instructions_block = {
 		
 			'<p class = block-text>After the remember or forget cue disappears, you will be presented with 6 letters. You must memorize all 6 letters.</p> '+
 						
-			'<p class = block-text>After the 6 letters disappear, you will also see another cue, either TOP or BOT. This instructs you which letters you should remember or forget, either the top or bottom letters.</p>'+
+			'<p class = block-text>After the 6 letters disappear, you will see another cue, either TOP or BOT. This instructs you which letters you should remember or forget, either the top or bottom letters.</p>'+
 		
 			'<p class = block-text>For example, if the first cue was forget and the second cue was TOP, please forget the top 3 letters. <strong>The other 3 letters, are called your memory set!</strong></p>'+
 		

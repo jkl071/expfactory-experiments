@@ -310,7 +310,7 @@ var stimArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'
 
 var stims = createTrialTypes(practice_len)
 
-var task_boards = [['<div class = bigbox><div class = topLeft><div class = fixation>'],['</div></div><div class = topMiddle><div class = fixation>'],['</div></div><div class = topRight><div class = fixation>'],['</div></div><div class = bottomLeft><div class = fixation>'],['</div></div><div class = bottomMiddle><div class = fixation>'],['</div></div><div class = bottomRight><div class = fixation>'],['</div></div></div>']]
+var task_boards = [['<div class = bigbox><div class = lettersBox><div class = topLeft style="font-size:50px;"><div class = fixation>'],['</div></div><div class = topMiddle style="font-size:50px;"><div class = fixation>'],['</div></div><div class = topRight style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomLeft style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomMiddle style="font-size:50px;"><div class = fixation>'],['</div></div><div class = bottomRight style="font-size:50px;"><div class = fixation>'],['</div></div></div></div>']]
 				   
 
 var prompt_text_list = '<ul list-text>'+
@@ -352,10 +352,9 @@ var practice1 = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox>'+
 				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:24px;">This is what the first part of the trial will look like.  The letters A, B, and C are on the top portion, while the letters D, E, and F are on the bottom portion.  After these letters disappear, a cue will be presented.</p>'+
-					'<p class = block-text style="font-size:24px;">If the cue presented is <strong>TOP</strong>, then you should <strong> forget the letters A, B, and C</strong> and remember D, E, and F.</p>'+
-					'<p class = block-text style="font-size:24px;">If the cue presented is <strong>BOT</strong>, then you should <strong> forget D, E, and F </strong> and remember A, B, and C.</p>'+
-					'<p class = block-text style="font-size:24px;">The letters you must remember are called your memory set. </strong>Press <strong> enter</strong> to continue.</p>'+
+					'<p class = block-text style="font-size:22px;">This is what the first part of the trial will look like.  The letters A, B, and C are on the top portion, while the letters D, E, and F are on the bottom portion.</p>'+
+					'<p class = block-text style="font-size:22px;">Please remember all 6 letters.</p>'+
+					'<p class = block-text style="font-size:22px;">Press enter to start continue. You will not be able to go back.</p>'+
 				'</div>'+
 				'<div class = lettersBox>'+
 					'<div class = topLeft style="font-size:50px;">A</div>' +
@@ -381,13 +380,44 @@ var practice2 = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox>'+
 				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:24px;">After the cue, TOP or BOT disappears, you will be presented with a probe (white letter) overlapped by a red letter.  Please respond if the <strong>probe (white letter)</strong> was in the memory set.</p>'+
-					'<p class = block-text style="font-size:24px;">Ignore the red letter.</p>'+
-					'<p class = block-text style="font-size:24px;">Press '+possible_responses[0][0]+' if the letter was in the memory set, and '+possible_responses[1][0]+' if not.</p>'+
-					'<p class = block-text style="font-size:24px;">Press enter to start practice.</p>'+
+					'<p class = block-text style="font-size:22px;">This is what the second part of the trial will look like. A cue will be presented, either TOP or BOT.  This cue instructs you which of the 6 letters to forget, either the top 3 or bottom 3 letters.</p>'+
+					'<p class = block-text style="font-size:22px;">If the cue presented is <strong>TOP</strong>, then you should <strong> forget the top letters A, B, and C</strong> and remember D, E, and F.</p>'+
+					'<p class = block-text style="font-size:22px;">If the cue presented is <strong>BOT</strong>, then you should <strong> forget the bottom letters D, E, and F </strong> and remember A, B, and C.</p>'+
+					'<p class = block-text style="font-size:22px;">The letters that you must remember, are called your memory set. </strong></p>'+
+					'<p class = block-text style="font-size:22px;">In this case, the cue is TOP, so forget the top 3 letters, A, B, and C. <strong>Your memory set is D, E, and F!</strong></p>'+
+					'<p class = block-text style="font-size:22px;">Press enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				
+				'<div class = centerbox><div class = flanker-text>TOP</div></div>'+
+				
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice3 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:22px;">After the cue, TOP or BOT disappears, you will be presented with a probe (white letter) overlapped by a red letter.  Please respond if the <strong>probe (white letter)</strong> was in the memory set.</p>'+
+					'<p class = block-text style="font-size:22px;">Ignore the red letter.</p>'+
+					'<p class = block-text style="font-size:22px;">Press '+possible_responses[0][0]+' if the letter was in the memory set, and '+possible_responses[1][0]+' if not.</p>'+
+					'<p class = block-text style="font-size:22px;">In this case, the distractor is A and the probe is C.  The probe, D, is in the memory set.  The correct answer is the '+possible_responses[0][0]+'.</p>'+
+					'<p class = block-text style="font-size:22px;">Press enter to start practice.</p>'+
 				'</div>'+
 		
-				'<div class = centerbox><div class = flanker-text>AABAA</div></div>'+
+				'<div class = centerbox>'+
+					'<div class = distractor-text><font color="red" size="10">A</font></div>'+
+					'<div class = cue-text><font size="10">D</font></div>'+
+				'</div>'+
 			  '</div>',
 	is_html: true,
 	choices: [13],
@@ -479,13 +509,15 @@ var instructions_block = {
 	},
 	pages: [		
 		'<div class = centerbox>'+
-			'<p class = block-text>In this experiment you will be presented with 6 letters on each trial. You must memorize all 6 letters.</p> '+
+			'<p class = block-text>In this experiment you will be presented with 6 letters on each trial. 3 will be at the top, and 3 on the bottom. You must memorize all 6 letters.</p> '+
 				
 			'<p class = block-text>There will be a short delay, then you will see a cue, either <strong>TOP</strong> or <strong>BOT</strong>. '+
-			'This will instruct you to <strong>FORGET</strong> the 3 letters located at either the top or bottom (respectively) of the screen. '+
-			'The three remaining letters that you must remember are called your <strong>MEMORY SET</strong>. Please forget the letters not in the memory set.</p>'+
+			'This will instruct you to <strong>FORGET</strong> the 3 letters located at either the top or bottom (respectively) of the screen.</p>'+
+			
+			'<p class = block-text>The three remaining letters that you must remember are called your <strong>MEMORY SET</strong>. Please forget the letters not in the memory set.</p>'+
 		
-			'<p class = block-text>So for example, if you get the cue TOP, please forget the top 3 letters and remember the bottom 3 letters. The bottom three letters would be your MEMORY SET.</p>'+
+			'<p class = block-text>So for example, if you get the cue TOP, please <strong>forget the top 3 letters</strong> and remember the bottom 3 letters. <strong>The bottom three letters would be your MEMORY SET.</strong></p>'+
+		
 		'</div>',
 		
 		'<div class = centerbox>'+
@@ -897,6 +929,8 @@ directed_forgetting_with_shape_matching_experiment.push(instruction_node);
 directed_forgetting_with_shape_matching_experiment.push(practice1);
 
 directed_forgetting_with_shape_matching_experiment.push(practice2);
+
+directed_forgetting_with_shape_matching_experiment.push(practice3);
 
 directed_forgetting_with_shape_matching_experiment.push(practiceNode);
 

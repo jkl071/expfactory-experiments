@@ -50,8 +50,7 @@ function assessPerformance() {
 }
 
 var getInstructFeedback = function() {
-	return '<div class = centerbox><p class = center-block-text>' + feedback_instruct_text +
-		'</p></div>'
+	return '<div class = centerbox><p class = center-block-text>' + feedback_instruct_text + '</p></div>'
 }
 
 var getFeedback = function() {
@@ -60,28 +59,25 @@ var getFeedback = function() {
 
 var getCategorizeIncorrectText = function(){
 	if (go_nogo_condition == 'go'){
-	
-		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
 	} else {
-	
-		return '<div class = fb_box><div class = center-text><font size = 20>Shape is red</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Letter is '+go_no_go_styles[1]+'</font></div></div>' + prompt_text
 	}
-
 }
 
 var getTimeoutText = function(){
 	if (go_nogo_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text
 	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
 	}
 }
 
 var getCorrectText = function(){
 	if (go_nogo_condition == "go"){
-		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
 	} else {
-		return '<div class = fb_box><div class = center-text><font size = 20>Shape is red</font></div></div>'
+		return '<div class = fb_box><div class = center-text><font size = 20>Letter is '+go_no_go_styles[1]+'</font></div></div>' + prompt_text
 	}
 }
 
@@ -91,11 +87,9 @@ var randomDraw = function(lst) {
 }
 	 
 var createTrialTypes = function(numTrialsPerBlock){
-	go_nogo_trial_types = ['go','go','go','go','stop']
-	flanker_trial_types = ['congruent','incongruent']
 	
 	var stims = []
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/10; numIterations++){
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/20; numIterations++){
 		for (var numFlankerConds = 0; numFlankerConds < flanker_trial_types.length; numFlankerConds++){
 			for (var numgo_nogoConds = 0; numgo_nogoConds < go_nogo_trial_types.length; numgo_nogoConds++){
 			
@@ -103,17 +97,27 @@ var createTrialTypes = function(numTrialsPerBlock){
 				go_nogo_condition = go_nogo_trial_types[numgo_nogoConds]
 				
 				if (go_nogo_condition == 'stop'){
-					correct_response = possible_responses[1][1]
-					color = 'red'
+					go_no_go_style = go_no_go_styles[1]
 				} else {
-					color = 'green'
-					correct_response = possible_responses[0][1]
+					go_no_go_style = go_no_go_styles[0]
 				}
 				
-				if (flanker_condition == 'congruent'){
-					flanker_color = color
-				} else {
-					flanker_color = randomDraw(['red','green'].filter(function(y) {return $.inArray(y, [color]) == -1}))
+				if (flanker_condition == 'H_congruent'){
+					stim = 'H'
+					flanker = 'H'
+					correct_response = possible_responses[1][1]
+				} else if (flanker_condition == 'H_incongruent'){
+					stim = 'H'
+					flanker = 'F'
+					correct_response = possible_responses[1][1]
+				} else if (flanker_condition == 'F_congruent'){
+					stim = 'F'
+					flanker = 'F'
+					correct_response = possible_responses[0][1]
+				} else if (flanker_condition == 'F_incongruent'){
+					stim = 'F'
+					flanker = 'H'
+					correct_response = possible_responses[0][1]
 				}
 				
 				
@@ -121,8 +125,9 @@ var createTrialTypes = function(numTrialsPerBlock){
 					go_nogo_condition: go_nogo_condition,
 					flanker_condition: flanker_condition,
 					correct_response: correct_response,
-					color: color,
-					flanker_color: flanker_color
+					go_no_go_style: go_no_go_style,
+					stim: stim,
+					flanker: flanker
 					
 					}
 			
@@ -144,15 +149,16 @@ var getStim = function(){
 	stim = stims.shift()
 	flanker_condition = stim.flanker_condition
 	go_nogo_condition = stim.go_nogo_condition
-	correct_response = stim.correct_response
-	color = stim.color
-	flanker_color = stim.flanker_color
+	go_no_go_style = stim.go_no_go_style
+	stim = stim.stim
+	flanker = stim.flanker
+	correct_response = stim.correct_response	
 	
-	return  task_boards[0] + flanker_color +
-		 	task_boards[1] + flanker_color +
-		 	task_boards[2] + color +
-		 	task_boards[3] + flanker_color +
-		 	task_boards[4] + flanker_color +
+	return  task_boards[0] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
+		 	task_boards[1] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
+		 	task_boards[2] + preFileType + go_no_go_style + '_'+ stim + fileTypePNG +
+		 	task_boards[3] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
+		 	task_boards[4] + preFileType + go_no_go_style + '_'+ flanker + fileTypePNG +
 		 	task_boards[5] 
 }
 
@@ -170,11 +176,12 @@ var appendData = function(){
 	}
 	
 	jsPsych.data.addDataToLastTrial({
-		flanker_condition: flanker_condition,
 		go_nogo_condition: go_nogo_condition,
+		flanker_condition: flanker_condition,
 		correct_response: correct_response,
-		flanker_color: flanker_color,
-		center_color: color,
+		go_no_go_style: go_no_go_style,
+		stim: stim,
+		flanker: flanker,
 		current_block: current_block,
 		current_trial: current_trial
 	})
@@ -183,15 +190,11 @@ var appendData = function(){
 		jsPsych.data.addDataToLastTrial({
 			correct_trial: 1,
 		})
-	
 	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != correct_response){
 		jsPsych.data.addDataToLastTrial({
 			correct_trial: 0,
 		})
-	
-	}
-	
-	
+	}	
 }
 
 /* ************************************ */
@@ -204,16 +207,20 @@ var credit_var = 0
 
 // task specific variables
 // Set up variables for stimuli
-var practice_len = 10 // must be divisible by 10, [5 (go,go,go,go,stop) by 2 (flanker conditions)]
-var exp_len = 20 //350 must be divisible by 10
-var numTrialsPerBlock = 10; // 70 divisible by 10
+var practice_len = 20 // must be divisible by 20, [5 (go,go,go,go,stop) by 4 (flanker conditions)]
+var exp_len = 40 //350 must be divisible by 10
+var numTrialsPerBlock = 20; // 70 divisible by 10
 var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.30
-var practice_thresh = 2 // 3 blocks of 28 trials
+var practice_thresh = 3 // 3 blocks of 28 trials
  
-var possible_responses = [['Spacebar', 32],['No Response', -1]]
+var possible_responses = [['F key', 70],['H key', 72]]
+var go_nogo_trial_types = ['go','go','go','go','stop']
+var flanker_trial_types = ['H_congruent','H_incongruent','F_congruent','F_incongruent']
+var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+
 
 
 var current_trial = 0
@@ -223,22 +230,33 @@ var fileTypePNG = '.png"></img>'
 var preFileType = '<img class = center src="/static/experiments/go_nogo_with_flanker/images/'
 
 
-var task_boards = [['<div class = bigbox><div class = leftbox1 style="background-color:'],['"></div><div class = leftbox2 style="background-color:'],['"></div><div class = centerimg style="background-color:'],['"></div><div class = rightbox1 style="background-color:'],['"></div><div class = rightbox2 style="background-color:'],['"></div></div>']]
+var task_boards = [['<div class = bigbox><div class = centerbox><div class = leftbox1 style="background-color:'],['"></div><div class = leftbox2 style="background-color:'],['"></div><div class = centerimg style="background-color:'],['"></div><div class = rightbox1 style="background-color:'],['"></div><div class = rightbox2 style="background-color:'],['"></div></div></div>']]
+var task_boards = [['<div class = bigbox><div class = centerbox><div class = leftbox1>'],['</div><div class = leftbox2>'],['</div><div class = centerimg>'],['</div><div class = rightbox1>'],['</div><div class = rightbox2>'],['</div></div></div>']]
 
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-					'<li>Press the '+possible_responses[0][0] +' if the center square is green</li>' +
-					'<li>Ignore the other squares</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Indicate the identity of the center letter</li>' +
+						'<li>Press the F key if center letter is F</li>' +
+						'<li>Press the H key if center letter is H</li>' +
+						'<li>Do not respond if the '+go_no_go_styles[1]+' version of the letters came out!</li>' +
+					   '</ul>'
+					  
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Indicate the identity of the center letter</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Press the F key if center letter is F</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Press the H key if center letter is H</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Do not respond if the '+go_no_go_styles[1]+' version of the letters came out!</p>' +
+				  '</div>' 	
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
 
 var test_img_block = {
 	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = leftbox1 style="background-color:lightblue"></div>'+
+	stimulus: '<div class = bigbox><div class = centerbox>'+
+				'<div class = leftbox1 style="background-color:lightblue"></div>'+
 				'<div class = leftbox2 style="background-color:lightblue"></div>'+
 				'<div class = centerimg style="background-color:lightblue"></div>'+
 				'<div class = rightbox1 style="background-color:lightblue"></div>'+
@@ -254,6 +272,64 @@ var test_img_block = {
 	timing_response: -1,
 	response_ends_trial: true
 };
+
+
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">This is what the trial will look like. You will see a row of letters composed of H and F. Please indicate the identity of the center letter.</p>'+
+					'<p class = block-text style="font-size:24px;">In this case, the center letter is F, so the correct answer is the F key.</p>'+
+					'<p class = block-text style="font-size:24px;">Please ignore the letters that are not in the center, in this case, H.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox>'+
+					'<div class = leftbox1>' + preFileType +   go_no_go_styles[0]  + '_H'  + fileTypePNG + '</div>'+
+					'<div class = leftbox2>' + preFileType +   go_no_go_styles[0]  + '_H'  + fileTypePNG + '</div>'+
+					'<div class = centerimg>' + preFileType +   go_no_go_styles[0]  + '_F'  + fileTypePNG + '</div>'+
+					'<div class = rightbox1>' + preFileType +   go_no_go_styles[0]  + '_H'  + fileTypePNG + '</div>'+
+					'<div class = rightbox2>' + preFileType +   go_no_go_styles[0]  + '_H'  + fileTypePNG + '</div>'+
+				'</div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px;">If instead, the '+go_no_go_styles[1]+' version of the letters came out, then do not respond on that trial!</p>'+
+					'<p class = block-text style="font-size:24px;">Remember, respond only if the number is '+go_no_go_styles[0]+', not if the number is '+go_no_go_styles[0]+'.</p>'+
+					'<p class = block-text style="font-size:24px;">Press Enter to start practice.</p>'+
+				'</div>'+
+				
+				'<div class = centerbox>'+
+					'<div class = leftbox1>' + preFileType +   go_no_go_styles[1]  + '_H'  + fileTypePNG + '</div>'+
+					'<div class = leftbox2>' + preFileType +   go_no_go_styles[1]  + '_H'  + fileTypePNG + '</div>'+
+					'<div class = centerimg>' + preFileType +   go_no_go_styles[1]  + '_F'  + fileTypePNG + '</div>'+
+					'<div class = rightbox1>' + preFileType +   go_no_go_styles[1]  + '_H'  + fileTypePNG + '</div>'+
+					'<div class = rightbox2>' + preFileType +   go_no_go_styles[1]  + '_H'  + fileTypePNG + '</div>'+
+				'</div>'+
+			  '</div>',
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction"
+	},
+	timing_post_trial: 0,
+	timing_stim: 300000,
+	timing_response: 300000,
+	response_ends_trial: true,
+}
 
 //Set up post task questionnaire
 var post_task_block = {
@@ -272,7 +348,7 @@ var response_keys =
 	'<ul list-text><li><span class = "large" style = "color:red">WORD</span>: "R key"</li><li><span class = "large" style = "color:blue">WORD</span>: "B key"</li><li><span class = "large" style = "color:green">WORD</span>: "G key"</li></ul>'
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -309,14 +385,17 @@ var instructions_block = {
 		trial_id: "instruction"
 	},
 	pages: [
-		'<div class = centerbox>'+
-		'<p class = block-text>In this experiment you will see a row of colored squares.</p> '+
+		"<div class = centerbox>"+
+		"<p class = block-text>In this experiment you will see a row of letters composed of H's and F's.</p> "+
 				
-		'<p class = block-text>If the center square is green, please press the '+possible_responses[0][0]+' as quickly as possible.  If the center square is red, make '+possible_responses[1][0]+'.</p>'+
+		"<p class = block-text>Please indicate the identity of the center letter! If the center letter is F, press the "+possible_responses[0][0]+" as quickly as possible.  If the center letter is H, press the "+possible_responses[1][0]+".</p>"+
 		
-		'<p class = block-text>Ignore the squares not in the center!</p>'+
+		"<p class = block-text>Ignore the letters not in the center!</p>"+
+		
+		"<p class = block-text>On most trials, the letters will be "+go_no_go_styles[0]+".  Sometimes, the letters will be "+go_no_go_styles[1]+".  If the letters are "+go_no_go_styles[1]+", please make no response on that trial.</p>"+
 						
-		'<p class = block-text>We will start with practice after you finish the instructions.</p></div>'
+		"<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>"+
+		"</div>",
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -363,17 +442,17 @@ var start_test_block = {
 		trial_id: "instruction"
 	},
 	timing_response: 180000,
-	text: '<div class = centerbox>'+
-			'<p class = block-text>We will now start the test portion</p>'+
+	text: "<div class = centerbox>"+
+			"<p class = block-text>We will now start the test portion</p>"+
 			
-			'<p class = block-text>In this experiment you will see a row of colored squares.</p> '+
-				
-			'<p class = block-text>If the center square is green, please press the '+possible_responses[0][0]+' as quickly as possible.  If the center square is red, make '+possible_responses[1][0]+'.</p>'+
+			"<p class = block-text>Please indicate the identity of the center letter! If the center letter is F, press the "+possible_responses[0][0]+" as quickly as possible.  If the center letter is H, press the "+possible_responses[1][0]+".</p>"+
 		
-			'<p class = block-text>Ignore the squares not in the center!</p>'+
+			"<p class = block-text>Ignore the letters not in the center!</p>"+
+		
+			"<p class = block-text>On most trials, the letters will be "+go_no_go_styles[0]+".  Sometimes, the letters will be "+go_no_go_styles[1]+".  If the letters are "+go_no_go_styles[1]+", please make no response on that trial.</p>"+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
-		 '</div>',
+			"<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>"+
+		 "</div>",
 	cont_key: [13],
 	timing_post_trial: 1000,
 	on_finish: function(){
@@ -414,7 +493,8 @@ for (i = 0; i < practice_len; i++) {
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
-		on_finish: appendData
+		on_finish: appendData,
+		prompt: prompt_text,
 	}
 	practiceTrials.push(practice_block)
 }
@@ -464,7 +544,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 			if (missed_responses > missed_thresh){
 				feedback_text +=
 						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -548,7 +628,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember, judge if the green shape on the left matches or mismatches the <strong>CENTER</strong> white shape on the right: <br>' + prompt_text_list
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -576,6 +656,10 @@ go_nogo_with_flanker_experiment = []
 //go_nogo_with_flanker_experiment.push(test_img_block)
 
 go_nogo_with_flanker_experiment.push(instruction_node)
+
+go_nogo_with_flanker_experiment.push(practice1)
+
+go_nogo_with_flanker_experiment.push(practice2)
 
 go_nogo_with_flanker_experiment.push(practiceNode)
 
