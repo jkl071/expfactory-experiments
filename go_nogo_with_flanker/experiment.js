@@ -103,19 +103,19 @@ var createTrialTypes = function(numTrialsPerBlock){
 				}
 				
 				if (flanker_condition == 'H_congruent'){
-					stim = 'H'
+					central_letter = 'H'
 					flankers = 'H'
 					correct_response = possible_responses[1][1]
 				} else if (flanker_condition == 'H_incongruent'){
-					stim = 'H'
+					central_letter = 'H'
 					flankers = 'F'
 					correct_response = possible_responses[1][1]
 				} else if (flanker_condition == 'F_congruent'){
-					stim = 'F'
+					central_letter = 'F'
 					flankers = 'F'
 					correct_response = possible_responses[0][1]
 				} else if (flanker_condition == 'F_incongruent'){
-					stim = 'F'
+					central_letter = 'F'
 					flankers = 'H'
 					correct_response = possible_responses[0][1]
 				}
@@ -126,7 +126,7 @@ var createTrialTypes = function(numTrialsPerBlock){
 					flanker_condition: flanker_condition,
 					correct_response: correct_response,
 					go_no_go_style: go_no_go_style,
-					stim: stim,
+					central_letter: central_letter,
 					flankers: flankers
 					
 					}
@@ -150,13 +150,13 @@ var getStim = function(){
 	flanker_condition = stim.flanker_condition
 	go_nogo_condition = stim.go_nogo_condition
 	go_no_go_style = stim.go_no_go_style
-	stim = stim.stim
+	central_letter = stim.central_letter
 	flankers = stim.flankers
 	correct_response = stim.correct_response	
 	
 	return  task_boards[0] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
 		 	task_boards[1] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
-		 	task_boards[2] + preFileType + go_no_go_style + '_'+ stim + fileTypePNG +
+		 	task_boards[2] + preFileType + go_no_go_style + '_'+ central_letter + fileTypePNG +
 		 	task_boards[3] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
 		 	task_boards[4] + preFileType + go_no_go_style + '_'+ flankers + fileTypePNG +
 		 	task_boards[5] 
@@ -180,7 +180,7 @@ var appendData = function(){
 		flanker_condition: flanker_condition,
 		correct_response: correct_response,
 		go_no_go_style: go_no_go_style,
-		stim: stim,
+		central_letter: central_letter,
 		flankers: flankers,
 		current_block: current_block,
 		current_trial: current_trial

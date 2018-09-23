@@ -296,8 +296,7 @@ var getControlStim = function(){
 	probe = stim.probe
 	correct_response = stim.correct_response
 	flankers = stim.flankers
-	delay = stim.delay
-		
+	control_delay = stim.delay		
 	return task_boards[0]+ 
 			flankers+
 			flankers+
@@ -359,8 +358,8 @@ var credit_var = 0
 
 
 var practice_len = 16 // 24 must be divisible by 16
-var exp_len = 96 //324 must be divisible by 16
-var numTrialsPerBlock = 32 // 54 must be divisible by 16 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
+var exp_len = 48 //96 must be divisible by 16
+var numTrialsPerBlock = 16 // 32 must be divisible by 16 and we need to have a multiple of 3 blocks (3,6,9) in order to have equal delays across blocks
 var numTestBlocks = exp_len / numTrialsPerBlock
 var practice_thresh = 3 // 3 blocks of 16 trials
 
@@ -618,7 +617,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		stimulus: getControlStim,
 		is_html: true,
 		data: {
-			"trial_id": "control_trial",
+			"trial_id": "control_trial"
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		timing_stim: 1000, //2000
@@ -636,7 +635,6 @@ var controlNode = {
 	loop_function: function(data) {
 		controlCount += 1
 		current_trial = 0
-		stims = createTrialTypes(numTrialsPerBlock, delay)
 	
 		if (controlCount == 1){
 			feedback_text +=
@@ -826,7 +824,6 @@ var testNode = {
 /* ************************************ */
 
 var n_back_with_flanker_experiment = []
-
 
 n_back_with_flanker_experiment.push(instruction_node);
 
