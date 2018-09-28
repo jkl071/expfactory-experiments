@@ -79,7 +79,6 @@ var getTimeoutText = function(){
 var getCategorizeFeedback = function(){
 	curr_trial = jsPsych.progress().current_trial_global - 1
 	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
-	
 	console.log(trial_id)
 	if ((trial_id == 'practice_with_stop') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition != 'stop')){
 		if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == jsPsych.data.getDataByTrialIndex(curr_trial).correct_response){
@@ -97,11 +96,15 @@ var getCategorizeFeedback = function(){
 			return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text
 	
 		}
-	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'stop'){
-	
-		return '<div class = fb_box><div class = center-text><font size = 20></font></div></div>' + prompt_text
+	} else if ((trial_id == 'practice_with_stop') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'stop')){
+		if (jsPsych.data.getDataByTrialIndex(curr_trial).rt == -1){
+			return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
+		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).rt != -1){
+			return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
+		}
 	}
 }
+
 
 var randomDraw = function(lst) {
   var index = Math.floor(Math.random() * (lst.length))
@@ -410,12 +413,12 @@ var practice1 = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox>'+
 				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:24px; line-height:100%;">This is what the first part of the trial will look like.  The number 3 is on the bottom left, so you would just based on <strong>'+predictive_dimensions_list[1].dim+'.</strong>.</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">This is what the first part of the trial will look like.  The number 3 is on the bottom left, so you would judge based on <strong>'+predictive_dimensions_list[1].dim+'</strong>.</p>'+
 					'<p class = block-text style="font-size:24px; line-height:100%;">Press the <strong>'+possible_responses[0][0]+' if '+predictive_dimensions_list[1].values[0]+'</strong>, and the <strong>' + possible_responses[1][0] + ' if '+predictive_dimensions_list[1].values[1]+'</strong>.</p>'+
 					'<p class = block-text style="font-size:24px; line-height:100%;">Press enter to continue. You will not be able to go back.</p>'+
 				'</div>'+
 				
-				'<div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10" color = "blue">3</font></div></div></div>'+
+				'<div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10">3</font></div></div></div>'+
 				
 				'</div>',				
 	is_html: true,
@@ -439,7 +442,7 @@ var practice2 = {
 					'<p class = block-text style="font-size:24px; line-height:100%;">Press enter to continue. You will not be able to go back.</p>'+
 				'</div>'+
 				
-				'<div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10" color = "blue">3</font></div></div></div>'+
+				'<div class = decision-bottom-left><div class = centerbox><div class = cue-text><font size = "10">3</font></div></div></div>'+
 					stop_boards[3][0] + 
 					preFileType + 'stopSignal' + fileTypePNG + 
 					stop_boards[3][1] +
@@ -508,7 +511,7 @@ var instructions_block = {
 	pages: [
 		'<div class = centerbox>'+
 			'<p class = block-text>In this experiment, across trials you will see a single number moving clockwise on the screen in 4 quadrants.'+
-			'On any trial, one quadrant will have a single number.</p> '+
+			' On any trial, one quadrant will have a single number.</p> '+
 		
 			'<p class = block-text>You will be asked to judge the number on magnitude (higher or lower than 5) or parity (odd or even), depending on which quadrant '+
 			'the number are in.</p>'+
@@ -839,7 +842,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 			
 			if (stop_success_percentage > upper_stop_success_bound){
 			feedback_text +=
@@ -969,7 +972,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 		}
 		
 		if (stop_success_percentage > upper_stop_success_bound){

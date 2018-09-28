@@ -64,45 +64,43 @@ var randomDraw = function(lst) {
 							 
 var createTrialTypes = function(numTrialsPerBlock){
 	stop_signal_trial_types = ['go','go','stop']
-	flanker_trial_types = ['congruent','incongruent']
-	flanker_letters = ['H','S']
+	flanker_trial_types = ['H_congruent','H_incongruent','F_congruent','F_incongruent']
+	flanker_letters = ['H','F']
 	
 	var stims = []
 	for(var numIterations = 0; numIterations < numTrialsPerBlock/12; numIterations++){
 		for (var numFlankerConds = 0; numFlankerConds < flanker_trial_types.length; numFlankerConds++){
 			for (var numstop_signalConds = 0; numstop_signalConds < stop_signal_trial_types.length; numstop_signalConds++){
-				for (var numLetters = 0; numLetters < flanker_letters.length; numLetters++){
 			
-					flanker_condition = flanker_trial_types[numFlankerConds]
-					stop_signal_condition = stop_signal_trial_types[numstop_signalConds]
-					center_letter = flanker_letters[numLetters]
-				
-					if (stop_signal_condition == 'stop'){
-						correct_response = -1
-					} else if (center_letter == 'H'){
-						correct_response = possible_responses[0][1]
-					} else if (center_letter == 'S'){
-						correct_response = possible_responses[1][1]
-					}
-				
-					if (flanker_condition == 'congruent'){
-						flanker_letter = center_letter
-					} else {
-						flanker_letter = randomDraw(['H','S'].filter(function(y) {return $.inArray(y, [center_letter]) == -1}))
-					}
-				
-				
-					stim = {
-						stop_signal_condition: stop_signal_condition,
-						flanker_condition: flanker_condition,
-						correct_response: correct_response,
-						center_letter: center_letter,
-						flanker_letter: flanker_letter
-					
-						}
+				flanker_condition = flanker_trial_types[numFlankerConds]
+				stop_signal_condition = stop_signal_trial_types[numstop_signalConds]
 			
-					stims.push(stim)
+				if (stop_signal_condition == 'stop'){
+					correct_response = -1
+				} else if (center_letter == 'H'){
+					correct_response = possible_responses[1][1]
+				} else if (center_letter == 'F'){
+					correct_response = possible_responses[0][1]
 				}
+			
+				if (flanker_condition == 'congruent'){
+					flanker_letter = center_letter
+				} else {
+					flanker_letter = randomDraw(['H','F'].filter(function(y) {return $.inArray(y, [center_letter]) == -1}))
+				}
+			
+			
+				stim = {
+					stop_signal_condition: stop_signal_condition,
+					flanker_condition: flanker_condition,
+					correct_response: correct_response,
+					center_letter: center_letter,
+					flanker_letter: flanker_letter
+				
+					}
+		
+				stims.push(stim)
+				
 			}
 		}
 	}
@@ -213,7 +211,7 @@ var maxSSD = 850
 var minSSD = 0 
 
  
-var possible_responses = [['H Key', 72],['S Key', 83]]
+var possible_responses = [['F Key', 70],['H Key', 72]]
 
 
 var current_trial = 0
@@ -315,7 +313,7 @@ var instructions_block = {
 		'<div class = centerbox>'+
 			'<p class = block-text>In this experiment you will see a row of letters.</p> '+
 				
-			'<p class = block-text>If the center letter is H, please press the '+possible_responses[0][0]+' as quickly as possible.  If the center square is S, press the '+possible_responses[1][0]+'.</p>'+
+			'<p class = block-text>If the center letter is H, please press the '+possible_responses[1][0]+' as quickly as possible.  If the center square is F, press the '+possible_responses[0][0]+'.</p>'+
 		
 			'<p class = block-text>Ignore the letters not in the center!</p>'+
 		
@@ -377,7 +375,7 @@ var start_test_block = {
 			
 			'<p class = block-text>In this experiment you will see a row of letters.</p> '+
 				
-			'<p class = block-text>If the center letter is H, please press the '+possible_responses[0][0]+' as quickly as possible.  If the center square is S, press the '+possible_responses[1][0]+'.</p>'+
+			'<p class = block-text>If the center letter is H, please press the '+possible_responses[1][0]+' as quickly as possible.  If the center square is F, press the '+possible_responses[0][0]+'.</p>'+
 		
 			'<p class = block-text>Ignore the squares not in the center!</p>'+
 		

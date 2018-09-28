@@ -327,9 +327,15 @@ var minSSD = 0
 var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
 var cued_dimensions = jsPsych.randomization.repeat(['magnitude','parity'],1)
 							 
+var cued_dimensions_list = jsPsych.randomization.repeat([jsPsych.randomization.repeat([stim =  {dim:'magnitude', values: jsPsych.randomization.repeat(['high','low'],1)},
+														  stim =  {dim:'high-low', values: jsPsych.randomization.repeat(['high','low'],1)}],1),
+														 jsPsych.randomization.repeat([stim =  {dim:'parity', values: jsPsych.randomization.repeat(['odd','even'],1)},
+														  stim =  {dim:'odd-even', values: jsPsych.randomization.repeat(['odd','even'],1)}],1)],1)
+
+								  						 
 var cued_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magnitude', values: jsPsych.randomization.repeat(['high','low'],1)},
-								  						 stim = {dim:'parity', values: jsPsych.randomization.repeat(['odd','even'],1)}],1)
-							 	  
+								  						 stim = {dim:'parity'   , values: jsPsych.randomization.repeat(['odd','even'],1)}],1)
+								  						 							 	  
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
 

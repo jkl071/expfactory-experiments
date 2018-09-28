@@ -73,7 +73,7 @@ var getCategorizeFeedback = function(){
 	curr_trial = jsPsych.progress().current_trial_global - 1
 	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
 	console.log(trial_id)
-	if ((trial_id == 'practice_with_stop') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'go')){
+	if ((trial_id == 'practice_trial') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition != 'stop')){
 		if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == jsPsych.data.getDataByTrialIndex(curr_trial).correct_response){
 			
 			
@@ -89,19 +89,15 @@ var getCategorizeFeedback = function(){
 			return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text
 	
 		}
-	} else if ((trial_id == 'practice_with_stop') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'stop')){
-			
-		if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == -1){
-			
-			
+	} else if ((trial_id == 'practice_trial') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'stop')){
+		if (jsPsych.data.getDataByTrialIndex(curr_trial).rt == -1){
 			return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
-		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != -1){
-			
-			
+		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).rt != -1){
 			return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
 		}
 	}
 }
+
 
 var randomDraw = function(lst) {
 	var index = Math.floor(Math.random() * (lst.length))
@@ -535,12 +531,9 @@ var instructions_block = {
 		'</div>',
 		'<div class = centerbox>' + 
 			'<p class = block-text>On some trials, a star will appear around the letter.  The star will appear with, or shortly after the letter appears.</p>'+
-			
 			'<p class = block-text>If you see a star appear, please try your best to make no response on that trial. You must still commit the letter to memory, however.</p>'+
-		
 			'<p class = block-text>Please do not slow down your responses in order to wait for the star.  Continue to respond as quickly and accurately as possible.</p>'+
-								
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
+			'<p class = block-text>We will start practice when you finish instructions. <i>Your delay for this practice round is 1</i>. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -629,7 +622,8 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will start practice. Your delay for this practice round is 1. <br><br>During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -699,6 +693,7 @@ var controlNode = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len + 3; i++) {
 	var practice_block = {
 		type: 'stop-signal',
@@ -897,25 +892,17 @@ var testNode = {
 var stop_signal_with_n_back_experiment = []
 
 
-stop_signal_with_n_back_experiment.push(instruction_node);
+//stop_signal_with_n_back_experiment.push(instruction_node);
 
-stop_signal_with_n_back_experiment.push(practice1);
-stop_signal_with_n_back_experiment.push(practice2);
+//stop_signal_with_n_back_experiment.push(practice1);
+//stop_signal_with_n_back_experiment.push(practice2);
 
 stop_signal_with_n_back_experiment.push(practiceNode);
+stop_signal_with_n_back_experiment.push(feedback_block);
 
-if (control_before == 0){
-	stop_signal_with_n_back_experiment.push(start_control_block);
-	stop_signal_with_n_back_experiment.push(controlNode);
-}
 
 stop_signal_with_n_back_experiment.push(start_test_block);
 
 stop_signal_with_n_back_experiment.push(testNode);
-
-if (control_before == 1){
-	stop_signal_with_n_back_experiment.push(start_control_block);
-	stop_signal_with_n_back_experiment.push(controlNode);
-}
 
 stop_signal_with_n_back_experiment.push(end_block);

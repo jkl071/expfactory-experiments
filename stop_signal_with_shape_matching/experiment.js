@@ -57,6 +57,37 @@ var getFeedback = function() {
 	return '<div class = bigbox><div class = picture_box><p class = block-text>' + feedback_text + '</p></div></div>'
 }
 
+var getCategorizeFeedback = function(){
+	curr_trial = jsPsych.progress().current_trial_global - 1
+	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
+	console.log(trial_id)
+	if ((trial_id == 'practice_trial') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition != 'stop')){
+		if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == jsPsych.data.getDataByTrialIndex(curr_trial).correct_response){
+			
+			
+			return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
+		} else if ((jsPsych.data.getDataByTrialIndex(curr_trial).key_press != jsPsych.data.getDataByTrialIndex(curr_trial).correct_response) && (jsPsych.data.getDataByTrialIndex(curr_trial).key_press != -1)){
+			
+			
+			return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
+	
+		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == -1){
+			
+			
+			return '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text
+	
+		}
+	} else if ((trial_id == 'practice_trial') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'stop')){
+		
+		if (jsPsych.data.getDataByTrialIndex(curr_trial).rt == -1){
+			return '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text
+		} else if (jsPsych.data.getDataByTrialIndex(curr_trial).rt != -1){
+			return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
+		}
+	}
+}
+
+
 var randomDraw = function(lst) {
   var index = Math.floor(Math.random() * (lst.length))
   return lst[index]
@@ -276,14 +307,21 @@ var stop_boards = ['<div class = starbox>','</div>']
 
 var stims = createTrialTypes(practice_len)
 
-var prompt_text = '<ul list-text>'+
-					'<li>Do not respond if you see a star around the shapes!</li>' +
-					'<li>Do not slow down your responses to the shape to wait for the star.</li>' +
-				  	'<li>Match: ' + possible_responses[0][0] + '</li>' +
-				  	'<li>Mismatch: ' + possible_responses[1][0] + '</li>' +
-				  '</ul>'
+var prompt_text_list = '<ul list-text>'+
+						'<li>Respond if the green and white shapes are the same or different!</li>' +
+						'<li>Same: ' + possible_responses[0][0] + '</li>' +
+						'<li>Different: ' + possible_responses[1][0] + '</li>' +
+						'<li>Do not respond if you see a star around the shapes!</li>' +
+						'<li>Do not slow down your responses to the shape to wait for the star.</li>' +
+					   '</ul>'
 
-
+var prompt_text = '<div class = prompt_box>'+
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Respond if the green and white shapes are the same or different!</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Same: ' + possible_responses[0][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Different: ' + possible_responses[1][0] +'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Do not respond if you see a star around the shapes!</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">Do not slow down your responses to the shape to wait for the star.</p>' +
+				  '</div>'
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -306,6 +344,59 @@ var test_img_block = {
 };
 
 
+var practice1 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">This is what the first part of the trial will look like.  There are the green and red shapes on the left, and 1 white shape on the right.</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">The green and white shapes are different, so you would respond with the '+possible_responses[1][0]+'.</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">Ignore the red shape!</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">Press enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				'<div class = leftbox>'+preFileType+'7_green'+fileTypePNG+'</div>' +
+				'<div class = rightbox>'+preFileType+'2_white'+fileTypePNG+'</div>' +
+				'<div class = distractorbox>'+preFileType+'2_red'+fileTypePNG+'</div>' +
+				
+				'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
+var practice2 = {
+	type: 'poldrack-single-stim',
+	stimulus: '<div class = bigbox>'+
+				'<div class = instructBox>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">This is what the second part of the trial may look like.  On this trial, a star appeared around the white shape.</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">If a star appears, (only white shapes may have stars, not green or red shapes) , please try your best <strong>not to respond</strong> on that trial.</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">Do not slow down your responses in order to wait for the star.  Continue to respond as quickly and as accurately as possible and try your best not to respond, if a star appears.</p>'+
+					'<p class = block-text style="font-size:24px; line-height:100%;">Press enter to continue. You will not be able to go back.</p>'+
+				'</div>'+
+				
+				'<div class = leftbox>'+ preFileType +'7_green'+fileTypePNG+'</div>' +
+				'<div class = starbox>'+ preFileType +'stopSignal'+fileTypePNG+'</div>' +
+				'<div class = rightbox>'+ preFileType +'2_white'+fileTypePNG+'</div>' +
+				
+				'<div class = distractorbox>'+preFileType+'2_red'+fileTypePNG+'</div>'+
+				'</div>',				
+	is_html: true,
+	choices: [13],
+	data: {
+		trial_id: "visual_instruction",
+		},
+	timing_post_trial: 0,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true
+};
+
 //Set up post task questionnaire
 var post_task_block = {
    type: 'survey-text',
@@ -319,7 +410,8 @@ var post_task_block = {
 };
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 
+	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -358,15 +450,23 @@ var instructions_block = {
 		'<div class = centerbox>'+
 			'<p class = block-text>In this experiment you will see a red and green shape on the left side of the screen, and a white shape on the right.</p> '+
 		
-			'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the shape on the right.</p>'+
+			'<p class = block-text>You will be asked to judge whether the green shape on the left, is the same as the white shape on the right.</p>'+
 		
-			'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
+			'<p class = block-text>If the shapes are the same, please press the '+possible_responses[0][0]+'.  If the shapes are different, press the '+possible_responses[1][0]+'.</p>'+
 				
 			'<p class = block-text>On some trials, a red shape will overlap the green shape. Ignore this red shape, your job is to match the green shape to the white shape.</p>'+
+		'</div>',
 		
-			'<p class = block-text>On some trials, you will see a star appear with or shortly after the shapes. Do not respond if you see a star.  Do not slow down your responses to the shapes in order to wait for the star.</p>'+
+		'<div class = centerbox>'+
+			'<p class = block-text>On some trials, a star will appear around the white shape on the right.  The star will appear with, or shortly after the white shape appears.</p>'+
 			
-			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
+			'<p class = block-text>If you see a star appear, please try your best to make no response on that trial.</p>'+
+		
+			'<p class = block-text>Please do not slow down your responses in order to wait for the star.  Continue to respond as quickly and accurately as possible.</p>'+
+			
+			'<p class = block-text>If a star does appear, they will appear only with the white shape.</p>'+
+					
+			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -422,15 +522,15 @@ var start_test_block = {
 			
 			'<p class = block-text>In this experiment you will see a red and green shape on the left side of the screen, and a white shape on the right.</p> '+
 		
-			'<p class = block-text>You will be asked to judge whether the green shape on the left, matches the shape on the right.</p>'+
+			'<p class = block-text>You will be asked to judge whether the green shape on the left, is the same the white shape on the right.</p>'+
 		
-			'<p class = block-text>If the shapes match, please press the '+possible_responses[0][0]+'.  If the shapes mismatch, press the '+possible_responses[1][0]+'.</p>'+
+			'<p class = block-text>If the shapes are the same, please press the '+possible_responses[0][0]+'.  If the shapes are different, press the '+possible_responses[1][0]+'.</p>'+
 				
 			'<p class = block-text>On some trials, a red shape will overlap the green shape. Ignore this red shape, your job is to match the green shape to the white shape.</p>'+
 		
 			'<p class = block-text>On some trials, you will see a star appear with or shortly after the shapes. Do not respond if you see a star.  Do not slow down your responses to the shapes in order to wait for the star.</p>'+
 	
-			'<p class = block-text>Press Enter to continue.</p>'+
+			'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+ 
 		 '</div>',
 	cont_key: [13],
 	timing_post_trial: 1000,
@@ -454,6 +554,8 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
+
 for (i = 0; i < practice_len; i++) {
 	var mask_block = {
 		type: 'poldrack-single-stim',
@@ -465,7 +567,8 @@ for (i = 0; i < practice_len; i++) {
 		choices: 'none',
 		timing_response: 500, //500
 		timing_post_trial: 0,
-		response_ends_trial: false
+		response_ends_trial: false,
+		prompt: prompt_text
 	}
 	
 	var practice_block = {
@@ -485,14 +588,30 @@ for (i = 0; i < practice_len; i++) {
 		timing_SS: 500,
 		timing_post_trial: 0,
 		on_finish: appendData,
+		prompt: prompt_text,
 		on_start: function(){
 			stoppingTracker = []
 			stoppingTimeTracker = []
 		}
 	}
 	
+	var categorize_block = {
+		type: 'poldrack-single-stim',
+		data: {
+			trial_id: "practice-stop-feedback"
+		},
+		choices: 'none',
+		stimulus: getCategorizeFeedback,
+		timing_post_trial: 0,
+		is_html: true,
+		timing_stim: 500,
+		timing_response: 500,
+		response_ends_trial: false
+
+	};
 	practiceTrials.push(mask_block)
 	practiceTrials.push(practice_block)
+	practiceTrials.push(categorize_block)
 }
 
 
@@ -540,7 +659,7 @@ var practiceNode = {
 	
 		} else if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 			if (missed_responses > missed_thresh){
 			feedback_text +=
 					'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
@@ -646,7 +765,7 @@ var testNode = {
 		
 		if (accuracy < accuracy_thresh){
 			feedback_text +=
-					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text 
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
 		}
 		
 		if (missed_responses > missed_thresh){
@@ -673,9 +792,15 @@ stop_signal_with_shape_matching_experiment = []
 
 //stop_signal_with_shape_matching_experiment.push(test_img_block)
 
-stop_signal_with_shape_matching_experiment.push(instruction_node)
+//stop_signal_with_shape_matching_experiment.push(instruction_node)
+
+//stop_signal_with_shape_matching_experiment.push(practice1)
+
+//stop_signal_with_shape_matching_experiment.push(practice2)
 
 stop_signal_with_shape_matching_experiment.push(practiceNode)
+
+stop_signal_with_shape_matching_experiment.push(feedback_block)
 
 stop_signal_with_shape_matching_experiment.push(start_test_block)
 

@@ -11,7 +11,7 @@
 }
 
 .display_stage > div, .display_stage > p {
-  color: black;
+  color: white;
 }
 
 .fb_box {
@@ -59,11 +59,6 @@ img.center {
   right: 0;  
   margin: auto;  
   max-height: 65%;
-}
-
-img {
-  height: 100%;
-  width: 100%;
 }
 
 .fb_box {
