@@ -75,10 +75,6 @@ text-align: center;
 }
 
 
-.mask {
-  width: 80%;
-}
-
 img {
   height: 100%;
   width: 100%;
@@ -97,12 +93,6 @@ img {
 /*******************************************************/
 /***********    Shape Matching CSS Styles     **********/
 /*******************************************************/
-
-
-.mask {
-  width: 80%;
-}
-
 .leftbox {
   width: 18vw;
   height: 18vw;
@@ -112,7 +102,7 @@ img {
   margin-right:-50%;
   transform: translate(-100%,-50%);
   z-index: 2;
-  background-color: none;
+  background-color: red;
 }
 
 .distractorbox {

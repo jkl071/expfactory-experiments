@@ -200,10 +200,10 @@ var setStims = function() {
 var getCue = function() {
   var cue_html = '<div class = upperbox><div class = "center-text" >' + curr_cue + '</div></div>'+
   				 '<div class = lowerbox>'+ 
-							'<div class = leftbox>' + preFileType + 'mask' + fileTypePNG + '</div>' +
-							'<div class = distractorbox>' + '' + '</div>' +
-							'<div class = rightbox>' + preFileType + 'mask' + fileTypePNG + '</div>' +
-						'</div>'
+					'<div class = leftbox>' + preFileType + 'mask' + fileTypePNG + '</div>' +
+					'<div class = distractorbox>' + '' + '</div>' +
+					'<div class = rightbox>' + preFileType + 'mask' + fileTypePNG + '</div>' +
+				'</div>'
   return cue_html
 }
 

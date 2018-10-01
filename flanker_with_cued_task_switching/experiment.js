@@ -320,10 +320,10 @@ var prompt_text_list = '<ul list-text>'+
 				  '</ul>'
 				  
 var prompt_text = '<div class = prompt_box>'+
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If the cue is '+cued_dimensions_list[0].dim+', judge number on '+cued_dimensions_list[0].dim+'.</p>' +
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + ' | ' + cued_dimensions_list[0].values[1] + ': ' + possible_responses[1][0] + '</p>' +
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If the cue is '+cued_dimensions_list[1].dim+', judge number on '+cued_dimensions_list[1].dim+'.</p>' +
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + ' | '+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] +'</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">If the cue is '+cued_dimensions_list[0].dim+', judge number on '+cued_dimensions_list[0].dim+'.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+cued_dimensions_list[0].values[0]+': ' + possible_responses[0][0] + ' | ' + cued_dimensions_list[0].values[1] + ': ' + possible_responses[1][0] + '</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">If the cue is '+cued_dimensions_list[1].dim+', judge number on '+cued_dimensions_list[1].dim+'.</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%;">'+cued_dimensions_list[1].values[0]+': ' + possible_responses[0][0] + ' | '+cued_dimensions_list[1].values[1]+': ' + possible_responses[1][0] +'</p>' +
 				  '</div>' 
 /* ************************************ */
 /* Set up jsPsych blocks */
