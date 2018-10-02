@@ -64,6 +64,9 @@ var randomDraw = function(lst) {
   return lst[index]
 }
 
+var getCTI = function(){
+	return CTI
+}
 var getCorrectResponse = function(number, cued_dimension){
 	if (number > 5){
 		var magnitude = 'high'
@@ -295,6 +298,8 @@ var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 9
 
 var current_trial = 0
 var current_block = 0
+var CTI = 300
+
 
 var fileTypePNG = ".png'></img>"
 var preFileType = "<img class = center src='/static/experiments/flanker_with_cued_task_switching/images/"
@@ -568,7 +573,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		data: {
 			trial_id: "practice_cue"
 		},
-		timing_response: 500, //500
+		timing_response: getCTI, //500
 		timing_post_trial: 0,
 		prompt: prompt_text
 	}
@@ -586,7 +591,7 @@ for (i = 0; i < practice_len + 1; i++) {
 		correct_text: '<div class = fb_box><div class = center-text><font size = 20>Correct!</font></div></div>' + prompt_text,
 		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
 		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
-		timing_stim: 2000, //2000
+		timing_stim: 1000, //2000
 		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
@@ -692,7 +697,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 		data: {
 			trial_id: "test_cue"
 		},
-		timing_response: 500, //500
+		timing_response: getCTI, //500
 		timing_post_trial: 0
 	}
 	
@@ -705,7 +710,7 @@ for (i = 0; i < numTrialsPerBlock + 1; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 2000, //2000
+		timing_stim: 1000, //2000
 		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,

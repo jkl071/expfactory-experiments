@@ -8,7 +8,7 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'n_back_with_cued_task_switching'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'n_back_with_two_by_two'})
 }
 
 function assessPerformance() {
@@ -165,38 +165,47 @@ var createControlTypes = function(numTrialsPerBlock){
 
 
 var createTrialTypes = function(numTrialsPerBlock){
-	cued_dimension = cued_dimensions[Math.floor(Math.random() * 2)]
-	cued_condition = 'N/A'
-	n_back_condition = 'N/A'
+	//cued_dimension = cued_dimensions[Math.floor(Math.random() * 2)][Math.floor(Math.random() * 2)] // current task, 1 or 2 back
+	curr_task = 'one_back'
+	curr_cue = tasks[curr_task].cues[Math.floor(Math.random() * 2)]
+	cued_condition = 'N/A' // switch or stay for tasks
+	n_back_condition = 'N/A' 
+	cued_switch_condition = 'N/A' //stay or switch for cues
 	probe = randomDraw(letters)
 	correct_response = possible_responses[1][1]
-		
 	
 	first_stim = {
 		n_back_condition: n_back_condition,
-		cued_dimension: cued_dimension[0],
+		//cued_dimension: cued_dimension[0],
+		curr_task: curr_task,
+		curr_cue: curr_cue,
 		cued_condition: cued_condition,
 		probe: probe,
 		correct_response: correct_response,
-		delay: cued_dimension[1]
-
+		delay: tasks[curr_task].delay,
+		cued_switch_condition: cued_switch_condition
 	}	
 	
 	n_back_condition = jsPsych.randomization.repeat(['match','mismatch','mismatch','mismatch','mismatch'],1).pop()
 	cued_condition = cued_conditions[Math.floor(Math.random() * 2)]
-	last_dim = cued_dimension[0]
-	if (cued_condition == "switch"){
-		cued_dimension = randomDraw(['1-back','2-back'].filter(function(y) {return $.inArray(y, [last_dim]) == -1}))
-	} else if (cued_condition == "stay"){
-		cued_dimension = last_dim
+	cued_switch_condition = cued_switch_conditions[Math.floor(Math.random() * 2)]
+	last_task = curr_task
+	if (cued_condition == "switch"){ // if switch tasks, pick a random cue and switch to other task
+		curr_task = randomDraw(['one_back','two_back'].filter(function(y) {return $.inArray(y, [last_task]) == -1}))
+		curr_cue = tasks[curr_task].cues[Math.floor(Math.random() * 2)]
+	} else if (cued_condition == "stay"){ // if stay tasks, if cued_switch condition is switch, then switch to other cue, stay if not.
+		if (cued_switch_condition == 'switch'){
+		last_cue = curr_cue
+		curr_cue = randomDraw(tasks[curr_task].cues.filter(function(y) {return $.inArray(y, [last_cue]) == -1}))
+		}
+	
 	}
+	delay = tasks[curr_task].delay
 	
-	delay = parseInt(cued_dimension[0])
-	
-	if ((n_back_condition == "match") && (cued_dimension == '1-back')){
+	if ((n_back_condition == "match") && (curr_task == 'one_back')){
 		probe = randomDraw([first_stim.probe.toUpperCase(), first_stim.probe.toLowerCase()])
 		correct_response = possible_responses[0][1]
-	} else if ((n_back_condition == "mismatch") && (cued_dimension == '1-back')){
+	} else if ((n_back_condition == "mismatch") && (curr_task == 'two_back')){
 		probe = randomDraw('bBdDgGtTvV'.split("").filter(function(y) {return $.inArray(y, [first_stim.probe.toLowerCase(), first_stim.probe.toUpperCase()]) == -1}))
 		correct_response = possible_responses[1][1]
 	
@@ -209,30 +218,39 @@ var createTrialTypes = function(numTrialsPerBlock){
 	
 	second_stim = {
 		n_back_condition: n_back_condition,
-		cued_dimension: cued_dimension,
+		//cued_dimension: cued_dimension[0],
+		curr_task: curr_task,
+		curr_cue: curr_cue,
 		cued_condition: cued_condition,
 		probe: probe,
 		correct_response: correct_response,
-		delay: delay
+		delay: tasks[curr_task].delay,
+		cued_switch_condition: cued_switch_condition
 	}
 	
 	stims = []
 	
-	for(var numIterations = 0; numIterations < numTrialsPerBlock/10; numIterations++){
+	for(var numIterations = 0; numIterations < numTrialsPerBlock/20; numIterations++){
 		for (var numNBackConds = 0; numNBackConds < n_back_conditions.length; numNBackConds++){
 			for (var numCuedConds = 0; numCuedConds < cued_conditions.length; numCuedConds++){
+				for (var numCuedSwitchConds = 0; numCuedSwitchConds < cued_switch_conditions.length; numCuedSwitchConds++){
 			
-				cued_dimension = 'N/A'
-				cued_condition = cued_conditions[numCuedConds]
-				n_back_condition = n_back_conditions[numNBackConds]
+					//cued_dimension = 'N/A'
+					cued_condition = cued_conditions[numCuedConds]
+					n_back_condition = n_back_conditions[numNBackConds]
+					curr_task = 'N/A'
+					cued_switch_condition = cued_switch_conditions[numCuedSwitchConds]
 				
-				stim = {
-					cued_dimension: cued_dimension,
-					cued_condition: cued_condition,
-					n_back_condition: n_back_condition
-					}
+					stim = {
+						//cued_dimension: cued_dimension,
+						cued_condition: cued_condition,
+						n_back_condition: n_back_condition,
+						curr_task: curr_task,
+						cued_switch_condition
+						}
 			
-				stims.push(stim)
+					stims.push(stim)
+				}
 			}
 			
 		}
@@ -249,7 +267,10 @@ var createTrialTypes = function(numTrialsPerBlock){
 		if (i < 2){
 			stim = stims.pop()
 			n_back_condition = stim.n_back_condition
-			cued_dimension = stim.cued_dimension
+			//cued_dimension = stim.cued_dimension
+			curr_task = stim.curr_task
+			curr_cue = stim.curr_cue
+			cued_switch_condition = stim.cued_switch_condition
 			cued_condition = stim.cued_condition
 			probe = stim.probe
 			correct_response = stim.correct_response
@@ -258,15 +279,21 @@ var createTrialTypes = function(numTrialsPerBlock){
 			stim = stims.pop()
 			n_back_condition = stim.n_back_condition
 			cued_condition = stim.cued_condition
+			cued_switch_condition = stim.cued_switch_condition
 			
-			last_dim = cued_dimension
-			if (cued_condition == "switch"){
-				cued_dimension = randomDraw(['1-back','2-back'].filter(function(y) {return $.inArray(y, [last_dim]) == -1}))
-			} else if (cued_condition == "stay"){
-				cued_dimension = last_dim
+			last_task = curr_task
+			if (cued_condition == "switch"){ // if switch tasks, pick a random cue and switch to other task
+				curr_task = randomDraw(['one_back','two_back'].filter(function(y) {return $.inArray(y, [last_task]) == -1}))
+				curr_cue = tasks[curr_task].cues[Math.floor(Math.random() * 2)]
+			} else if (cued_condition == "stay"){ // if stay tasks, if cued_switch condition is switch, then switch to other cue, stay if not.
+				if (cued_switch_condition == 'switch'){
+				last_cue = curr_cue
+				curr_cue = randomDraw(tasks[curr_task].cues.filter(function(y) {return $.inArray(y, [last_cue]) == -1}))
+				}
+	
 			}
 	
-			delay = parseInt(cued_dimension[0])
+			delay = tasks[curr_task].delay
 		
 			if (n_back_condition == "match"){
 				probe = randomDraw([new_stims[i - delay].probe.toUpperCase(), new_stims[i - delay].probe.toLowerCase()])
@@ -280,11 +307,14 @@ var createTrialTypes = function(numTrialsPerBlock){
 		
 		stim = {
 			n_back_condition: n_back_condition,
-			cued_dimension: cued_dimension,
+			//cued_dimension: cued_dimension[0],
+			curr_task: curr_task,
+			curr_cue: curr_cue,
 			cued_condition: cued_condition,
 			probe: probe,
 			correct_response: correct_response,
-			delay: delay
+			delay: tasks[curr_task].delay,
+			cued_switch_condition: cued_switch_condition
 		}
 		
 		new_stims.push(stim)	
@@ -303,7 +333,10 @@ var getStim = function(){
 var getCueStim = function(){
 	stim = stims.shift()
 	n_back_condition = stim.n_back_condition
-	cued_dimension = stim.cued_dimension
+	//cued_dimension = stim.cued_dimension
+	curr_task = stim.curr_task
+	curr_cue = stim.curr_cue
+	cued_switch_condition = stim.cued_switch_condition
 	cued_condition = stim.cued_condition
 	probe = stim.probe
 	correct_response = stim.correct_response
@@ -311,6 +344,31 @@ var getCueStim = function(){
 
 	return task_boards[0] + cued_dimension
 		   task_boards[1]
+}
+
+var getCueStim = function() {
+	stim = stims.shift()
+	n_back_condition = stim.n_back_condition
+	//cued_dimension = stim.cued_dimension
+	curr_task = stim.curr_task
+	curr_cue = stim.curr_cue
+	cued_switch_condition = stim.cued_switch_condition
+	cued_condition = stim.cued_condition
+	probe = stim.probe
+	correct_response = stim.correct_response
+	delay = stim.delay
+	
+  var cue_html = '<div class = upperbox><div class = "center-text" >' + curr_cue +
+    '</div></div><div class = lowerbox><div class = fixation>+</div></div>'
+  return cue_html
+}
+
+var getStim = function() {
+
+  var stim_html = '<div class = upperbox><div class = "center-text" >' + curr_cue +
+		'</div></div><div class = lowerbox><div class = flanker-text>'+ probe +'</div></div>'
+		
+  return stim_html
 }
 
 var getCueControlStim = function(){
@@ -377,7 +435,7 @@ var credit_var = 0
 
 
 var practice_len = 20 // 20
-var exp_len = 20 //320 must be divisible by 20
+var exp_len = 40 //320 must be divisible by 20
 var numTrialsPerBlock = 20 // must be divisible by 20
 var numTestBlocks = exp_len / numTrialsPerBlock
 
@@ -386,16 +444,33 @@ var missed_thresh = 0.10
 
 var practice_thresh = 3 // 3 blocks of 24 trials
 
-var pathSource = "/static/experiments/n_back_with_cued_task_switching/images/"
+var pathSource = "/static/experiments/n_back_with_two_by_two/images/"
 var fileTypePNG = ".png'></img>"
-var preFileType = "<img class = center src='/static/experiments/n_back_with_cued_task_switching/images/"
+var preFileType = "<img class = center src='/static/experiments/n_back_with_two_by_two/images/"
 
 
 
 var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
-var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
-var cued_dimensions = jsPsych.randomization.repeat([['1-back',1],['2-back',2]],1)
-var control_dimensions = jsPsych.randomization.repeat([['T or t'],['non-T or non-t']],1)
+var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1) //task switching
+var cued_switch_conditions = jsPsych.randomization.repeat(['stay','switch'],1) //cue switching
+
+var cued_dimensions = jsPsych.randomization.repeat([['1-back',1],['2-back',2]],1) //cues for each task
+var cued_dimensions = jsPsych.randomization.repeat([[['1-back',1],['one ago',1]],[['2-back',2],['two ago',2]]],1) //cues for each task
+
+var tasks = {
+  one_back: {
+    task: '1-back',
+    cues: ['1-back', 'one-ago'],
+    delay: 1
+  },
+  two_back: {
+    task: '2-back',
+    cues: ['2-back', 'two-ago'],
+    delay: 2
+  }
+}
+
+var control_dimensions = jsPsych.randomization.repeat([['T or t'],['non-T or non-t']],1) //control cues
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 							 
 var letters = 'bBdDgGtTvV'.split("")
@@ -405,15 +480,15 @@ var stims = createTrialTypes(practice_len)
 
 
 var prompt_text_list = '<ul list-text>'+
-						'<li>'+cued_dimensions[0][0]+': match the current letter to the letter that appeared '+cued_dimensions[0][1]+' trials ago</li>' +
-						'<li>'+cued_dimensions[1][0]+': match the current letter to the letter that appeared '+cued_dimensions[1][1]+' trials ago</li>' +
+						'<li>one-ago or 1-back: match the current letter to the letter that appeared 1 trial ago</li>' +
+						'<li>two-ago or 2-back: match the current letter to the letter that appeared 2 trials ago</li>' +
 						'<li>If they match, press the '+possible_responses[0][0]+'</li>' +
 					    '<li>If they mismatch, press the '+possible_responses[1][0]+'</li>' +
 					  '</ul>'
 
 var prompt_text = '<div class = prompt_box>'+
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions[0][0]+': match the current letter to the letter that appeared '+cued_dimensions[0][1]+' trials ago</p>' +
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">'+cued_dimensions[1][0]+': match the current letter to the letter that appeared '+cued_dimensions[1][1]+' trials ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">one-ago or 1-back: match the current letter to the letter that appeared 1 trial ago</p>' +
+					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">two-ago or 2-back: match the current letter to the letter that appeared 2 trials ago</p>' +
 					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they match, press the '+possible_responses[0][0]+'</p>' +
 					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">If they mismatch, press the '+possible_responses[1][0]+'</p>' +
 				  '</div>'
@@ -453,7 +528,7 @@ var end_block = {
     	exp_id: 'flanker_with_predictive_task_switching'
 	},
 	timing_response: 180000,
-	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
+	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <i>enter</i> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
 	on_finish: assessPerformance
@@ -461,7 +536,7 @@ var end_block = {
 
 
 var feedback_instruct_text =
-	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
+	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <i>enter</i> to begin.'
 var feedback_instruct_block = {
 	type: 'poldrack-text',
 	data: {
@@ -481,20 +556,20 @@ var instructions_block = {
 	},
 	pages: [
 		'<div class = centerbox>'+
-			'<p class = block-text>In this task, you will see a cue, either 1-back or 2-back, followed by a letter on every trial.</p>'+
-			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1 or 2 trials ago depending on if you saw the 1-back or 2-back cue.</p> '+
-			'<p class = block-text>If you saw a 1-back cue, please respond if the current letter was the same as the letter that occurred 1 trial(s) ago.</p> '+
-			'<p class = block-text>If you saw a 2-back cue, please respond if the current letter was the same as the letter that occurred 2 trial(s) ago.</p> '+
+			'<p class = block-text>In this task, you will see a cue, either <i>1-back</i>, <i>one-ago</i>, <i>2-back</i>, or <i>two-ago</i> followed by a letter on every trial.</p>'+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1 or 2 trials ago depending on which cue you saw.</p> '+
+			'<p class = block-text>If you saw a <i>1-back</i> or <i>one-ago cue</i>, please respond if the current letter was the same as the letter that occurred 1 trial(s) ago.</p> '+
+			'<p class = block-text>If you saw a <i>2-back</i> or <i>two-ago cue</i>, please respond if the current letter was the same as the letter that occurred 2 trial(s) ago.</p> '+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 		'</div>',
 		'<div class = centerbox>'+
-			'<p class = block-text>For example, if the cues you saw were  1-back, 2-back, 2-back, and 1-back, and the letters you received following each of those cues were V, B, v, and V, you would respond, no match, no match, match, and match.</p> '+
+			'<p class = block-text>For example, if the cues you saw were  1-back, 2-back, two-ago, and one-ago, and the letters you received following each of those cues were V, B, v, and V, you would respond, no match, no match, match, and match.</p> '+
 			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
 			'<p class = block-text>The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago to match with, so press the '+possible_responses[1][0]+' on those trials.</p>'+
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from trials 2 ago, V, so you would respond match.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES match the letter from trial 1 ago, v, so you would respond match.</p>'+
-			'<p class = block-text>We will start with practice after you finish the instructions. Please ensure that you understand the instructions before you move on.</p>'+
+			'<p class = block-text>We will start practice after you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will not be available for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -518,10 +593,10 @@ var instruction_node = {
 		}
 		if (sumInstructTime <= instructTimeThresh * 1000) {
 			feedback_instruct_text =
-				'Read through instructions too quickly.  Please take your time and make sure you understand the instructions.  Press <strong>enter</strong> to continue.'
+				'Read through instructions too quickly.  Please take your time and make sure you understand the instructions.  Press <i>enter</i> to continue.'
 			return true
 		} else if (sumInstructTime > instructTimeThresh * 1000) {
-			feedback_instruct_text = 'Done with instructions. Press <strong>enter</strong> to continue.'
+			feedback_instruct_text = 'Done with instructions. Press <i>enter</i> to continue.'
 			return false
 		}
 	}
@@ -536,9 +611,9 @@ var start_test_block = {
 	text: '<div class = centerbox>'+
 			'<p class = block-text>We will now start the test portion</p>'+
 			
-			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1 or 2 trials ago depending on if you saw the 1-back or 2-back cue.</p> '+
-			'<p class = block-text>If you saw a 1-back cue, please respond if the current letter was the same as the letter that occurred 1 trial(s) ago.</p> '+
-			'<p class = block-text>If you saw a 2-back cue, please respond if the current letter was the same as the letter that occurred 2 trial(s) ago.</p> '+
+			'<p class = block-text>You will be asked to match the current letter, to the letter that appeared either 1 or 2 trials ago depending on if you saw the <i>1-back</i>, <i>one-ago</i>, <i>2-back</i>, or <i>two-ago</i> cue.</p> '+
+			'<p class = block-text>If you saw a <i>1-back</i> or <i>one-ago cue</i>, please respond if the current letter was the same as the letter that occurred 1 trial(s) ago.</p> '+
+			'<p class = block-text>If you saw a <i>2-back</i> or <i>two-ago cue</i>, please respond if the current letter was the same as the letter that occurred 2 trial(s) ago.</p> '+
 			'<p class = block-text>Press the '+possible_responses[0][0]+' if the current letter matches the letter 1 or 2 trials ago, and the '+possible_responses[1][0]+' if they mismatch.</p> '+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 				
@@ -584,7 +659,8 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This experiment will take less than 30 minutes. Press <i>enter</i> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -658,7 +734,22 @@ var controlNode = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len + 2; i++) {
+	var fixation_block = {
+	  type: 'poldrack-single-stim',
+	  stimulus: '<div class = upperbox><div class = fixation>+</div></div><div class = lowerbox><div class = fixation>+</div></div>',
+	  is_html: true,
+	  choices: 'none',
+	  data: {
+		trial_id: "fixation"
+	  },
+	  timing_post_trial: 0,
+	  timing_stim: 500,
+	  timing_response: 500,
+	  prompt: prompt_text
+	}
+	
 	var cue_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getCueStim,
@@ -693,7 +784,7 @@ for (i = 0; i < practice_len + 2; i++) {
 		on_finish: appendData,
 		prompt: prompt_text
 	}
-	//practiceTrials.push(fixation_block)
+	practiceTrials.push(fixation_block)
 	practiceTrials.push(cue_block)
 	practiceTrials.push(practice_block)
 }
@@ -732,7 +823,7 @@ var practiceNode = {
 		var ave_rt = sum_rt / sum_responses
 	
 		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
-		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</strong>"
+		feedback_text += "</p><p class = block-text><i>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</i>"
 
 		if (accuracy > accuracy_thresh){
 			feedback_text +=
@@ -768,6 +859,20 @@ var practiceNode = {
 var testTrials = []
 testTrials.push(feedback_block)
 for (i = 0; i < numTrialsPerBlock + 2; i++) {
+	var fixation_block = {
+	  type: 'poldrack-single-stim',
+	  stimulus: '<div class = upperbox><div class = fixation>+</div></div><div class = lowerbox><div class = fixation>+</div></div>',
+	  is_html: true,
+	  choices: 'none',
+	  data: {
+		trial_id: "fixation"
+	  },
+	  timing_post_trial: 0,
+	  timing_stim: 500,
+	  timing_response: 500,
+	  prompt: prompt_text
+	}
+	
 	var cue_block = {
 		type: 'poldrack-single-stim',
 		stimulus: getCueStim,
@@ -795,6 +900,7 @@ for (i = 0; i < numTrialsPerBlock + 2; i++) {
 		response_ends_trial: false,
 		on_finish: appendData
 	}
+	testTrials.push(fixation_block)
 	testTrials.push(cue_block)
 	testTrials.push(test_block)
 }
@@ -833,7 +939,7 @@ var testNode = {
 		var ave_rt = sum_rt / sum_responses
 	
 		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
-		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</strong>"
+		feedback_text += "</p><p class = block-text><i>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</i>"
 		feedback_text += "</p><p class = block-text>You have completed: "+testCount+" out of "+numTestBlocks+" blocks of trials."
 		
 		if (accuracy < accuracy_thresh){
@@ -862,24 +968,25 @@ var testNode = {
 /*          Set up Experiment           */
 /* ************************************ */
 
-var n_back_with_cued_task_switching_experiment = []
+var n_back_with_two_by_two_experiment = []
 
-n_back_with_cued_task_switching_experiment.push(instruction_node);
+//n_back_with_two_by_two_experiment.push(instruction_node);
 
-n_back_with_cued_task_switching_experiment.push(practiceNode);
-
+n_back_with_two_by_two_experiment.push(practiceNode);
+n_back_with_two_by_two_experiment.push(feedback_block);
+/*
 if (control_before == 0){
-	n_back_with_cued_task_switching_experiment.push(start_control_block);
-	n_back_with_cued_task_switching_experiment.push(controlNode);
+	n_back_with_two_by_two_experiment.push(start_control_block);
+	n_back_with_two_by_two_experiment.push(controlNode);
 }
-
-n_back_with_cued_task_switching_experiment.push(start_test_block);
-
-n_back_with_cued_task_switching_experiment.push(testNode);
-
+*/
+n_back_with_two_by_two_experiment.push(start_test_block);
+n_back_with_two_by_two_experiment.push(testNode);
+n_back_with_two_by_two_experiment.push(feedback_block);
+/*
 if (control_before == 1){
-	n_back_with_cued_task_switching_experiment.push(start_control_block);
-	n_back_with_cued_task_switching_experiment.push(controlNode);
+	n_back_with_two_by_two_experiment.push(start_control_block);
+	n_back_with_two_by_two_experiment.push(controlNode);
 }
-
-n_back_with_cued_task_switching_experiment.push(end_block);
+*/
+n_back_with_two_by_two_experiment.push(end_block);
