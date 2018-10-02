@@ -7,7 +7,7 @@ function getDisplayElement() {
 }
 
 function addID() {
-  jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_with_go_no_go'})
+  jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_single_task_network'})
 }
 
 
@@ -24,7 +24,7 @@ var getCategorizeFeedback = function(){
 	curr_trial = jsPsych.progress().current_trial_global - 1
 	trial_id = jsPsych.data.getDataByTrialIndex(curr_trial).trial_id
 	console.log(trial_id)
-	if ((trial_id == 'practice_trial') && ((jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'go') ||(jsPsych.data.getDataByTrialIndex(curr_trial).go_no_go_type == 'go'))){
+	if ((trial_id == 'practice_trial') && (jsPsych.data.getDataByTrialIndex(curr_trial).stop_signal_condition == 'go')){
 		if (jsPsych.data.getDataByTrialIndex(curr_trial).key_press == jsPsych.data.getDataByTrialIndex(curr_trial).correct_response){
 			
 			
@@ -47,33 +47,28 @@ var getCategorizeFeedback = function(){
 			return '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text
 		}
 	
-	} else if (jsPsych.data.getDataByTrialIndex(curr_trial).go_no_go_type == 'stop'){
-	
-		return '<div class = fb_box><div class = center-text><font size = 20>Shape is '+go_no_go_styles[1]+'</font></div></div>' + prompt_text
 	}
 }
 
 var createTrialTypes = function(numTrialsPerBlock){
-	var unique_combos = 60
+	var unique_combos = 12
 	
 	var stims = []
-	for (var i = 0; i < go_no_go_types.length; i++){
-		for (var x = 0; x < stop_signal_conditions.length; x++){
-			for (var j = 0; j < totalShapesUsed; j++){
-				stim = {
-					stim: shapes[j],
-					correct_response: possible_responses[j][1],
-					stop_signal_condition: stop_signal_conditions[x],
-					go_no_go_type: go_no_go_types[i]
-			
-				}
-			
-				stims.push(stim)
-			}	
+	for (var x = 0; x < stop_signal_conditions.length; x++){
+		for (var j = 0; j < totalShapesUsed; j++){
+			stim = {
+				stim: shapes[j],
+				correct_response: possible_responses[j][1],
+				stop_signal_condition: stop_signal_conditions[x]
 		
-		}
+			}
+		
+			stims.push(stim)
+		}	
 	
 	}
+	
+	
 	
 	var iteration = numTrialsPerBlock/unique_combos
 	
@@ -92,35 +87,26 @@ var getStim = function(){
 		stim = stims.pop()
 		shape = stim.stim
 		correct_response = stim.correct_response
-		go_no_go_type = "practice_no_go"
 		stop_signal_condition = "practice_no_stop"
 		
 	} else if ((exp_phase == "test") || (exp_phase == "practice2")){
 		stim = stims.pop()
 		shape = stim.stim
 		stop_signal_condition = stim.stop_signal_condition
-		go_no_go_type = stim.go_no_go_type
 		correct_response = stim.correct_response
 		
-		if (go_no_go_type == 'stop'){
-			stim_style = go_no_go_styles[1]
-		} else if (go_no_go_type == 'go'){
-			stim_style = go_no_go_styles[0]
-		}
+
 		
-		
-		if((stop_signal_condition == "stop")||(go_no_go_type == "stop")){
+		if(stop_signal_condition == "stop"){
 			correct_response = -1
 		} 
 	}
 	
 	stim = {
-		image: '<centerbox>'+preFileType + pathSource + stim_style + '_' + shape + fileType + postFileType+'</div>',
+		image: '<centerbox>'+preFileType + pathSource + 'solid_' + shape + fileType + postFileType+'</div>',
 		data: { 
 			stim: shape,
-			stim_style: stim_style,
 			stop_signal_condition: stop_signal_condition,
-			go_no_go_type: go_no_go_type,
 			correct_response: correct_response
 			}
 	}
@@ -154,12 +140,10 @@ var appendData = function(){
 	if ((exp_phase == "practice1") || (exp_phase == "practice2") || (exp_phase == "test")){
 		jsPsych.data.addDataToLastTrial({
 			stim: stimData.stim,
-			stim_style: stim_style,
 			correct_response: correct_response,	
 			current_block: currBlock,
 			current_trial: current_trial,
-			stop_signal_condition: stimData.stop_signal_condition,
-			go_no_go_condition: stimData.go_no_go_type
+			stop_signal_condition: stimData.stop_signal_condition
 		})
 	}
 	
@@ -194,11 +178,11 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = 0
 
 
-var practice_len = 15 // 24 must be divisible by 
-var exp_len = 180 //320 must be divisible by 60
-var numTrialsPerBlock = 60 // 60, must be divisible by 60
+var practice_len = 24 // 24 must be divisible by 12
+var exp_len = 48 //320 must be divisible by 12
+var numTrialsPerBlock = 24 // 60, must be divisible by 12
 var numTestBlocks = exp_len / numTrialsPerBlock
-var practice_thresh = 3 // 3 blocks of 16 trials
+var practice_thresh = 3 // 3 blocks of 12 trials
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
@@ -217,8 +201,6 @@ var stop_signal_respond_upper_thresh = 0.70
 
 
 var stop_signal_conditions = ['go','go','stop']
-var go_no_go_types = ['go','go','go','go','stop']
-var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
 var shapes = jsPsych.randomization.repeat(['circle','square','triangle','pentagon'],1)
 //'hourglass', 'Lshape', 'moon', 'oval', 'rectangle', 'rhombus', 'tear', 'trapezoid'
 var color = "black"
@@ -229,7 +211,7 @@ var possible_responses = [['Z key', 90], ['Z key', 90], ['M key', 77], ['M key',
 
 
 var postFileType = "'></img>"
-var pathSource = "/static/experiments/stop_signal_with_go_no_go/images/"
+var pathSource = "/static/experiments/stop_signal_single_task_network/images/"
 var fileType = ".png"
 var preFileType = "<img class = center src='"
 
@@ -249,7 +231,6 @@ var prompt_text_list = '<ul list-text>'+
 						'<li>' + shapes[2] + ': ' + possible_responses[2][0] + '</li>' +
 						'<li>' + shapes[3] + ': ' + possible_responses[2][0] + '</li>' +
 						'<li>Do not respond if a star appears!</li>' +
-						'<li>Do not respond if the shape is '+go_no_go_styles[1]+'!</li>' +
 					  '</ul>'
 
 var prompt_text = '<div class = prompt_box>'+
@@ -258,7 +239,6 @@ var prompt_text = '<div class = prompt_box>'+
 					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">' + shapes[2] + ': ' + possible_responses[2][0] + '</p>' +
 					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">' + shapes[3] + ': ' + possible_responses[2][0] + '</p>' +
 					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Do not respond if a star appears!</p>' +
-					  '<p class = center-block-text style = "font-size:16px; line-height:80%%;">Do not respond if the shape is '+go_no_go_styles[1]+'!</p>' +
 				  '</div>'
 
 
@@ -273,107 +253,10 @@ var exp_phase = "practice2"
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
-
-var practice1 = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox>'+
-				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:22px;">This is what a trial will look like.  You will see a shape in the center.</p>'+
-					'<p class = block-text style="font-size:22px;">Please respond to the shape.  If the shape is a '+shapes[0]+' or a '+shapes[1]+', press the '+possible_responses[0][0]+'.</p>'+
-					'<p class = block-text style="font-size:22px;">If the shape is a '+shapes[2]+' or a '+shapes[3]+', press the '+possible_responses[2][0]+'.</p>'+
-					'<p class = block-text style="font-size:22px;">Press Enter to continue. You will not be able to go back.</p>'+
-				'</div>'+
-				'<div class =centerbox>'+
-					preFileType + pathSource + go_no_go_styles[0] + '_square' + fileType + postFileType +
-				'</div>'+
-			  '</div>',
-	is_html: true,
-	choices: [13],
-	data: {
-		trial_id: "visual_instruction"
-	},
-	timing_post_trial: 0,
-	timing_stim: 300000,
-	timing_response: 300000,
-	response_ends_trial: true,
-}
-
-var practice2 = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox>'+
-				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:22px;">On some trials, a star will appear around the shape.  The star will appear with, or shortly after the letter appears.</p>'+
-					'<p class = block-text style="font-size:22px;">If you see a star, please make <i> no response </i> on that trial.</p>'+
-					'<p class = block-text style="font-size:22px;">Do not slow down your responses to the shapes in order to wait for the star.  Continue to respond as quickly and accurately as possible to the shape.</p>'+
-					'<p class = block-text style="font-size:22px;">Press Enter to continue. You will not be able to go back.</p>'+
-				'</div>'+
-				
-				'<div class = centerbox>'+
-					preFileType + pathSource + go_no_go_styles[0] + '_square' + fileType + postFileType +
-					preFileType + pathSource + 'stopSignal' + fileType + postFileType +
-			   '</div>',
-	is_html: true,
-	choices: [13],
-	data: {
-		trial_id: "visual_instruction"
-	},
-	timing_post_trial: 0,
-	timing_stim: 300000,
-	timing_response: 300000,
-	response_ends_trial: true,
-}
-
-var practice3 = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox>'+
-				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:22px;">If instead, the '+go_no_go_styles[1]+' version of the shape came out, then also do not respond on that trial!</p>'+
-					'<p class = block-text style="font-size:22px;">Remember, respond only if the shape is '+go_no_go_styles[0]+', not if the shape is '+go_no_go_styles[1]+'.</p>'+
-					'<p class = block-text style="font-size:22px;">Press Enter to continue. You will not be able to go back.</p>'+
-				'</div>'+
-				
-				'<div class = centerbox>'+
-					preFileType + pathSource + go_no_go_styles[1] + '_square' + fileType + postFileType +
-			   '</div>',
-	is_html: true,
-	choices: [13],
-	data: {
-		trial_id: "visual_instruction"
-	},
-	timing_post_trial: 0,
-	timing_stim: 300000,
-	timing_response: 300000,
-	response_ends_trial: true,
-}
-
-var practice4 = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox>'+
-				'<div class = instructBox>'+
-					'<p class = block-text style="font-size:22px;">On some trials, you will see both a star and a '+go_no_go_styles[1]+' shape.</p>'+
-					'<p class = block-text style="font-size:22px;">On these trials, also make no response.</p>'+
-					'<p class = block-text style="font-size:22px;">Press Enter to start practice.</p>'+
-				'</div>'+
-				
-				'<div class = centerbox>'+
-					preFileType + pathSource + go_no_go_styles[1] + '_square' + fileType + postFileType +
-					preFileType + pathSource + 'stopSignal' + fileType + postFileType +
-			   '</div>',
-	is_html: true,
-	choices: [13],
-	data: {
-		trial_id: "visual_instruction"
-	},
-	timing_post_trial: 0,
-	timing_stim: 300000,
-	timing_response: 300000,
-	response_ends_trial: true,
-}
-
 var end_block = {
 	type: 'poldrack-text',
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		trial_id: "end"
 	},
 	timing_response: -1,
@@ -388,7 +271,7 @@ var end_block = {
 var welcome_block = {
 	type: 'poldrack-text',
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		trial_id: "welcome"
 	},
 	timing_response: -1,
@@ -416,7 +299,7 @@ var feedback_instruct_block = {
 var instructions_block = {
 	type: 'poldrack-instructions',
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		trial_id: "instruction"
 	},
 	pages:[
@@ -436,20 +319,10 @@ var instructions_block = {
 			'<p class = block-text>If the star appears on a trial, and you try your best to withhold your response, you will find that you will be able to stop sometimes but not always</p>'+
 		
 			'<p class = block-text>Please do not slow down your responses in order to wait for the star.  Continue to respond as quickly and accurately as possible.</p>'+
-								
+				
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the rules before moving on. During practice, you will see a reminder of the rules.  <i> This will be removed for test</i>.</p>'+					
 		'</div>',
 		
-		"<div class = centerbox>"+
-			"<p class = block-text>Additionally, on most trials, the shapes will be "+go_no_go_styles[0]+".  Sometimes, the shapes will be "+go_no_go_styles[1]+".</p>"+
-			"<p class = block-text>If the shapes are "+go_no_go_styles[1]+", please make no response on that trial.</p>"+
-			"<p class = block-text>We will show you what a shape will look like if it is "+go_no_go_styles[0]+" or "+go_no_go_styles[1]+".</p>"+
-		"</div>",
-		
-		"<div class = centerbox>"+
-			"<p class = block-text>On trials where you see both a star and a "+go_no_go_styles[1]+" shape, make no response on that trial.</p>"+
-			"<p class = block-text>You must respond if you a star does not appear, and if the shapes are "+go_no_go_styles[0]+".</p>"+
-			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the rules before moving on. During practice, you will see a reminder of the rules.  <i> This will be removed for test</i>.</p>'+
-		"</div>",
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -482,7 +355,7 @@ var fixation_block = {
 	is_html: true,
 	choices: 'none',
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		trial_id: "fixation",
 	},
 	timing_post_trial: 0,
@@ -496,7 +369,7 @@ var prompt_fixation_block = {
 	is_html: true,
 	choices: 'none',
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		trial_id: "prompt_fixation",
 	},
 	timing_post_trial: 0,
@@ -514,7 +387,7 @@ var practice_intro = {
 	is_html: true,
 	choices: [13],
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		"trial_id": "stop_intro_phase1"
 	},
 	timing_post_trial: 0,
@@ -549,14 +422,13 @@ var test_intro = {
 				'<p class = block-text>If the shape is a '+shapes[0]+' or a '+shapes[1]+', press the '+possible_responses[0][0]+'.</p>'+
 				'<p class = block-text>If the shape is a '+shapes[2]+' or a '+shapes[3]+', press the '+possible_responses[2][0]+'.</p>'+
 				'<p class = block-text>Do not respond if you see a star</p>'+
-				'<p class = block-text>Do not respond if the shape is '+go_no_go_styles[1]+'</p>'+
 				'<p class = block-text>You will no longer receive the rule prompt, so remember the instructions before you continue. Press Enter to begin.</p>'+
 			 '</div>',
 	
 	is_html: true,
 	choices: [13],
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		"trial_id": "test_intro"
 	},
 	timing_post_trial: 0,
@@ -573,7 +445,7 @@ var feedback_text =
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "stop_signal_with_go_no_go",
+		exp_id: "stop_signal_single_task_network",
 		trial_id: "practice-no-stop-feedback"
 	},
 	choices: [13],
@@ -599,7 +471,7 @@ for (i = 0; i < practice_len; i++) {
 		stimulus: getStim,
 		is_html: true,
 		data: {
-			exp_id: "stop_signal_with_go_no_go",
+			exp_id: "stop_signal_single_task_network",
 			"trial_id": "practice_no_stop_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[2][1]],
@@ -710,7 +582,7 @@ for (i = 0; i < practice_len; i++) {
 		SS_stimulus: getStopStim,
 		SS_trial_type: getSSType,
 		data: {
-			exp_id: "stop_signal_with_go_no_go",
+			exp_id: "stop_signal_single_task_network",
 			"trial_id": "practice_trial",
 		},
 		is_html: true,
@@ -762,26 +634,22 @@ var practiceStopNode = {
 		
 		var sum_stop_rt = 0;
 		var sum_go_rt = 0;
-		var sum_gng_rt = 0;
 		
 		var sumGo_correct = 0;
 		var sumStop_correct = 0;
-		var sumGNG_correct = 0;
 		
 		var num_go_responses = 0;
 		var num_stop_responses = 0;
-		var num_gng_responses = 0;
 		
 		var go_length = 0;
 		var stop_length = 0
-		var go_no_go_length = 0
 		
 		for (i = 0; i < data.length; i++) {
 			if (data[i].trial_id == "practice_trial"){
 				total_trials += 1
 			}
 			
-			if ((data[i].stop_signal_condition == "go") && (data[i].go_no_go_condition == "go")){
+			if (data[i].stop_signal_condition == "go"){
 				go_length += 1
 				if (data[i].rt != -1) {
 					num_go_responses += 1
@@ -798,15 +666,7 @@ var practiceStopNode = {
 				} else if (data[i].rt == -1){
 					sumStop_correct += 1
 				}				
-			} else if (data[i].go_no_go_condition == "stop") {
-				go_no_go_length += 1
-				if (data[i].rt != -1){
-					num_gng_responses += 1
-					sum_gng_rt += data[i].rt
-				} else if (data[i].rt == -1){
-					sumGNG_correct += 1
-				}				
-			}
+			} 
 		}
 		
 		var average_rt = sum_go_rt / num_go_responses;
@@ -815,7 +675,6 @@ var practiceStopNode = {
 		var aveShapeRespondCorrect = sumGo_correct / go_length 
 		
 		var stop_signal_respond = num_stop_responses / stop_length
-		var gng_respond = num_gng_responses / go_no_go_length
 		
 		
 		
@@ -882,7 +741,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		SS_stimulus: getStopStim,
 		SS_trial_type: getSSType,
 		data: {
-			exp_id: "stop_signal_with_go_no_go",
+			exp_id: "stop_signal_single_task_network",
 			"trial_id": "stim",
 			"exp_stage": "test_trial",
 		},
@@ -916,19 +775,15 @@ var testNode = {
 		
 		var sum_stop_rt = 0;
 		var sum_go_rt = 0;
-		var sum_gng_rt = 0;
 		
 		var sumGo_correct = 0;
 		var sumStop_correct = 0;
-		var sumGNG_correct = 0;
 		
 		var num_go_responses = 0;
 		var num_stop_responses = 0;
-		var num_gng_responses = 0;
 		
 		var go_length = 0;
 		var stop_length = 0
-		var go_no_go_length = 0
 		
 		for (i = 0; i < data.length; i++) {
 			if (data[i].trial_id == "practice_trial"){
@@ -952,14 +807,6 @@ var testNode = {
 				} else if (data[i].rt == -1){
 					sumStop_correct += 1
 				}				
-			} else if (data[i].go_no_go_condition == "stop") {
-				go_no_go_length += 1
-				if (data[i].rt != -1){
-					num_gng_responses += 1
-					sum_gng_rt += data[i].rt
-				} else if (data[i].rt == -1){
-					sumGNG_correct += 1
-				}				
 			}
 		}
 		
@@ -969,7 +816,6 @@ var testNode = {
 		var aveShapeRespondCorrect = sumGo_correct / go_length 
 		
 		var stop_signal_respond = num_stop_responses / stop_length
-		var gng_respond = num_gng_responses / go_no_go_length
 		
 
 		feedback_text = "<br>Please take this time to read your feedback and to take a short break. Press enter to continue"
@@ -1024,28 +870,28 @@ var testNode = {
 /*          Set up Experiment           */
 /* ************************************ */
 
-var stop_signal_with_go_no_go_experiment = []
+var stop_signal_single_task_network_experiment = []
 /*
-stop_signal_with_go_no_go_experiment.push(instruction_node);
-stop_signal_with_go_no_go_experiment.push(practice1);
-stop_signal_with_go_no_go_experiment.push(practice2);
-stop_signal_with_go_no_go_experiment.push(practice3);
-stop_signal_with_go_no_go_experiment.push(practice4);
+stop_signal_single_task_network_experiment.push(instruction_node);
+stop_signal_single_task_network_experiment.push(practice1);
+stop_signal_single_task_network_experiment.push(practice2);
+stop_signal_single_task_network_experiment.push(practice3);
+stop_signal_single_task_network_experiment.push(practice4);
 
 
-stop_signal_with_go_no_go_experiment.push(practice_intro);
-stop_signal_with_go_no_go_experiment.push(practiceNode);
-stop_signal_with_go_no_go_experiment.push(feedback_block);
+stop_signal_single_task_network_experiment.push(practice_intro);
+stop_signal_single_task_network_experiment.push(practiceNode);
+stop_signal_single_task_network_experiment.push(feedback_block);
 */
 
-stop_signal_with_go_no_go_experiment.push(practiceStopNode)
-stop_signal_with_go_no_go_experiment.push(feedback_block);
+stop_signal_single_task_network_experiment.push(practiceStopNode)
+stop_signal_single_task_network_experiment.push(feedback_block);
 
-stop_signal_with_go_no_go_experiment.push(test_intro);
-stop_signal_with_go_no_go_experiment.push(testNode);
-stop_signal_with_go_no_go_experiment.push(feedback_block);
+stop_signal_single_task_network_experiment.push(test_intro);
+stop_signal_single_task_network_experiment.push(testNode);
+stop_signal_single_task_network_experiment.push(feedback_block);
 
-stop_signal_with_go_no_go_experiment.push(end_block);
+stop_signal_single_task_network_experiment.push(end_block);
 
 
 
