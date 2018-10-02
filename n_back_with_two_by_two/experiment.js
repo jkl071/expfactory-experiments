@@ -322,30 +322,6 @@ var createTrialTypes = function(numTrialsPerBlock){
 	return new_stims
 }
 
-
-var getStim = function(){	
-		
-	return task_boards[0] + probe
-		   task_boards[1]
-	
-}
-
-var getCueStim = function(){
-	stim = stims.shift()
-	n_back_condition = stim.n_back_condition
-	//cued_dimension = stim.cued_dimension
-	curr_task = stim.curr_task
-	curr_cue = stim.curr_cue
-	cued_switch_condition = stim.cued_switch_condition
-	cued_condition = stim.cued_condition
-	probe = stim.probe
-	correct_response = stim.correct_response
-	delay = stim.delay
-
-	return task_boards[0] + cued_dimension
-		   task_boards[1]
-}
-
 var getCueStim = function() {
 	stim = stims.shift()
 	n_back_condition = stim.n_back_condition
@@ -645,20 +621,6 @@ var start_control_block = {
 	}
 };
 
-var fixation_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
-	is_html: true,
-	choices: 'none',
-	data: {
-		trial_id: "practice_fixation"
-	},
-	timing_response: 500, //500
-	timing_post_trial: 0,
-}
-
-
-
 var feedback_text = 
 'Welcome to the experiment. This experiment will take less than 30 minutes. Press <i>enter</i> to begin.'
 var feedback_block = {
@@ -675,8 +637,6 @@ var feedback_block = {
 	response_ends_trial: true, 
 
 };
-
-
 /* ************************************ */
 /*        Set up timeline blocks        */
 /* ************************************ */
