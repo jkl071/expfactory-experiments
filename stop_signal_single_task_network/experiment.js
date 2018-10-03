@@ -501,6 +501,17 @@ var feedback_block = {
 
 };
 
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post_task_questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
 /********************************************/
 /*				Set up nodes				*/
 /********************************************/
@@ -934,6 +945,7 @@ stop_signal_single_task_network_experiment.push(test_intro);
 stop_signal_single_task_network_experiment.push(testNode);
 stop_signal_single_task_network_experiment.push(feedback_block);
 
+stop_signal_single_task_network_experiment.push(post_task_block);
 stop_signal_single_task_network_experiment.push(end_block);
 
 

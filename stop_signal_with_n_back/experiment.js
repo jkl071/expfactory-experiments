@@ -631,7 +631,6 @@ var feedback_text =
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
-		exp_id: "stop_signal_with_n_back",
 		trial_id: "practice-no-stop-feedback"
 	},
 	choices: [13],
@@ -644,6 +643,17 @@ var feedback_block = {
 
 };
 
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
 
 /* ************************************ */
 /*        Set up timeline blocks        */
@@ -823,7 +833,7 @@ for (i = 0; i < numTrialsPerBlock + 3; i++) {
 			"trial_id": "test_trial",
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
-		timing_stim: 2000, //2000
+		timing_stim: 850, //2000
 		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
@@ -909,4 +919,5 @@ stop_signal_with_n_back_experiment.push(start_test_block);
 
 stop_signal_with_n_back_experiment.push(testNode);
 
+stop_signal_with_n_back_experiment.push(post_task_block);
 stop_signal_with_n_back_experiment.push(end_block);

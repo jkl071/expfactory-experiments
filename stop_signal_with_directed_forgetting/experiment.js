@@ -845,8 +845,8 @@ for (i = 0; i < practice_len; i++) {
 		},
 		timing_post_trial: 0,
 		prompt: prompt_text,
-		timing_stim: 3500, //4000
-		timing_response: 3500
+		timing_stim: 4000, //4000
+		timing_response: 4000
 	}
 
 	var practice_cue_directed_block = {

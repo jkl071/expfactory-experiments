@@ -127,7 +127,7 @@ var genStims = function(n) {
 
 //Sets the cue-target-interval for the cue block
 var setCTI = function() {
-  return 300 //randomDraw([100, 900])
+  return CTI //randomDraw([100, 900])
 }
 
 var getCTI = function() {
@@ -318,6 +318,7 @@ var preFileType = '<img class = center src="/static/experiments/stop_signal_with
 var accuracy_thresh = 0.80
 var missed_thresh = 0.60
 var practice_thresh = 3
+var CTI = 300
 
 // task specific variables
 var response_keys = {key: [77,90], key_name: ["M","Z"]}
