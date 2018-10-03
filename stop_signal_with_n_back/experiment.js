@@ -366,6 +366,8 @@ var practice_thresh = 3 // 3 blocks of 16 trials
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 var SSD = 250
+var maxSSD = 800
+var minSSD = 0
 
 var delays = jsPsych.randomization.repeat([1, 2, 3], numTestBlocks / 3)
 
@@ -380,7 +382,7 @@ var stop_stim = '<div class = bigbox><div class = starbox>' + preFileType + 'sto
 
 var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
 var stop_signal_conditions = jsPsych.randomization.repeat(['go','go','stop'],1)
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 							 
 var letters = 'bBdDgGtTvV'.split("")
 							 
@@ -522,6 +524,7 @@ var instructions_block = {
 			'<p class = block-text>Ignore the letters not in the center, focus only on the center letter.</p>'+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
 		'</div>',
+		/*
 		'<div class = centerbox>'+
 			'<p class = block-text>For example, if your delay for the block was 2, and the letters you received for the first 4 trials were V, B, v, and V, you would respond, no match, no match, match, and no match.</p> '+
 			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
@@ -529,9 +532,10 @@ var instructions_block = {
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from 2 trials, V, so you would respond match.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from 2 trials ago, B, so you would respond no match.</p>'+
 		'</div>',
+		*/
 		'<div class = centerbox>' + 
 			'<p class = block-text>On some trials, a star will appear around the letter.  The star will appear with, or shortly after the letter appears.</p>'+
-			'<p class = block-text>If you see a star appear, please try your best to make no response on that trial. You must still commit the letter to memory, however.</p>'+
+			'<p class = block-text>If you see a star, please try your best to make no response on that trial. You must still commit the letter to memory, however.</p>'+
 			'<p class = block-text>Please do not slow down your responses in order to wait for the star.  Continue to respond as quickly and accurately as possible.</p>'+
 			'<p class = block-text>We will start practice when you finish instructions. <i>Your delay for this practice round is 1</i>. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'

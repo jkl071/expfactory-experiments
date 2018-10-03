@@ -442,7 +442,6 @@ var instructions_block = {
 		"<div class = centerbox>"+
 			"<p class = block-text>Additionally, on most trials, the shapes will be "+go_no_go_styles[0]+".  Sometimes, the shapes will be "+go_no_go_styles[1]+".</p>"+
 			"<p class = block-text>If the shapes are "+go_no_go_styles[1]+", please make no response on that trial.</p>"+
-			"<p class = block-text>We will show you what a shape will look like if it is "+go_no_go_styles[0]+" or "+go_no_go_styles[1]+".</p>"+
 		"</div>",
 		
 		"<div class = centerbox>"+
@@ -831,7 +830,7 @@ var practiceStopNode = {
 		}
 		if (aveShapeRespondCorrect < accuracy_thresh) {
 			feedback_text +=
-				'</p><p class = block-text>Your accuracy too low. Remember:<br>' +
+				'</p><p class = block-text>Your accuracy is too low. Remember:<br>' +
 				prompt_text_list
 		
 			if (average_rt > rt_thresh) {
@@ -984,7 +983,7 @@ var testNode = {
 			
 			if (aveShapeRespondCorrect < accuracy_thresh) {
 				feedback_text +=
-					'</p><p class = block-text>Your accuracy too low. Remember:<br>' +
+					'</p><p class = block-text>Your accuracy is too low. Remember:<br>' +
 					prompt_text_list
 			}
 			if (average_rt > rt_thresh) {
