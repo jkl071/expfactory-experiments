@@ -384,7 +384,7 @@ var stop_stim = '<div class = bigbox><div class = starbox>' + preFileType + 'sto
 
 var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
 var stop_signal_conditions = jsPsych.randomization.repeat(['go','go','stop'],1)
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 							 
 var letters = 'bBdDgGtTvV'.split("")
 							 

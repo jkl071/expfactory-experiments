@@ -204,7 +204,7 @@ var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.30
-var practice_thresh = 2 // 3 blocks of 28 trials
+var practice_thresh = 3 // 3 blocks of 28 trials
 
 var SSD = 250
 var maxSSD = 850
@@ -232,10 +232,9 @@ var stop_boards = ['<div class = starbox>','</div>']
 var stims = createTrialTypes(practice_len)
 
 var prompt_text = '<ul list-text>'+
+					'<li>Indicate the identity of the center letter</li>' +
 					'<li>Do not respond if you see a star around the letters!</li>' +
 					'<li>Do not slow down your responses to the letter to wait for the star.</li>' +
-				  	'<li>Match: ' + possible_responses[0][0] + '</li>' +
-				  	'<li>Mismatch: ' + possible_responses[1][0] + '</li>' +
 				  '</ul>'
 
 
@@ -274,7 +273,8 @@ var post_task_block = {
 };
 
 
-var feedback_text = 'We will start practice. Press <strong>enter</strong> to begin.'
+var feedback_text = 
+	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <i>enter</i> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -316,11 +316,17 @@ var instructions_block = {
 			'<p class = block-text>If the center letter is H, please press the '+possible_responses[1][0]+' as quickly as possible.  If the center square is F, press the '+possible_responses[0][0]+'.</p>'+
 		
 			'<p class = block-text>Ignore the letters not in the center!</p>'+
+		'</div>',
 		
-			'<p class = block-text>On some trials, you will see a star appear with or shortly after the letters. Do not respond if you see a star.  Do not slow down your responses to the letter in order to wait for the star.</p>'+
+		'<div class = centerbox>'+
+			'<p class = block-text>On some trials, a star will appear around the probe.  The star will appear with, or shortly after the probe appears.</p>'+
 			
-			'<p class = block-text>We will start with practice after you finish the instructions.</p>'+
-		'</div>'
+			'<p class = block-text>If you see a star appear, please try your best to make no response on that trial.</p>'+
+		
+			'<p class = block-text>Please do not slow down your responses to the probe in order to wait for the star.  Continue to respond as quickly and accurately as possible to the probe.</p>'+
+					
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
+		'</div>',
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -405,6 +411,7 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
@@ -622,7 +629,7 @@ stop_signal_with_flanker_experiment = []
 
 //stop_signal_with_flanker_experiment.push(test_img_block)
 
-stop_signal_with_flanker_experiment.push(instruction_node)
+//stop_signal_with_flanker_experiment.push(instruction_node)
 
 stop_signal_with_flanker_experiment.push(practiceNode)
 

@@ -14,99 +14,50 @@
   color: white;
 }
 
-.fb_box {
-  width:35vw;
-  height: 20vh;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-50%,-175%);;
-}
-
-.ss_text {
+.flanker-text {
 	text-align: center;
-	font-size: 60px;
+	font-size: 50px;
+	position: relative;
+    top: 50%; 
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
 }
 
-
-.ss_stim {
-	text-align: center;
-	font-size: 24px;
-}
-
-.stop-signal{
-	text-align: center;
-	font-size: 160px;
-	color: black;
-}
-
-.centered-shape {
-	position:absolute;
-	top:50%;
-    left:50%;
-	transform: translate(-50%,-50%);
-}
-
-.shapebox {
-  width: 25vw;
-  height: 25vw;
-  position: absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-50%,-50%);
-}
-
-
-.stim {
-    height: auto;
-    width: auto\9; /* ie8 */
-    position: absolute;  
-    top: 0;  
-    bottom: 0;  
-    left: 0;  
-    right: 0;  
-    margin: auto;  
-}
-
-.prompt_stim {
-  height: 60px;
-  width: 60px;
-}
-
-.stopbox {
-  width: 20%;
-  height: 20vw;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-50%,-50%);
-  z-index: -1;
-}
-
-.instructbox {
-  width: 20%;
-  height: 20vw;
-  position:absolute;
-  top:50%;
-  left:50%;
-  margin-right:-50%;
-  transform: translate(-50%,-0%);
-  z-index: -1;
-}
-
-.instructBox {
- width: 80vw;
- height: 10vw;
+.picture_box {
+ width: 60%;
+ height: 60%;
  position:absolute;
- top:10%;
- left:50%; 
- margin-right: 0%;
+ top:50%;
+ left:50%;
  transform: translate(-50%,-50%);
+ margin-right:0%;
  background-color: none;
- font-size: 24px;
+ text-align: center;
+}
+
+
+.bigbox {
+width:100%;
+margin: auto; 
+min-height: 100%;
+position:absolute;
+top:0%;
+left:0%;
+margin-right:0%;
+background-color: none;
+text-align: center;
+}
+
+img.center {
+  height: auto;
+  width: auto\9; /* ie8 */
+  position: absolute;  
+  top: 0;  
+  bottom: 0;  
+  left: 0;  
+  right: 0;  
+  margin: auto;  
+  max-height: 65%;
 }
 
 
@@ -120,96 +71,14 @@
   transform: translate(-50%,-175%);
 }
 
-.flanker-text {
- text-align: center;
- font-size: 50px;
- position: relative;
- top: 50%; 
- transform: translateY(-50%);
- -webkit-transform: translateY(-50%);
-}
-
-.prompt_box {
- width: 75%;
- height: 20%;
- position:absolute;
- top:10%;
- left:15%;
- transform: translate(-50%,-45%);
- margin-right:0%;
- background-color: none;
- text-align: center;
-}
-
-.lowerbox {
-  width:35vw;
-  height: 20vw;
+.starbox {
+  width:50vw;
+  height: 50vh;
   position:absolute;
   top:50%;
   left:50%;
   margin-right:-50%;
-  transform: translate(-50%, -0%);
+  transform: translate(-50%,-50%);
+  background-color: none;
 }
 
-
-#stop-signal {
-    background: black;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    text-align: center;
-    z-index: -2;
-}
-
-#stop-signal:before, #stop-signal:after {
-    content: "";
-    position: absolute;
-    top: 0%;
-    left: 0%;
-    height: 100%;
-    width: 100%;
-    background: black;
-}
-
-#stop-signal:before {
-    -webkit-transform: rotate(30deg);
-       -moz-transform: rotate(30deg);
-        -ms-transform: rotate(30deg);
-         -o-transform: rotate(30deg);
-}
-#stop-signal:after {
-    -webkit-transform: rotate(60deg);
-       -moz-transform: rotate(60deg);
-        -ms-transform: rotate(60deg);
-         -o-transform: rotate(60deg);
-}
-
-#stop-signal-inner {
-    background: gray;
-    width: 95%;
-    height: 95%;
-    text-align: center;
-    z-index: -1;
-}
-#stop-signal-inner:before, #stop-signal-inner:after {
-    content: "";
-    position: absolute;
-    top: 0%;
-    left: 0%;
-    height: 100%;
-    width: 100%;
-    background: gray;
-}
-
-#stop-signal-inner:before {
-    -webkit-transform: rotate(30deg);
-       -moz-transform: rotate(30deg);
-        -ms-transform: rotate(30deg);
-         -o-transform: rotate(30deg);
-}
-#stop-signal-inner:after {
-    -webkit-transform: rotate(60deg);
-       -moz-transform: rotate(60deg);
-        -ms-transform: rotate(60deg);
-         -o-transform: rotate(60deg);
-}

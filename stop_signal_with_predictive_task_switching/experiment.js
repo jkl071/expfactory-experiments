@@ -344,10 +344,10 @@ var minSSD = 0
 var predictive_conditions = [['switch','stay'],
 							 ['stay','switch']]
 							 
-var predictive_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magnitude', values: jsPsych.randomization.repeat(['high','low'],1)},
-								  							   stim = {dim:'parity', values: jsPsych.randomization.repeat(['odd','even'],1)}],1)
+var predictive_dimensions_list = [stim = {dim:'magnitude', values: ['low','high']},
+								  stim = {dim:'parity', values: ['odd','even']}]
 							 	  
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = ['M Key', 77],['Z Key', 90]]
 
 
 
@@ -473,7 +473,8 @@ var post_task_block = {
 };
 
 
-var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -532,7 +533,7 @@ var instructions_block = {
 		
 			'<p class = block-text>Please do not slow down your responses to the number in order to wait for the star.  Continue to respond as quickly and accurately as possible to the number.</p>'+
 					
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -725,6 +726,8 @@ var NoSSPracticeNode = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
+
 for (i = 0; i < practice_len + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',
@@ -1008,10 +1011,10 @@ var testNode = {
 stop_signal_with_predictive_task_switching_experiment = []
 
 
-stop_signal_with_predictive_task_switching_experiment.push(instruction_node)
+//stop_signal_with_predictive_task_switching_experiment.push(instruction_node)
 
-stop_signal_with_predictive_task_switching_experiment.push(practice1)
-stop_signal_with_predictive_task_switching_experiment.push(practice2)
+//stop_signal_with_predictive_task_switching_experiment.push(practice1)
+//stop_signal_with_predictive_task_switching_experiment.push(practice2)
 
 //stop_signal_with_predictive_task_switching_experiment.push(test_img_block)
 

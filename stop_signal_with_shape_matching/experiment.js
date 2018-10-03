@@ -48,6 +48,7 @@ function assessPerformance() {
 	jsPsych.data.addDataToLastTrial({"credit_var": credit_var})
 }
 
+
 var getInstructFeedback = function() {
 	return '<div class = centerbox><p class = center-block-text>' + feedback_instruct_text +
 		'</p></div>'
@@ -283,7 +284,7 @@ var maxSSD = 850
 var minSSD = 0 
 
  
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 
 
 var current_trial = 0
@@ -466,7 +467,7 @@ var instructions_block = {
 			
 			'<p class = block-text>If a star does appear, they will appear only with the white shape.</p>'+
 					
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,

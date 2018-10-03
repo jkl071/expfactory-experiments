@@ -10,6 +10,48 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_single_task_network'})
 }
 
+function assessPerformance() {
+	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
+	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
+	var missed_count = 0
+	var trial_count = 0
+	var rt_array = []
+	var rt = 0
+		//record choices participants made
+	var choice_counts = {}
+	choice_counts[-1] = 0
+	for (var k = 0; k < possible_responses.length; k++) {
+		choice_counts[possible_responses[k][1]] = 0
+	}
+	for (var i = 0; i < experiment_data.length; i++) {
+		if (experiment_data[i].possible_responses != 'none') {
+			trial_count += 1
+			rt = experiment_data[i].rt
+			key = experiment_data[i].key_press
+			choice_counts[key] += 1
+			if (rt == -1) {
+				missed_count += 1
+			} else {
+				rt_array.push(rt)
+			}
+		}
+	}
+	//calculate average rt
+	var avg_rt = -1
+	if (rt_array.length !== 0) {
+		avg_rt = math.median(rt_array)
+	} 
+	//calculate whether response distribution is okay
+	var responses_ok = true
+	Object.keys(choice_counts).forEach(function(key, index) {
+		if (choice_counts[key] > trial_count * 0.85) {
+			responses_ok = false
+		}
+	})
+	var missed_percent = missed_count/trial_count
+	credit_var = (missed_percent < 0.4 && avg_rt > 200 && responses_ok)
+	jsPsych.data.addDataToLastTrial({"credit_var": credit_var})
+}
 
 var getFeedback = function() {
 	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
@@ -187,8 +229,8 @@ var practice_thresh = 3 // 3 blocks of 12 trials
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 var SSD = 250
-var maxSSD = 800
-var minSSD = 0
+var maxSSD = 850
+var minSSD = 0 
 var current_trial = 0
 
 
@@ -201,7 +243,7 @@ var stop_signal_respond_upper_thresh = 0.70
 
 
 var stop_signal_conditions = ['go','go','stop']
-var shapes = jsPsych.randomization.repeat(['circle','square','triangle','pentagon'],1)
+var shapes = ['circle','square','triangle','pentagon']
 //'hourglass', 'Lshape', 'moon', 'oval', 'rectangle', 'rhombus', 'tear', 'trapezoid'
 var color = "black"
 var totalShapesUsed = 4
@@ -265,7 +307,8 @@ var end_block = {
 	'<p class = center-block-text>Press<i> enter</i> to continue.</p>'+
 	'</div>',
 	cont_key: [13],
-	timing_post_trial: 0
+	timing_post_trial: 0,
+	on_finish: assessPerformance
 };
 
 var welcome_block = {

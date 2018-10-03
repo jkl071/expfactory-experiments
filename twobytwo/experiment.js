@@ -227,13 +227,7 @@ var instructTimeThresh = 0 ///in seconds
 var credit_var = true
 
 // task specific variables
-var response_keys = jsPsych.randomization.repeat([{
-  key: 77,
-  key_name: 'M'
-}, {
-  key: 90,
-  key_name: 'Z'
-}], 1, true)
+var response_keys = {key: [77,90], key_name: ["M","Z"]}
 var choices = response_keys.key
 var practice_length = 40
 var test_length = 440

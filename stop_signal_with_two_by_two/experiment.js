@@ -320,13 +320,7 @@ var missed_thresh = 0.60
 var practice_thresh = 3
 
 // task specific variables
-var response_keys = jsPsych.randomization.repeat([{
-  key: 77,
-  key_name: 'M'
-}, {
-  key: 90,
-  key_name: 'Z'
-}], 1, true)
+var response_keys = {key: [77,90], key_name: ["M","Z"]}
 var choices = response_keys.key
 var practice_length = 12
 var test_length = 36
@@ -334,8 +328,8 @@ var numTrialsPerBlock = 12
 var numTestBlocks = test_length / numTrialsPerBlock
 
 var SSD = 250
-var maxSSD = 800
-var minSSD = 0
+var maxSSD = 850
+var minSSD = 0 
 
 //set up block stim. correct_responses indexed by [block][stim][type]
 var tasks = {
@@ -579,7 +573,8 @@ var cue_block = {
   }
 };
 
-var feedback_text = 'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -792,7 +787,7 @@ for (var i = 0; i < numTrialsPerBlock; i++) {
   testTrials.push(setStims_block)
   testTrials.push(fixation_block)
   testTrials.push(cue_block);
-  testrials.push(test_block);
+  testTrials.push(test_block);
   testTrials.push(gap_block);
 }
 
@@ -856,7 +851,6 @@ var testNode = {
 
 /* create experiment definition array */
 var stop_signal_with_two_by_two_experiment = [];
-
 stop_signal_with_two_by_two_experiment.push(practiceNode);
 stop_signal_with_two_by_two_experiment.push(feedback_block);
 
@@ -864,7 +858,7 @@ stop_signal_with_two_by_two_experiment.push(attention_node)
 
 stop_signal_with_two_by_two_experiment.push(start_test_block)
 
-stop_signal_with_two_by_two_experiment.push(testeNode);
+stop_signal_with_two_by_two_experiment.push(testNode);
 stop_signal_with_two_by_two_experiment.push(feedback_block);
 
 stop_signal_with_two_by_two_experiment.push(attention_node)

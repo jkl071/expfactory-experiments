@@ -366,8 +366,8 @@ var practice_thresh = 3 // 3 blocks of 16 trials
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 var SSD = 250
-var maxSSD = 800
-var minSSD = 0
+var maxSSD = 850
+var minSSD = 0 
 
 var delays = jsPsych.randomization.repeat([1, 2, 3], numTestBlocks / 3)
 
