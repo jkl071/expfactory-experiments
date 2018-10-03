@@ -389,26 +389,23 @@ var prompt_text = '<div class = prompt_box>'+
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox>'+
-	
-	'<div class = distractor_text><font color="red" size="10">G</font></div>'+
-	
-	'<div class = cue_text><font color="white" size="10">A</font></div>'+
-	
-	'</div></div>',
-	is_html: true,
-	choices: [13],
-	data: {
-		trial_id: "instruction_images"
-	},
-	timing_post_trial: 0,
-	timing_stim: 300000,
-	timing_response: 300000,
-	response_ends_trial: true,
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
 }
 
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
 var practice1 = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox>'+
@@ -570,10 +567,14 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
-var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+	'Welcome to the experiment. This task will take around 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -634,7 +635,7 @@ var instructions_block = {
 			
 			'<p class = block-text>If the letter is '+go_no_go_styles[1]+', please do not respond on that trial!</p>'+
 
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>'+
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. You will be given a reminder of the rules for practice. <i>This will be removed for test!</i></p>'+
 		'</div>',
 	],
 	allow_keys: false,
@@ -785,6 +786,7 @@ var probe_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len; i++) {
 	var practice_start_fixation_block = {
 		type: 'poldrack-single-stim',
@@ -956,6 +958,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock; i++) {
 	testTrials.push(start_fixation_block)
 	testTrials.push(training_block)
@@ -1027,25 +1030,19 @@ var testNode = {
 
 /* create experiment definition array */
 var go_nogo_with_directed_forgetting_experiment = [];
-
 //go_nogo_with_directed_forgetting_experiment.push(test_img_block);
-
-go_nogo_with_directed_forgetting_experiment.push(instruction_node);
-
-go_nogo_with_directed_forgetting_experiment.push(practice1);
-
-go_nogo_with_directed_forgetting_experiment.push(practice2);
-
-go_nogo_with_directed_forgetting_experiment.push(practice3);
-
-go_nogo_with_directed_forgetting_experiment.push(practice4);
+//go_nogo_with_directed_forgetting_experiment.push(instruction_node);
+//go_nogo_with_directed_forgetting_experiment.push(practice1);
+//go_nogo_with_directed_forgetting_experiment.push(practice2);
+//go_nogo_with_directed_forgetting_experiment.push(practice3);
+//go_nogo_with_directed_forgetting_experiment.push(practice4);
 
 go_nogo_with_directed_forgetting_experiment.push(practiceNode);
+go_nogo_with_directed_forgetting_experiment.push(feedback_block);
 
 go_nogo_with_directed_forgetting_experiment.push(start_test_block);
-
 go_nogo_with_directed_forgetting_experiment.push(testNode);
+go_nogo_with_directed_forgetting_experiment.push(feedback_block);
 
 go_nogo_with_directed_forgetting_experiment.push(post_task_block);
-
 go_nogo_with_directed_forgetting_experiment.push(end_block);

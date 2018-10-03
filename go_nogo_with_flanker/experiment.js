@@ -5,6 +5,21 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_flanker'})
 }
 
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  jsPsych.data.addDataToLastTrial({"att_check_percent": check_percent})
+  return check_percent
+}
 
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
@@ -252,27 +267,23 @@ var prompt_text = '<div class = prompt_box>'+
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
+}
 
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox>'+
-				'<div class = leftbox1 style="background-color:lightblue"></div>'+
-				'<div class = leftbox2 style="background-color:lightblue"></div>'+
-				'<div class = centerimg style="background-color:lightblue"></div>'+
-				'<div class = rightbox1 style="background-color:lightblue"></div>'+
-				'<div class = rightbox2 style="background-color:lightblue"></div>'+
-			  '</div>',
-	is_html: true,
-	choices: [32],
-	data: {
-		trial_id: "fixation",
-		},
-	timing_post_trial: 0,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true
-};
-
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
 
 var practice1 = {
 	type: 'poldrack-single-stim',
@@ -394,7 +405,7 @@ var instructions_block = {
 		
 		"<p class = block-text>On most trials, the letters will be "+go_no_go_styles[0]+".  Sometimes, the letters will be "+go_no_go_styles[1]+".  If the letters are "+go_no_go_styles[1]+", please make no response on that trial.</p>"+
 						
-		"<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>"+
+		"<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. You will be given a reminder of the rules for practice. <i>This will be removed for test!</i></p>"+
 		"</div>",
 	],
 	allow_keys: false,
@@ -433,7 +444,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 var start_test_block = {
@@ -475,6 +489,7 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len; i++) {
 	var practice_block = {
 		type: 'poldrack-categorize',
@@ -571,6 +586,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock; i++) {
 	var test_block = {
 		type: 'poldrack-single-stim',
@@ -654,19 +670,16 @@ var testNode = {
 go_nogo_with_flanker_experiment = []
 
 //go_nogo_with_flanker_experiment.push(test_img_block)
-
-go_nogo_with_flanker_experiment.push(instruction_node)
-
-go_nogo_with_flanker_experiment.push(practice1)
-
-go_nogo_with_flanker_experiment.push(practice2)
+//go_nogo_with_flanker_experiment.push(instruction_node)
+//go_nogo_with_flanker_experiment.push(practice1)
+//go_nogo_with_flanker_experiment.push(practice2)
 
 go_nogo_with_flanker_experiment.push(practiceNode)
+go_nogo_with_flanker_experiment.push(feedback_block)
 
 go_nogo_with_flanker_experiment.push(start_test_block)
-
 go_nogo_with_flanker_experiment.push(testNode)
+go_nogo_with_flanker_experiment.push(feedback_block)
 
 go_nogo_with_flanker_experiment.push(post_task_block)
-
 go_nogo_with_flanker_experiment.push(end_block)

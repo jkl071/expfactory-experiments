@@ -4,6 +4,21 @@
 function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_with_predictive_task_switching'})
 }
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  jsPsych.data.addDataToLastTrial({"att_check_percent": check_percent})
+  return check_percent
+}
 
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
@@ -573,7 +588,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 var start_test_block = {
@@ -883,6 +901,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var fixation_block = {
 		type: 'poldrack-single-stim',

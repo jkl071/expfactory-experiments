@@ -11,6 +11,22 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'go_nogo_with_n_back'})
 }
 
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  jsPsych.data.addDataToLastTrial({"att_check_percent": check_percent})
+  return check_percent
+}
+
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
 	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
@@ -418,20 +434,23 @@ var control_stims = createControlTypes(numTrialsPerBlock)
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
+}
 
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">Magnitude</font></div></div></div>',
-	is_html: true,
-	choices: [32],
-	data: {
-		trial_id: "fixation",
-		},
-	timing_post_trial: 0,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true
-	};
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
 
 var practice1 = {
 	type: 'poldrack-single-stim',
@@ -493,7 +512,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 
@@ -540,7 +562,7 @@ var instructions_block = {
 			'<p class = block-text>The second letter in that sequence, B, ALSO DOES NOT have a trial 2 ago to match with, so press the '+possible_responses[1][0]+' on those trials.</p>'+
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from 2 trials, V, so if the '+go_no_go_styles[0]+' version of the letter came out, you would press '+possible_responses[0][0]+'.  But since the '+go_no_go_styles[1]+' version of the letter came out, please refrain from making a response! You must still commit this letter to memory, however.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from 2 trials ago, B, so you would respond no match.</p>'+
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +		
+			'<p class = block-text>We will start practice when you finish instructions. <i>Your delay for practice is 1</i>. Please make sure you understand the instructions before moving on. You will be given a reminder of the rules for practice. <i>This will be removed for test!</i></p>'+	
 		'</div>',
 		
 	],
@@ -611,7 +633,8 @@ var fixation_block = {
 
 
 
-var feedback_text = 'We will start practice. Your delay for this practice round is 1. <br><br>During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This task will take around 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -690,6 +713,7 @@ var controlNode = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len + 3; i++) {
 	
 	var practice_block = {
@@ -787,6 +811,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 3; i++) {
 	
 	var test_block = {
@@ -869,26 +894,28 @@ var testNode = {
 
 var go_nogo_with_n_back_experiment = []
 
-go_nogo_with_n_back_experiment.push(instruction_node);
-
-go_nogo_with_n_back_experiment.push(practice1);
-
-go_nogo_with_n_back_experiment.push(practice2);
+//go_nogo_with_n_back_experiment.push(instruction_node);
+//go_nogo_with_n_back_experiment.push(practice1);
+//go_nogo_with_n_back_experiment.push(practice2);
 
 go_nogo_with_n_back_experiment.push(practiceNode);
+go_nogo_with_n_back_experiment.push(feedback_block);
 
+/*
 if (control_before == 0){
 	go_nogo_with_n_back_experiment.push(start_control_block);
 	go_nogo_with_n_back_experiment.push(controlNode);
-}
+}*/
 
 go_nogo_with_n_back_experiment.push(start_test_block);
-
 go_nogo_with_n_back_experiment.push(testNode);
+go_nogo_with_n_back_experiment.push(feedback_block);
 
+/*
 if (control_before == 1){
 	go_nogo_with_n_back_experiment.push(start_control_block);
 	go_nogo_with_n_back_experiment.push(controlNode);
-}
+}*/
 
+go_nogo_with_n_back_experiment.push(post_task_block);
 go_nogo_with_n_back_experiment.push(end_block);

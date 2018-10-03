@@ -1,6 +1,10 @@
 /* ************************************ */
 /* Define helper functions */
 /* ************************************ */
+function addID() {
+  jsPsych.data.addDataToLastTrial({exp_id: 'stop_signal_with_two_by_two'})
+}
+
 function evalAttentionChecks() {
   var check_percent = 1
   if (run_attention_checks) {
@@ -13,6 +17,7 @@ function evalAttentionChecks() {
     }
     check_percent = checks_passed / attention_check_trials.length
   }
+  jsPsych.data.addDataToLastTrial({"att_check_percent": check_percent})
   return check_percent
 }
 
@@ -499,7 +504,10 @@ var end_block = {
   text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
   cont_key: [13],
   timing_response: 180000,
-  on_finish: assessPerformance
+  on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 var start_practice_block = {
@@ -783,7 +791,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-testTrials.push(instructions_block)
+testTrials.push(attention_node)
 for (var i = 0; i < numTrialsPerBlock; i++) {
   testTrials.push(setStims_block)
   testTrials.push(fixation_block)

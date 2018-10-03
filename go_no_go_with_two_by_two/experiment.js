@@ -13,6 +13,7 @@ function evalAttentionChecks() {
     }
     check_percent = checks_passed / attention_check_trials.length
   }
+  jsPsych.data.addDataToLastTrial({"att_check_percent": check_percent})
   return check_percent
 }
 
@@ -489,7 +490,10 @@ var end_block = {
   text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
   cont_key: [13],
   timing_response: 180000,
-  on_finish: assessPerformance
+  on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 var start_practice_block = {
@@ -564,7 +568,8 @@ var cue_block = {
   }
 };
 
-var feedback_text = 'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -732,7 +737,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-testTrials.push(instructions_block)
+testTrials.push(attention_node)
 for (var i = 0; i < numTrialsPerBlock; i++) {
   testTrials.push(setStims_block)
   testTrials.push(fixation_block)
@@ -805,15 +810,9 @@ var go_no_go_with_two_by_two_experiment = [];
 go_no_go_with_two_by_two_experiment.push(practiceNode);
 go_no_go_with_two_by_two_experiment.push(feedback_block);
 
-go_no_go_with_two_by_two_experiment.push(attention_node)
-
 go_no_go_with_two_by_two_experiment.push(start_test_block)
-
 go_no_go_with_two_by_two_experiment.push(testNode);
 go_no_go_with_two_by_two_experiment.push(feedback_block);
 
-go_no_go_with_two_by_two_experiment.push(attention_node)
-
 go_no_go_with_two_by_two_experiment.push(post_task_block)
-
 go_no_go_with_two_by_two_experiment.push(end_block)
