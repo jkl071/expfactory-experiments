@@ -328,25 +328,50 @@ var prompt_text = '<div class = prompt_box>'+
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox>'+
-	
-	'<div class = distractor_text><font color="red" size="10">G</font></div>'+
-	
-	'<div class = cue_text><font color="white" size="10">A</font></div>'+
-	
-	'</div></div>',
-	is_html: true,
-	choices: [13],
-	data: {
-		trial_id: "instruction_images"
-	},
-	timing_post_trial: 0,
-	timing_stim: 300000,
-	timing_response: 300000,
-	response_ends_trial: true,
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
 }
+
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
+
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
+
+var end_block = {
+  type: 'poldrack-text',
+  data: {
+    trial_id: "end",
+    exp_id: 'stop_signal_with_two_by_two'
+  },
+  text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
+  cont_key: [13],
+  timing_response: 180000,
+  on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
+};
 
 var practice1 = {
 	type: 'poldrack-single-stim',
@@ -528,7 +553,7 @@ var instructions_block = {
 		
 			'<p class = block-text>Please ignore the red letter.</p>'+
 		
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -593,6 +618,7 @@ var start_test_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len; i++) {
 	var start_fixation_block = {
 		type: 'poldrack-single-stim',
@@ -765,6 +791,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock; i++) {
 	
 	var start_fixation_block = {
@@ -923,21 +950,17 @@ var testNode = {
 var directed_forgetting_with_shape_matching_experiment = [];
 
 //directed_forgetting_with_shape_matching_experiment.push(test_img_block);
-
-directed_forgetting_with_shape_matching_experiment.push(instruction_node);
-
-directed_forgetting_with_shape_matching_experiment.push(practice1);
-
-directed_forgetting_with_shape_matching_experiment.push(practice2);
-
-directed_forgetting_with_shape_matching_experiment.push(practice3);
+//directed_forgetting_with_shape_matching_experiment.push(instruction_node);
+//directed_forgetting_with_shape_matching_experiment.push(practice1);
+//directed_forgetting_with_shape_matching_experiment.push(practice2);
+//directed_forgetting_with_shape_matching_experiment.push(practice3);
 
 directed_forgetting_with_shape_matching_experiment.push(practiceNode);
+directed_forgetting_with_shape_matching_experiment.push(feedback_block);
 
 directed_forgetting_with_shape_matching_experiment.push(start_test_block);
-
 directed_forgetting_with_shape_matching_experiment.push(testNode);
+directed_forgetting_with_shape_matching_experiment.push(feedback_block);
 
 directed_forgetting_with_shape_matching_experiment.push(post_task_block);
-
 directed_forgetting_with_shape_matching_experiment.push(end_block);

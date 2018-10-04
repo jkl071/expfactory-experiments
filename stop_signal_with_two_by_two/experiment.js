@@ -863,15 +863,9 @@ var stop_signal_with_two_by_two_experiment = [];
 stop_signal_with_two_by_two_experiment.push(practiceNode);
 stop_signal_with_two_by_two_experiment.push(feedback_block);
 
-stop_signal_with_two_by_two_experiment.push(attention_node)
-
 stop_signal_with_two_by_two_experiment.push(start_test_block)
-
 stop_signal_with_two_by_two_experiment.push(testNode);
 stop_signal_with_two_by_two_experiment.push(feedback_block);
 
-stop_signal_with_two_by_two_experiment.push(attention_node)
-
 stop_signal_with_two_by_two_experiment.push(post_task_block)
-
 stop_signal_with_two_by_two_experiment.push(end_block)

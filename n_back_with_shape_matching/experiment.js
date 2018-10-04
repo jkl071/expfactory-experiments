@@ -11,6 +11,22 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'n_back_with_shape_matching'})
 }
 
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  jsPsych.data.addDataToLastTrial({"att_check_percent": check_percent})
+  return check_percent
+}
+
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
 	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
@@ -382,7 +398,7 @@ var preFileType = "<img class = center src='/static/experiments/n_back_with_shap
 var n_back_conditions = ['match','mismatch','mismatch','mismatch','mismatch']
 var shape_matching_conditions = jsPsych.randomization.repeat(['match','mismatch_target','mismatch_non_target'],1)
 var shape_matching_conditions_control = jsPsych.randomization.repeat(['match','mismatch'],1)
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 							 
 var letters = 'bBdDgGtTvV'.split("")
 							 
@@ -417,20 +433,35 @@ var stims = createTrialTypes(practice_len, delay)
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
+}
 
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox><div class = flanker-text>Magnitude</div></div></div>',
-	is_html: true,
-	choices: [32],
-	data: {
-		trial_id: "fixation",
-		},
-	timing_post_trial: 0,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true
-	};
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
+
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
 
 var practice1 = {
 	type: 'poldrack-single-stim',
@@ -455,17 +486,20 @@ var practice1 = {
 	timing_response: 300000,
 	response_ends_trial: true,
 }
+
 var end_block = {
-	type: 'poldrack-text',
-	data: {
-		trial_id: "end",
-    	exp_id: 'flanker_with_predictive_task_switching'
-	},
-	timing_response: 180000,
-	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
-	cont_key: [13],
-	timing_post_trial: 0,
-	on_finish: assessPerformance
+  type: 'poldrack-text',
+  data: {
+    trial_id: "end",
+    exp_id: 'stop_signal_with_two_by_two'
+  },
+  text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
+  cont_key: [13],
+  timing_response: 180000,
+  on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 
@@ -496,8 +530,10 @@ var instructions_block = {
 			'<p class = block-text>Your delay (the number of trials ago which you must match the current letter to) will change from block to block. You will be given the delay at the start of every block of trials.</p>'+
 			'<p class = block-text>Ignore the red letter, focus only on the white letter.</p>'+
 			'<p class = block-text>Capitalization does not matter, so "T" matches with "t".</p> '+
+			'<p class = block-text>We will start practice when you finish instructions. Your delay for practice is 1. Please make sure you understand the instructions before moving on. You will be given a reminder of the rules for practice. <i>This will be removed for test!</i></p>'+
 		'</div>',
 		
+		/*
 		'<div class = centerbox>'+
 			'<p class = block-text>For example, if your delay for the block was 2, and the WHITE letters you received for the first 4 trials were V, B, v, and V, you would respond, no match, no match, match, and no match.</p> '+
 			'<p class = block-text>The first letter in that sequence, V, DOES NOT have a preceding trial to match with, so press the '+possible_responses[1][0]+' on those trials.</p> '+
@@ -505,7 +541,7 @@ var instructions_block = {
 			'<p class = block-text>The third letter in that sequence, v, DOES match the letter from 2 trials, V, so you would respond match.</p>'+
 			'<p class = block-text>The fourth letter in that sequence, V, DOES NOT match the letter from 2 trials ago, B, so you would respond no match.</p>'+
 			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
-		'</div>'
+		'</div>'*/
 	],
 	allow_keys: false,
 	show_clickable_nav: true,
@@ -670,7 +706,7 @@ for (i = 0; i < practice_len + 3; i++) {
 		incorrect_text: '<div class = fb_box><div class = center-text><font size = 20>Incorrect</font></div></div>' + prompt_text,
 		timeout_message: '<div class = fb_box><div class = center-text><font size = 20>Respond Faster!</font></div></div>' + prompt_text,
 		timing_stim: 1000, //2000
-		timing_response: 1000,
+		timing_response: 2000,
 		timing_feedback: 500, //500
 		show_stim_with_feedback: false,
 		timing_post_trial: 0,
@@ -752,6 +788,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 3; i++) {
 	
 	var test_block = {
@@ -763,7 +800,7 @@ for (i = 0; i < numTrialsPerBlock + 3; i++) {
 		},
 		choices: [possible_responses[0][1],possible_responses[1][1]],
 		timing_stim: 1000, //2000
-		timing_response: 1000, //2000
+		timing_response: 2000, //2000
 		timing_post_trial: 0,
 		response_ends_trial: false,
 		on_finish: appendData
@@ -834,23 +871,27 @@ var testNode = {
 
 var n_back_with_shape_matching_experiment = []
 
-n_back_with_shape_matching_experiment.push(instruction_node);
-n_back_with_shape_matching_experiment.push(practice1);
+//n_back_with_shape_matching_experiment.push(instruction_node);
+//n_back_with_shape_matching_experiment.push(practice1);
 
 n_back_with_shape_matching_experiment.push(practiceNode);
+n_back_with_shape_matching_experiment.push(feedback_block);
 
+/*
 if (control_before == 0){
 	n_back_with_shape_matching_experiment.push(start_control_block);
 	n_back_with_shape_matching_experiment.push(controlNode);
-}
+}*/
 
 n_back_with_shape_matching_experiment.push(start_test_block);
-
 n_back_with_shape_matching_experiment.push(testNode);
+n_back_with_shape_matching_experiment.push(feedback_block);
 
+/*
 if (control_before == 1){
 	n_back_with_shape_matching_experiment.push(start_control_block);
 	n_back_with_shape_matching_experiment.push(controlNode);
-}
+}*/
 
+n_back_with_shape_matching_experiment.push(post_task_block);
 n_back_with_shape_matching_experiment.push(end_block);
