@@ -347,11 +347,11 @@ var practice_thresh = 2 // 3 blocks of 16 trials
 var directed_cond_array = ['pos', 'pos', 'neg', 'con']
 var directed_cue_array = ['TOP','BOT']
 var go_nogo_conditions = ['go','go','go','go','stop']
-var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+var go_no_go_styles = ['solid','unfilled'] //has dashed as well
 var fileTypePNG = ".png"
 var preFileType = "<img class = center src='"
 
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 var fileTypePNG = ".png'></img>"
 var preFileType = "<img class = center src='/static/experiments/go_nogo_with_directed_forgetting/images/"
 							 

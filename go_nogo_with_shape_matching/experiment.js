@@ -289,7 +289,7 @@ var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 var practice_thresh = 2 // 3 blocks of 28 trials
  
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 
 var go_no_go_styles = ['unfilled','solid'] //has dashed as well
 

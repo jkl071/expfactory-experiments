@@ -126,7 +126,7 @@ var genStims = function(n) {
 
 //Sets the cue-target-interval for the cue block
 var setCTI = function() {
-  return 300 //randomDraw([100, 900])
+  return CTI //randomDraw([100, 900])
 }
 
 var getCTI = function() {
@@ -311,18 +311,13 @@ var practice_thresh = 3
 var lowestNumCond = 20
 
 // task specific variables
-var response_keys = jsPsych.randomization.repeat([{
-  key: 77,
-  key_name: 'M'
-}, {
-  key: 90,
-  key_name: 'Z'
-}], 1, true)
+var response_keys = {key: [77,90], key_name: ["M","Z"]}
 var choices = response_keys.key
 var practice_length = 20
 var test_length = 60
 var numTrialsPerBlock = 20
 var numTestBlocks = test_length / numTrialsPerBlock
+var CTI = 300
 
 var go_no_go_styles = ['solid','unfilled']
 

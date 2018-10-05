@@ -11,6 +11,21 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'n_back_with_two_by_two'})
 }
 
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  return check_percent
+}
+
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
 	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
@@ -401,6 +416,10 @@ var appendData = function(){
 	 
 }
 
+var getCTI = function(){
+	return CTI
+}
+
 /* ************************************ */
 /*    Define Experimental Variables     */
 /* ************************************ */
@@ -417,8 +436,9 @@ var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
-
 var practice_thresh = 3 // 3 blocks of 24 trials
+
+var CTI = 300
 
 var pathSource = "/static/experiments/n_back_with_two_by_two/images/"
 var fileTypePNG = ".png'></img>"
@@ -447,7 +467,7 @@ var tasks = {
 }
 
 var control_dimensions = jsPsych.randomization.repeat([['T or t'],['non-T or non-t']],1) //control cues
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 							 
 var letters = 'bBdDgGtTvV'.split("")
 
@@ -482,20 +502,35 @@ var task_boards = [['<div class = bigbox><div class = centerbox><div class = fix
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
+}
 
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = centerbox><div class = fixation><font color="white">Magnitude</font></div></div></div>',
-	is_html: true,
-	choices: [32],
-	data: {
-		trial_id: "fixation",
-		},
-	timing_post_trial: 0,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true
-	};
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
+
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
 
 var end_block = {
 	type: 'poldrack-text',
@@ -507,7 +542,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <i>enter</i> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+		assessPerformance()
+		evalAttentionChecks()
+    }
 };
 
 
@@ -719,8 +757,8 @@ for (i = 0; i < practice_len + 2; i++) {
 		},
 		choices: false,
 		timing_post_trial: 0,
-		timing_stim: 1000, //1000
-		timing_response: 1000,
+		timing_stim: getCTI, //1000
+		timing_response: getCTI,
 		prompt: prompt_text
 	};
 	
@@ -818,6 +856,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 2; i++) {
 	var fixation_block = {
 	  type: 'poldrack-single-stim',
@@ -842,8 +881,8 @@ for (i = 0; i < numTrialsPerBlock + 2; i++) {
 		},
 		choices: false,
 		timing_post_trial: 0,
-		timing_stim: 2000, //1000
-		timing_response: 2000
+		timing_stim: getCTI, //1000
+		timing_response: getCTI
 	};
 	
 	var test_block = {
@@ -949,4 +988,5 @@ if (control_before == 1){
 	n_back_with_two_by_two_experiment.push(controlNode);
 }
 */
+n_back_with_two_by_two_experiment.push(post_task_block);
 n_back_with_two_by_two_experiment.push(end_block);

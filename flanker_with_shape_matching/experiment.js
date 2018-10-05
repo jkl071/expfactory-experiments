@@ -5,6 +5,20 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'flanker_with_shape_matching'})
 }
 
+function evalAttentionChecks() {
+	var check_percent = 1
+	if (run_attention_checks) {
+		var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+		var checks_passed = 0
+		for (var i = 0; i < attention_check_trials.length; i++) {
+			if (attention_check_trials[i].correct === true) {
+				checks_passed += 1
+			}
+		}
+		check_percent = checks_passed / attention_check_trials.length
+	}
+	return check_percent
+}
 
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
@@ -241,7 +255,7 @@ var accuracy_thresh = 0.80
 var missed_thresh = 0.10
 var practice_thresh = 3 // 3 blocks of 28 trials
  
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 
 
 var current_trial = 0
@@ -273,29 +287,35 @@ var prompt_text = '<div class = prompt_box>'+
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
-
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox>'+
-				'<div class = leftbox>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = distractorbox>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox1>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox2>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox_center>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox3>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-				'<div class = rightbox4>'+preFileType+'1_green'+fileTypePNG+'</div>'+
-			  '</div>',
-	is_html: true,
-	choices: [32],
+// Set up attention check node
+var attention_check_block = {
+	type: 'attention-check',
 	data: {
-		trial_id: "fixation",
-		},
-	timing_post_trial: 0,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true
-};
+		trial_id: "attention_check"
+	},
+	timing_response: 180000,
+	response_ends_trial: true,
+	timing_post_trial: 200
+}
 
+var attention_node = {
+	timeline: [attention_check_block],
+	conditional_function: function() {
+		return run_attention_checks
+	}
+}
+
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
 var practice1 = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = bigbox>'+
@@ -339,7 +359,8 @@ var post_task_block = {
 };
 
 
-var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This task will take around 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -391,7 +412,7 @@ var instructions_block = {
 		
 			'<p class = block-text>Sometimes, you will also see a red shape near the green shape.  Ignore this red shape as well.</p>'+
 				
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -430,7 +451,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+  }
 };
 
 var start_test_block = {
@@ -474,6 +498,7 @@ var rest_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len; i++) {
 	var mask_block = {
 		type: 'poldrack-single-stim',
@@ -586,6 +611,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock; i++) {
 	var mask_block = {
 		type: 'poldrack-single-stim',
@@ -681,19 +707,16 @@ var testNode = {
 
 /* create experiment definition array */
 flanker_with_shape_matching_experiment = []
-
 //flanker_with_shape_matching_experiment.push(test_img_block)
-
-flanker_with_shape_matching_experiment.push(instruction_node)
-
-flanker_with_shape_matching_experiment.push(practice1)
+//flanker_with_shape_matching_experiment.push(instruction_node)
+//flanker_with_shape_matching_experiment.push(practice1)
 
 flanker_with_shape_matching_experiment.push(practiceNode)
+flanker_with_shape_matching_experiment.push(feedback_block)
 
 flanker_with_shape_matching_experiment.push(start_test_block)
-
 flanker_with_shape_matching_experiment.push(testNode)
+flanker_with_shape_matching_experiment.push(feedback_block)
 
 flanker_with_shape_matching_experiment.push(post_task_block)
-
 flanker_with_shape_matching_experiment.push(end_block)

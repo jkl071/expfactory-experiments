@@ -234,7 +234,7 @@ var practice_thresh = 3 // 3 blocks of 28 trials
 var possible_responses = [['F key', 70],['H key', 72]]
 var go_nogo_trial_types = ['go','go','go','go','stop']
 var flanker_trial_types = ['H_congruent','H_incongruent','F_congruent','F_incongruent']
-var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+var go_no_go_styles = ['solid','unfilled'] //has dashed as well
 
 
 

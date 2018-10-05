@@ -381,7 +381,7 @@ var directed_cond_array = ['pos', 'pos', 'neg', 'con']
 var directed_cue_array = ['TOP','BOT']
 var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
 var cued_dimensions = jsPsych.randomization.repeat(['forget','remember'],1)
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 							 
 var current_trial = 0	
 
@@ -511,7 +511,8 @@ var practice3 = {
 	response_ends_trial: true,
 }
 
-var feedback_text = 'We will start practice. During practice, you will receive a prompt to remind you of the rules.  <strong>This prompt will be removed for test!</strong> Press <strong>enter</strong> to begin.'
+var feedback_text = 
+'Welcome to the experiment. This task will take around 30 minutes. Press <strong>enter</strong> to begin.'
 var feedback_block = {
 	type: 'poldrack-single-stim',
 	data: {
@@ -567,7 +568,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+  	assessPerformance()
+  	evalAttentionChecks()
+    }
 };
 
 var feedback_instruct_text =
@@ -608,9 +612,8 @@ var instructions_block = {
 		
 			'<p class = block-text>Press the <strong>'+possible_responses[0][0]+
 			'  </strong>if the probe was in the memory set, and the <strong>'+possible_responses[1][0]+'  </strong>if not.</p>'+
-	
 		
-			'<p class = block-text>We will show you what a trial looks like when you finish instructions. Please make sure you understand the instructions before moving on.</p>' +
+			'<p class = block-text>We will start practice when you finish instructions. Please make sure you understand the instructions before moving on. During practice, you will receive a reminder of the rules.  <i>This reminder will be taken out for test</i>.</p>'+
 		'</div>'
 	],
 	allow_keys: false,
@@ -676,6 +679,7 @@ var start_test_block = {
 
 var practiceTrials = []
 practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
 for (i = 0; i < practice_len + 1; i++) {
 	var start_fixation_block = {
 		type: 'poldrack-single-stim',
@@ -858,6 +862,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var start_fixation_block = {
 		type: 'poldrack-single-stim',
@@ -1023,21 +1028,17 @@ var testNode = {
 
 /* create experiment definition array */
 var cued_task_switching_with_directed_forgetting_experiment = [];
-
-cued_task_switching_with_directed_forgetting_experiment.push(instruction_node);
-
-cued_task_switching_with_directed_forgetting_experiment.push(practice1);
-
-cued_task_switching_with_directed_forgetting_experiment.push(practice2);
-
-cued_task_switching_with_directed_forgetting_experiment.push(practice3);
+//cued_task_switching_with_directed_forgetting_experiment.push(instruction_node);
+//cued_task_switching_with_directed_forgetting_experiment.push(practice1);
+//cued_task_switching_with_directed_forgetting_experiment.push(practice2);
+//cued_task_switching_with_directed_forgetting_experiment.push(practice3);
 
 cued_task_switching_with_directed_forgetting_experiment.push(practiceNode);
+cued_task_switching_with_directed_forgetting_experiment.push(feedback_block);
 
 cued_task_switching_with_directed_forgetting_experiment.push(start_test_block);
-
 cued_task_switching_with_directed_forgetting_experiment.push(testNode);
+cued_task_switching_with_directed_forgetting_experiment.push(feedback_block);
 
 cued_task_switching_with_directed_forgetting_experiment.push(post_task_block);
-
 cued_task_switching_with_directed_forgetting_experiment.push(end_block);

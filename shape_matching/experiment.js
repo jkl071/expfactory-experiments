@@ -44,9 +44,28 @@ function assessPerformance() {
 	jsPsych.data.addDataToLastTrial({"credit_var": credit_var})
 }
 
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  return check_percent
+}
+
 var getInstructFeedback = function() {
 	return '<div class = centerbox><p class = center-block-text>' + feedback_instruct_text +
 		'</p></div>'
+}
+
+var getFeedback = function() {
+	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
 }
 
 var randomDraw = function(lst) {
@@ -133,6 +152,11 @@ var exp_len = 280
 var numblocks = 4
 var choices = [90, 77]
 
+var accuracy_thresh = 0.80
+var missed_thresh = 0.10
+var practice_thresh = 3 // 3 blocks of 24 trials
+
+
 /* ************************************ */
 /* Set up jsPsych blocks */
 /* ************************************ */
@@ -211,7 +235,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+		assessPerformance()
+		evalAttentionChecks()
+    }
 };
 
 var start_test_block = {
@@ -286,7 +313,10 @@ var practice_block = {
 	timing_feedback: 500,
 	show_stim_with_feedback: true,
 	timing_post_trial: 0,
-	prompt: '<div class = centerbox><p class = block-text>Press "M" key if the white and green shapes are the same. Otherwise press the "Z" key.</p></div>.'
+	prompt: '<div class = centerbox><p class = block-text>Press "M" key if the white and green shapes are the same. Otherwise press the "Z" key.</p></div>.',
+	on_finish: function(){
+		jsPsych.data.addDataToLastTrial({trial_id: 'practice_trial'})
+	}
 }
 
 var decision_block = {
@@ -302,18 +332,108 @@ var decision_block = {
 		if (data.key_press == data.correct_response) {
 			correct = true
 		}
-		jsPsych.data.addDataToLastTrial({'correct': correct})
+		jsPsych.data.addDataToLastTrial({'correct': correct,
+										 trial_id: 'practice_trial'})
 	}
 }
 
+var feedback_text = 
+'Welcome to the experiment. This experiment will take less than 30 minutes. Press <i>enter</i> to begin.'
+var feedback_block = {
+	type: 'poldrack-single-stim',
+	data: {
+		exp_id: "predictive_task_switching_with_two_by_two",
+		trial_id: "practice-no-stop-feedback"
+	},
+	choices: [13],
+	stimulus: getFeedback,
+	timing_post_trial: 0,
+	is_html: true,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true, 
+
+};
+
+
+var practiceTrials = []
+practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
+for (i = 0; i < practice_len; i++) {
+	practiceTrials.push(fixation_block)
+	practiceTrials.push(practice_block)
+	practiceTrials.push(mask_block)
+}
+
+var practiceCount = 0
+var practiceNode = {
+	timeline: practiceTrials,
+	loop_function: function(data) {
+		practiceCount += 1
+		trial_types = jsPsych.randomization.repeat(['SSS', 'SDD', 'SNN', 'DSD', 'DDD', 'DDS', 'DNN'],practice_len/7)
+		current_trial = 0 
+	
+		var sum_rt = 0
+		var sum_responses = 0
+		var correct = 0
+		var total_trials = 0
+	
+		for (var i = 0; i < data.length; i++){
+			if (data[i].trial_id == "practice_trial"){
+				total_trials+=1
+				if (data[i].rt != -1){
+					sum_rt += data[i].rt
+					sum_responses += 1
+					if (data[i].key_press == data[i].correct_response){
+						correct += 1
+		
+					}
+				}
+		
+			}
+	
+		}
+	
+		var accuracy = correct / total_trials
+		var missed_responses = (total_trials - sum_responses) / total_trials
+		var ave_rt = sum_rt / sum_responses
+	
+		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
+		feedback_text += "</p><p class = block-text><i>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</i>"
+
+		if (accuracy > accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Done with this practice. Press Enter to continue.' 
+			return false
+	
+		} else if (accuracy < accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list 
+			if (missed_responses > missed_thresh){
+				feedback_text +=
+						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
+			}
+		
+			if (practiceCount == practice_thresh){
+				feedback_text +=
+					'</p><p class = block-text>Done with this practice.' 
+					return false
+			}
+			
+			feedback_text +=
+				'</p><p class = block-text>Redoing this practice. Press Enter to continue.' 
+			
+			return true
+		
+		}
+		
+	}
+}
 /* create experiment definition array */
 shape_matching_experiment = []
-shape_matching_experiment.push(instruction_node)
-for (var i = 0; i < practice_len; i ++) {
-	shape_matching_experiment.push(fixation_block)
-	shape_matching_experiment.push(practice_block)
-	shape_matching_experiment.push(mask_block)
-}
+shape_matching_experiment.push(practiceNode)
+shape_matching_experiment.push(attention_node)
+
 shape_matching_experiment.push(start_test_block)
 for (var b = 0; b < numblocks; b++) {
 	for (var i = 0; i < exp_len/numblocks; i ++) {
@@ -323,6 +443,7 @@ for (var b = 0; b < numblocks; b++) {
 	}
 	if (b < (numblocks-1)) {
 		shape_matching_experiment.push(rest_block)
+		shape_matching_experiment.push(attention_node)
 	}
 }
 shape_matching_experiment.push(post_task_block)

@@ -11,6 +11,21 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'n_back_single_task_network'})
 }
 
+function evalAttentionChecks() {
+	var check_percent = 1
+	if (run_attention_checks) {
+		var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+		var checks_passed = 0
+		for (var i = 0; i < attention_check_trials.length; i++) {
+			if (attention_check_trials[i].correct === true) {
+				checks_passed += 1
+			}
+		}
+		check_percent = checks_passed / attention_check_trials.length
+	}
+	return check_percent
+}
+
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
 	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
@@ -350,9 +365,41 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+		assessPerformance()
+		evalAttentionChecks()
+    }
 };
 
+// Set up attention check node
+var attention_check_block = {
+	type: 'attention-check',
+	data: {
+		trial_id: "attention_check"
+	},
+	timing_response: 180000,
+	response_ends_trial: true,
+	timing_post_trial: 200
+}
+
+var attention_node = {
+	timeline: [attention_check_block],
+	conditional_function: function() {
+		return run_attention_checks
+	}
+}
+
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
+};
 
 var feedback_instruct_text =
 	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
@@ -647,6 +694,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 3; i++) {
 	
 	var test_block = {
@@ -738,9 +786,8 @@ var n_back_single_task_network_experiment = []
 n_back_single_task_network_experiment.push(practiceNode);
 n_back_single_task_network_experiment.push(feedback_block);
 
-
 n_back_single_task_network_experiment.push(start_test_block);
-
 n_back_single_task_network_experiment.push(testNode);
+n_back_single_task_network_experiment.push(feedback_block);
 
 n_back_single_task_network_experiment.push(end_block);

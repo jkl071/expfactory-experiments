@@ -318,7 +318,7 @@ var numTestBlocks = exp_len / numTrialsPerBlock
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.30 // must it be higher than standard 10% since stopping is part of task??
-var practice_thresh = 2 // 3 blocks of 24 trials
+var practice_thresh = 3 // 3 blocks of 24 trials
  
 
 var predictive_conditions = [['switch','stay'],
@@ -329,7 +329,7 @@ var predictive_dimensions_list = jsPsych.randomization.repeat([stim = {dim:'magn
 							 	  
 var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
 
-var go_no_go_styles = jsPsych.randomization.repeat(['solid','unfilled'],1) //has dashed as well
+var go_no_go_styles = ['solid','unfilled'] //has dashed as well
 
 
 

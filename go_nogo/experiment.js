@@ -72,12 +72,16 @@ var practice_index = 0
 var getFeedback = function() {
   if (practice_trials[practice_index].key_answer == -1) {
     practice_index += 1
-    return '<div class = centerbox><div style="color:green"; class = center-text>Correct!</div></div>'
+    return '<div class = centerbox><div class = center-text>Correct!</div></div>'
   } else {
     practice_index += 1
-    return '<div class = centerbox><div style="color:red"; class = center-text>Incorrect</div></p></div>'
+    return '<div class = centerbox><div class = center-text>Incorrect</div></p></div>'
   }
 }
+var getBlockFeedback = function() {
+	return '<div class = bigbox><div class = picture_box><p class = block-text><font color="white">' + feedback_text + '</font></p></div></div>'
+}
+
 
 var getInstructFeedback = function() {
   return '<div class = centerbox><p class = center-block-text>' + feedback_instruct_text +
@@ -93,6 +97,10 @@ var attention_check_thresh = 0.45
 var sumInstructTime = 0 //ms
 var instructTimeThresh = 0 ///in seconds
 var credit_var = true
+
+var practice_thresh = 3 // 3 blocks of 15 trials
+var accuracy_thresh = 0.80
+var missed_thresh = 0.10
 
 // task specific variables
 var num_go_stim = 9 //per one no-go stim
@@ -241,7 +249,10 @@ var end_block = {
   text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
   cont_key: [13],
   timing_post_trial: 0,
-  on_finish: assessPerformance
+  on_finish: function(){
+		assessPerformance()
+		evalAttentionChecks()
+    }
 };
 
 var start_test_block = {
@@ -266,6 +277,23 @@ var reset_block = {
   timing_post_trial: 0
 }
 
+var feedback_text = 
+	'Welcome to the experiment. This experiment will take less than 30 minutes. Press <strong>enter</strong> to begin.'
+var feedback_block = {
+	type: 'poldrack-single-stim',
+	data: {
+		exp_id: "n_back_single_task_network",
+		trial_id: "practice-no-stop-feedback"
+	},
+	choices: [13],
+	stimulus: getBlockFeedback,
+	timing_post_trial: 0,
+	is_html: true,
+	timing_stim: -1,
+	timing_response: -1,
+	response_ends_trial: true, 
+
+};
 
 /* define practice block */
 var practice_block = {
@@ -276,8 +304,8 @@ var practice_block = {
     trial_id: "stim",
     exp_stage: "practice"
   },
-  correct_text: '<div class = centerbox><div style="color:green"; class = center-text>Correct!</div></div>',
-  incorrect_text: '<div class = centerbox><div style="color:red"; class = center-text>Incorrect</div></div>',
+  correct_text: '<div class = centerbox><div class = center-text>Correct!</div></div>',
+  incorrect_text: '<div class = centerbox><div class = center-text>Incorrect</div></div>',
   timeout_message: getFeedback,
   choices: [32],
   timing_response: get_response_time,
@@ -288,6 +316,78 @@ var practice_block = {
   on_finish: appendData
 }
 
+var practiceTrials = []
+practiceTrials.push(feedback_block)
+practiceTrials.push(instructions_block)
+practiceTrials.push(practiceBlock)
+
+var practiceCount = 0
+var practiceNode = {
+	timeline: practiceTrials,
+	loop_function: function(data){
+		practiceCount += 1
+		practice_trials = jsPsych.randomization.repeat(practice_stimuli, 5); 
+		test_trials = jsPsych.randomization.repeat(test_stimuli_block, 35);   
+	
+		var sum_rt = 0
+		var sum_responses = 0
+		var correct = 0
+		var total_trials = 0
+	
+		for (var i = 0; i < data.length; i++){
+			if (data[i].trial_id == "stim"){
+				total_trials+=1
+				if (data[i].rt != -1){
+					sum_rt += data[i].rt
+					sum_responses += 1
+					if (data[i].key_press == data[i].correct_response){
+						correct += 1
+		
+					}
+				}
+		
+			}
+	
+		}
+	
+		var accuracy = correct / total_trials
+		var missed_responses = (total_trials - sum_responses) / total_trials
+		var ave_rt = sum_rt / sum_responses
+	
+		feedback_text = "<br>Please take this time to read your feedback and to take a short break! Press enter to continue"
+		feedback_text += "</p><p class = block-text><strong>Average reaction time:  " + Math.round(ave_rt) + " ms. 	Accuracy: " + Math.round(accuracy * 100)+ "%</strong>"
+
+		if (accuracy > accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Done with this practice. Press Enter to continue.' 
+			return false
+	
+		} else if (accuracy < accuracy_thresh){
+			feedback_text +=
+					'</p><p class = block-text>Your accuracy is too low.  Remember: <br>' + prompt_text_list
+					
+			if (missed_responses > missed_thresh){
+				feedback_text +=
+						'</p><p class = block-text>You have not been responding to some trials.  Please respond on every trial that requires a response.'
+			}
+		
+			if (practiceCount == practice_thresh){
+				feedback_text +=
+					'</p><p class = block-text>Done with this practice.' 
+					
+					return false
+			}
+			
+			feedback_text +=
+				'</p><p class = block-text>Redoing this practice. Press Enter to continue.' 
+			
+			return true
+		
+		}
+	
+	}
+	
+}
 /* define test block */
 var test_block = {
   type: 'poldrack-single-stim',
@@ -306,8 +406,13 @@ var test_block = {
 
 /* create experiment definition array */
 var go_nogo_experiment = [];
-go_nogo_experiment.push(instruction_node);
-go_nogo_experiment.push(practice_block);
+
+//go_nogo_experiment.push(instruction_node);
+//go_nogo_experiment.push(practice_block);
+
+go_nogo_experiment.push(practiceNode)
+go_nogo_experiment.push(feedback_block)
+
 go_nogo_experiment.push(attention_node)
 go_nogo_experiment.push(reset_block)
 go_nogo_experiment.push(start_test_block);

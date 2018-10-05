@@ -17,9 +17,6 @@ function evalAttentionChecks() {
 }
 
 function assessPerformance() {
-	/* Function to calculate the "credit_var", which is a boolean used to
-	credit individual experiments in expfactory. 
-	 */
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
 	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
 	var missed_count = 0
@@ -29,9 +26,9 @@ function assessPerformance() {
 		//record choices participants made
 	var choice_counts = {}
 	choice_counts[-1] = 0
-	for (var k = 0; k < choices.length; k++) {
-    choice_counts[choices[k]] = 0
-  }
+	for (var k = 0; k < possible_responses.length; k++) {
+		choice_counts[possible_responses[k][1]] = 0
+	}
 	for (var i = 0; i < experiment_data.length; i++) {
 		if (experiment_data[i].possible_responses != 'none') {
 			trial_count += 1
@@ -44,14 +41,13 @@ function assessPerformance() {
 				rt_array.push(rt)
 			}
 		}
-
 	}
 	//calculate average rt
-  var avg_rt = -1
-  if (rt_array.length !== 0) {
-    avg_rt = math.median(rt_array)
-  } 
-		//calculate whether response distribution is okay
+	var avg_rt = -1
+	if (rt_array.length !== 0) {
+		avg_rt = math.median(rt_array)
+	} 
+	//calculate whether response distribution is okay
 	var responses_ok = true
 	Object.keys(choice_counts).forEach(function(key, index) {
 		if (choice_counts[key] > trial_count * 0.85) {
@@ -294,6 +290,9 @@ var appendData = function() {
   }
 }
 
+var getCTI = function(){
+	return CTI
+}
 /* ************************************ */
 /* Define experimental variables */
 /* ************************************ */
@@ -310,7 +309,7 @@ var accuracy_thresh = 0.80
 var missed_thresh = 0.60
 var practice_thresh = 3
 var lowestNumCond = 28
-
+var CTI = 300
 // task specific variables
 var response_keys = jsPsych.randomization.repeat([{
   key: 77,
@@ -499,7 +498,10 @@ var end_block = {
   text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <strong>enter</strong> to continue.</p></div>',
   cont_key: [13],
   timing_response: 180000,
-  on_finish: assessPerformance
+  on_finish: function(){
+		assessPerformance()
+		evalAttentionChecks()
+    }
 };
 
 var start_practice_block = {
@@ -772,7 +774,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
-testTrials.push(instructions_block)
+testTrials.push(attention_node)
 for (var i = 0; i < numTrialsPerBlock; i++) {
   testTrials.push(setStims_block)
   testTrials.push(fixation_block)
@@ -841,19 +843,12 @@ var testNode = {
 
 /* create experiment definition array */
 var shape_matching_with_two_by_two_experiment = [];
-
 shape_matching_with_two_by_two_experiment.push(practiceNode);
 shape_matching_with_two_by_two_experiment.push(feedback_block);
 
-shape_matching_with_two_by_two_experiment.push(attention_node)
-
 shape_matching_with_two_by_two_experiment.push(start_test_block)
-
 shape_matching_with_two_by_two_experiment.push(testNode);
 shape_matching_with_two_by_two_experiment.push(feedback_block);
 
-shape_matching_with_two_by_two_experiment.push(attention_node)
-
 shape_matching_with_two_by_two_experiment.push(post_task_block)
-
 shape_matching_with_two_by_two_experiment.push(end_block)

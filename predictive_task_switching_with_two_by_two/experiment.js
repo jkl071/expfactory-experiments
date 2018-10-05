@@ -11,6 +11,21 @@ function addID() {
   jsPsych.data.addDataToLastTrial({exp_id: 'predictive_task_switching_with_two_by_two'})
 }
 
+function evalAttentionChecks() {
+  var check_percent = 1
+  if (run_attention_checks) {
+    var attention_check_trials = jsPsych.data.getTrialsOfType('attention-check')
+    var checks_passed = 0
+    for (var i = 0; i < attention_check_trials.length; i++) {
+      if (attention_check_trials[i].correct === true) {
+        checks_passed += 1
+      }
+    }
+    check_percent = checks_passed / attention_check_trials.length
+  }
+  return check_percent
+}
+
 function assessPerformance() {
 	var experiment_data = jsPsych.data.getTrialsOfType('poldrack-single-stim')
 	experiment_data = experiment_data.concat(jsPsych.data.getTrialsOfType('poldrack-categorize'))
@@ -387,11 +402,10 @@ var practice_len = 32 // 32
 var exp_len = 64 //320 must be divisible by 32
 var numTrialsPerBlock = 32 // 64 must be divisible by 32
 var numTestBlocks = exp_len / numTrialsPerBlock
+var CTI = 300
 
 var accuracy_thresh = 0.80
 var missed_thresh = 0.10
-var CTI = 300
-
 var practice_thresh = 3 // 3 blocks of 24 trials
 
 var pathSource = "/static/experiments/predictive_task_switching_with_two_by_two/images/"
@@ -411,7 +425,7 @@ var predictive_dimensions_list = [stim = {dim:'magnitude', values: ['low','high'
 								  stim = {dim:'parity', values: ['odd','even']}]
 
 							 	  
-var possible_responses = jsPsych.randomization.repeat([['M Key', 77],['Z Key', 90]],1)
+var possible_responses = [['M Key', 77],['Z Key', 90]]
 
 var cued_conditions = jsPsych.randomization.repeat(['stay','switch'],1)
 var curr_tasks = jsPsych.randomization.repeat(['right','left'],1)
@@ -467,23 +481,34 @@ var stims = createTrialTypes(practice_len)
 /* ************************************ */
 /*        Set up jsPsych blocks         */
 /* ************************************ */
+// Set up attention check node
+var attention_check_block = {
+  type: 'attention-check',
+  data: {
+    trial_id: "attention_check"
+  },
+  timing_response: 180000,
+  response_ends_trial: true,
+  timing_post_trial: 200
+}
 
-var test_img_block = {
-	type: 'poldrack-single-stim',
-	stimulus: '<div class = bigbox><div class = decision-bottom-left><div class = centerbox>'+
-				'<div class = left-text>9</div>'+
-				'<div class = right-text>2</div>'+
-				'<div class = cue-text>right</div>'+
-			  '</div></div></div>',
-	is_html: true,
-	choices: [32],
-	data: {
-		trial_id: "fixation",
-		},
-	timing_post_trial: 0,
-	timing_stim: -1,
-	timing_response: -1,
-	response_ends_trial: true
+var attention_node = {
+  timeline: [attention_check_block],
+  conditional_function: function() {
+    return run_attention_checks
+  }
+}
+
+//Set up post task questionnaire
+var post_task_block = {
+   type: 'survey-text',
+   data: {
+       trial_id: "post task questions"
+   },
+   questions: ['<p class = center-block-text style = "font-size: 20px">Please summarize what you were asked to do in this task.</p>',
+              '<p class = center-block-text style = "font-size: 20px">Do you have any comments about this task?</p>'],
+   rows: [15, 15],
+   columns: [60,60]
 };
 
 var practice1 = {
@@ -547,7 +572,10 @@ var end_block = {
 	text: '<div class = centerbox><p class = center-block-text>Thanks for completing this task!</p><p class = center-block-text>Press <i>enter</i> to continue.</p></div>',
 	cont_key: [13],
 	timing_post_trial: 0,
-	on_finish: assessPerformance
+	on_finish: function(){
+		assessPerformance()
+		evalAttentionChecks()
+    }
 };
 
 
@@ -825,6 +853,7 @@ var practiceNode = {
 
 var testTrials = []
 testTrials.push(feedback_block)
+testTrials.push(attention_node)
 for (i = 0; i < numTrialsPerBlock + 1; i++) {
 	var fixation_block = {
 	  type: 'poldrack-single-stim',
@@ -937,21 +966,16 @@ var testNode = {
 /* ************************************ */
 
 var predictive_task_switching_with_two_by_two_experiment = []
-
 //predictive_task_switching_with_two_by_two_experiment.push(instruction_node);
-
 //predictive_task_switching_with_two_by_two_experiment.push(practice1);
-
 //predictive_task_switching_with_two_by_two_experiment.push(practice2);
 
 predictive_task_switching_with_two_by_two_experiment.push(practiceNode);
 predictive_task_switching_with_two_by_two_experiment.push(feedback_block);
 
-
 predictive_task_switching_with_two_by_two_experiment.push(start_test_block);
-
 predictive_task_switching_with_two_by_two_experiment.push(testNode);
 predictive_task_switching_with_two_by_two_experiment.push(feedback_block);
 
-
+predictive_task_switching_with_two_by_two_experiment.push(post_task_block);
 predictive_task_switching_with_two_by_two_experiment.push(end_block);
