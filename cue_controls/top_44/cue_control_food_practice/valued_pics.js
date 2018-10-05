@@ -1,8 +1,0 @@
-var valued_pics = [
-'001.jpg',
-'002.jpg',
-'003.jpg',
-'004.jpg',
-'005.jpg',
-'006.jpg']
-
