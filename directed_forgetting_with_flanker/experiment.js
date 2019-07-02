@@ -612,7 +612,7 @@ for (i = 0; i < practice_len; i++) {
 		type: 'poldrack-single-stim',
 		stimulus: '<div class = centerbox><div class = fixation><span style="color:white;">+</span></div></div>',
 		is_html: true,
-		choices: [possible_responses[0][1],possible_responses[1][1]],
+		choices: 'none',
 		data: {
 			trial_id: "practice_ITI_fixation"
 		},
@@ -795,7 +795,7 @@ for (i = 0; i < numTrialsPerBlock; i++) {
 		type: 'poldrack-single-stim',
 		stimulus: '<div class = centerbox><div class = fixation><span style="color:white;">+</span></div></div>',
 		is_html: true,
-		choices: [possible_responses[0][1],possible_responses[1][1]],
+		choices: 'none',
 		data: {
 			trial_id: "test_ITI_fixation"
 		},

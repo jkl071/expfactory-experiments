@@ -542,7 +542,7 @@ var ITI_fixation_block = {
 	type: 'poldrack-single-stim',
 	stimulus: '<div class = centerbox><div class = fixation><span style="color:white">+</span></div></div>',
 	is_html: true,
-	choices: choices,
+	choices: 'none',
 	data: {
 		trial_id: "ITI_fixation"
 	},
